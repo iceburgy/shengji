@@ -1,0 +1,41 @@
+import { CommonMethods } from "./common_methods"
+
+export class PlayerEntity {
+    static readonly GameTeam = [
+        "None",
+        "VerticalTeam",
+        "HorizonTeam",
+    ]
+
+    public OfflineSince: string
+    public PlayerId: string
+    public PlayerName: string
+    public Rank: number
+    public Team: number
+    public IsReadyToStart: boolean
+    public IsRobot: boolean
+    public IsOffline: boolean
+    public Observers: string[]
+    constructor() {
+        this.OfflineSince = ""
+        this.PlayerId = ""
+        this.PlayerName = ""
+        this.Rank = 0
+        this.Team = 0
+        this.IsReadyToStart = false
+        this.IsRobot = false
+        this.IsOffline = false
+        this.Observers = []
+    }
+    public CloneFrom(from: PlayerEntity) {
+        this.OfflineSince = from.OfflineSince
+        this.PlayerId = from.PlayerId
+        this.PlayerName = from.PlayerName
+        this.Rank = from.Rank
+        this.Team = from.Team
+        this.IsReadyToStart = from.IsReadyToStart
+        this.IsRobot = from.IsRobot
+        this.IsOffline = from.IsOffline
+        this.Observers = CommonMethods.deepCopy<string[]>(from.Observers)
+    }
+}
