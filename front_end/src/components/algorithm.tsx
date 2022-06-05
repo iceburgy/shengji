@@ -16,7 +16,7 @@ export class Algorithm {
         currentCards.CloneFrom(currentPoker)
 
         var leadingCardsCp = new CurrentPoker();
-        leadingCardsCp.TrumpInt = currentTrickState.Trump;
+        leadingCardsCp.Trump = currentTrickState.Trump;
         leadingCardsCp.Rank = currentTrickState.Rank;
 
         currentTrickState.LeadingCards().forEach(card => {
@@ -102,7 +102,7 @@ export class Algorithm {
         currentCards.CloneFrom(currentPoker)
 
         var leadingCardsCp = new CurrentPoker();
-        leadingCardsCp.TrumpInt = currentTrickState.Trump;
+        leadingCardsCp.Trump = currentTrickState.Trump;
         leadingCardsCp.Rank = currentTrickState.Rank;
 
         currentTrickState.LeadingCards().forEach(card => {
@@ -144,7 +144,9 @@ export class Algorithm {
         }
         //如果别人出单张，则选择我手中相同花色的单张
         if (currentSuitCards.length <= leadingCardsCp.Count() - selectedCards.length) {
-            selectedCards = selectedCards.concat(currentSuitCards);
+            for (let i = 0; i < currentSuitCards.length; i++) {
+                selectedCards.push(currentSuitCards[i]);
+            }
         }
     }
     //先手

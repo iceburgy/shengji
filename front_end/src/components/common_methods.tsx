@@ -3,6 +3,8 @@ import { CurrentPoker } from './current_poker';
 import { PlayerEntity } from './player_entity';
 export class CommonMethods {
     public static cardNumToValue: string[] = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
+    public static reenterRoomSignal = "断线重连中,请稍后...";
+    public static resumeGameSignal = "牌局加载中,请稍后...";
 
     constructor() {
     }
@@ -42,6 +44,17 @@ export class CommonMethods {
         for (let i = 0; i < a.length; i++) {
             var p = a[i]
             if (p != null && p.IsReadyToStart) {
+                count++
+            }
+        }
+        return count
+    }
+
+    public static GetPlayerCount(a: PlayerEntity[]): number {
+        var count = 0
+        for (let i = 0; i < a.length; i++) {
+            var p = a[i]
+            if (p != null) {
                 count++
             }
         }
@@ -172,5 +185,43 @@ export class CommonMethods {
             else found = true
         }
         return to
+    }
+
+    // public static string GetSuitString(int a)
+    // {
+    //     int suitInt = GetSuit(a);
+    //     Suit suit = (Suit)suitInt;
+    //     return suit.ToString();
+    // }
+
+    public static GetNumberString(a: number): string {
+        if (a == 52) {
+            return "Small";
+        }
+        if (a == 53) {
+            return "Big";
+        }
+        return CommonMethods.cardNumToValue[a % 13];
+    }
+
+    public static GetScoreCardsScore(scoreCards: number[]): number {
+        let points = 0;
+        scoreCards.forEach(card => {
+            if (card % 13 == 3)
+                points += 5;
+            else if (card % 13 == 8)
+                points += 10;
+            else if (card % 13 == 11)
+                points += 10;
+
+        })
+        return points;
+    }
+
+    public static AllOnline(players: PlayerEntity[]): boolean {
+        players.forEach(player => {
+            if (player == null || player.IsOffline) return false;
+        })
+        return true;
     }
 }

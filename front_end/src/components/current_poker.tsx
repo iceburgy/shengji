@@ -5,7 +5,6 @@ export class CurrentPoker {
     public Rank: number
     public Cards: number[]
     public Trump: number
-    public TrumpInt: number
     constructor(cards?: any, suit?: any, rank?: any) {
         this.Cards = []
         for (let i = 0; i < 54; i++) {
@@ -14,7 +13,6 @@ export class CurrentPoker {
         this.Rank = rank !== undefined ? rank : 0
         this.Cards = cards !== undefined ? cards : this.Cards
         this.Trump = suit !== undefined ? suit : 0
-        this.TrumpInt = this.Trump
         if (cards !== undefined) {
             var temp: number[] = cards as Array<number>
             temp.forEach(c => {
@@ -26,7 +24,6 @@ export class CurrentPoker {
     public CloneFrom(cp: CurrentPoker) {
         this.Rank = cp.Rank;
         this.Trump = cp.Trump;
-        this.TrumpInt = this.Trump;
         this.Cards = CommonMethods.deepCopy<number[]>(cp.Cards)
     }
 
@@ -219,51 +216,51 @@ export class CurrentPoker {
     public GetMasterPairs(): number[] {
         let list: number[] = []
         for (let i = 0; i < 13; i++) {
-            if (this.TrumpInt == 1) {
+            if (this.Trump == 1) {
                 if (this.HeartsNoRank()[i] > 1) {
                     list.push(i);
                 }
             }
-            if (this.TrumpInt == 2) {
+            if (this.Trump == 2) {
                 if (this.SpadesNoRank()[i] > 1) {
                     list.push(i + 13);
                 }
             }
-            if (this.TrumpInt == 3) {
+            if (this.Trump == 3) {
                 if (this.DiamondsNoRank()[i] > 1) {
                     list.push(i + 26);
                 }
             }
-            if (this.TrumpInt == 4) {
+            if (this.Trump == 4) {
                 if (this.ClubsNoRank()[i] > 1) {
                     list.push(i + 39);
                 }
             }
         }
 
-        if (this.TrumpInt != 1) {
+        if (this.Trump != 1) {
             if (this.HeartsRankTotal() > 1) {
                 list.push(this.Rank);
             }
         }
-        if (this.TrumpInt != 2) {
+        if (this.Trump != 2) {
             if (this.SpadesRankTotal() > 1) {
                 list.push(this.Rank + 13);
             }
         }
-        if (this.TrumpInt != 3) {
+        if (this.Trump != 3) {
             if (this.DiamondsRankTotal() > 1) {
                 list.push(this.Rank + 26);
             }
         }
-        if (this.TrumpInt != 4) {
+        if (this.Trump != 4) {
             if (this.ClubsRankTotal() > 1) {
                 list.push(this.Rank + 39);
             }
         }
 
         if (this.MasterRank() == 2) {
-            list.push((this.TrumpInt - 1) * 13 + this.Rank);
+            list.push((this.Trump - 1) * 13 + this.Rank);
         }
 
         if (this.BlackJoker() > 1) {
@@ -277,7 +274,7 @@ export class CurrentPoker {
     }
 
     public GetPairsBySuit(asuit: number): number[] {
-        if (asuit == this.TrumpInt) {
+        if (asuit == this.Trump) {
             return this.GetMasterPairs();
         }
         return this.GetNoRankPairs(asuit);
@@ -309,7 +306,7 @@ export class CurrentPoker {
 
         //主花色副花色
         if ((this.MasterRank() == 2) && this.HasSubRankPairs()) {
-            return ((this.TrumpInt - 1) * 13 + this.Rank);
+            return ((this.Trump - 1) * 13 + this.Rank);
         }
 
         //副花色A时
@@ -321,16 +318,16 @@ export class CurrentPoker {
                 m = 11;
             }
 
-            if ((this.TrumpInt == 1) && (this.Hearts()[m] > 1)) {
+            if ((this.Trump == 1) && (this.Hearts()[m] > 1)) {
                 return a[0];
             }
-            if ((this.TrumpInt == 2) && (this.Spades()[m] > 1)) {
+            if ((this.Trump == 2) && (this.Spades()[m] > 1)) {
                 return a[0];
             }
-            if ((this.TrumpInt == 3) && (this.Diamonds()[m] > 1)) {
+            if ((this.Trump == 3) && (this.Diamonds()[m] > 1)) {
                 return a[0];
             }
-            if ((this.TrumpInt == 4) && (this.Clubs()[m] > 1)) {
+            if ((this.Trump == 4) && (this.Clubs()[m] > 1)) {
                 return a[0];
             }
         }
@@ -368,7 +365,7 @@ export class CurrentPoker {
     }
 
     public GetTractorBySuitInt(asuit: number): number {
-        if (asuit == this.TrumpInt) {
+        if (asuit == this.Trump) {
             return this.GetMasterTractor();
         }
         //顺序比较
@@ -510,7 +507,7 @@ export class CurrentPoker {
         if (this.Trump != SuitEnums.Suit.Joker) {
             //只有在不打无主时才考虑主级牌，从而打无主时副级牌+小王仍被视为拖拉机
             if (this.MasterRank() == 2)
-                result.push((this.TrumpInt - 1) * 13 + this.Rank);
+                result.push((this.Trump - 1) * 13 + this.Rank);
             else if (result.length > 1)
                 return result;
             else
@@ -587,7 +584,7 @@ export class CurrentPoker {
 
         //主花色副花色
         if ((this.MasterRank() == 2) && this.HasSubRankPairs()) {
-            return ((this.TrumpInt - 1) * 13 + this.Rank);
+            return ((this.Trump - 1) * 13 + this.Rank);
         }
 
         //副花色A时
@@ -598,16 +595,16 @@ export class CurrentPoker {
                 m = 11;
             }
 
-            if ((this.TrumpInt == 1) && (this.Hearts()[m] > 1)) {
+            if ((this.Trump == 1) && (this.Hearts()[m] > 1)) {
                 return a[0];
             }
-            if ((this.TrumpInt == 2) && (this.Spades()[m] > 1)) {
+            if ((this.Trump == 2) && (this.Spades()[m] > 1)) {
                 return a[0];
             }
-            if ((this.TrumpInt == 3) && (this.Diamonds()[m] > 1)) {
+            if ((this.Trump == 3) && (this.Diamonds()[m] > 1)) {
                 return a[0];
             }
-            if ((this.TrumpInt == 4) && (this.Clubs()[m] > 1)) {
+            if ((this.Trump == 4) && (this.Clubs()[m] > 1)) {
                 return a[0];
             }
         }
@@ -626,22 +623,22 @@ export class CurrentPoker {
                 break;
             }
 
-            if (this.TrumpInt == 1) {
+            if (this.Trump == 1) {
                 if ((this.HeartsNoRank()[i] > 1) && (this.HeartsNoRank()[m] > 1)) {
                     return i;
                 }
             }
-            if (this.TrumpInt == 2) {
+            if (this.Trump == 2) {
                 if ((this.SpadesNoRank()[i] > 1) && (this.SpadesNoRank()[m] > 1)) {
                     return (i + 13);
                 }
             }
-            if (this.TrumpInt == 3) {
+            if (this.Trump == 3) {
                 if ((this.DiamondsNoRank()[i] > 1) && (this.DiamondsNoRank()[m] > 1)) {
                     return (i + 26);
                 }
             }
-            if (this.TrumpInt == 4) {
+            if (this.Trump == 4) {
                 if ((this.ClubsNoRank()[i] > 1) && (this.ClubsNoRank()[m] > 1)) {
                     return (i + 39);
                 }
@@ -653,22 +650,22 @@ export class CurrentPoker {
 
     public GetSubRankPairs(): number[] {
         let list: number[] = []
-        if (this.TrumpInt != 1) {
+        if (this.Trump != 1) {
             if (this.HeartsRankTotal() == 2) {
                 list.push(this.Rank);
             }
         }
-        if (this.TrumpInt != 2) {
+        if (this.Trump != 2) {
             if (this.SpadesRankTotal() == 2) {
                 list.push(13 + this.Rank);
             }
         }
-        if (this.TrumpInt != 3) {
+        if (this.Trump != 3) {
             if (this.DiamondsRankTotal() == 2) {
                 list.push(26 + this.Rank);
             }
         }
-        if (this.TrumpInt != 4) {
+        if (this.Trump != 4) {
             if (this.ClubsRankTotal() == 2) {
                 list.push(39 + this.Rank);
             }
@@ -724,13 +721,13 @@ export class CurrentPoker {
         }
         //小王主花色
         if (max == 52) {
-            return [52, (this.TrumpInt - 1) * 13 + this.Rank, (this.TrumpInt - 1) * 13 + this.Rank];
+            return [52, (this.Trump - 1) * 13 + this.Rank, (this.Trump - 1) * 13 + this.Rank];
         }
 
         //主花色副花色
-        if (max == ((this.TrumpInt - 1) * 13 + this.Rank)) {
+        if (max == ((this.Trump - 1) * 13 + this.Rank)) {
             let a: number[] = this.GetSubRankPairs();
-            return [(this.TrumpInt - 1) * 13 + this.Rank, a[0], a[0]];
+            return [(this.Trump - 1) * 13 + this.Rank, a[0], a[0]];
         }
 
         //副花色A时
@@ -743,16 +740,16 @@ export class CurrentPoker {
                     m = 11;
                 }
 
-                if ((this.TrumpInt == 1) && (this.Hearts()[m] > 1)) {
+                if ((this.Trump == 1) && (this.Hearts()[m] > 1)) {
                     return [a[0], m, m]
                 }
-                if ((this.TrumpInt == 2) && (this.Spades()[m] > 1)) {
+                if ((this.Trump == 2) && (this.Spades()[m] > 1)) {
                     return [a[0], m + 13, m + 13]
                 }
-                if ((this.TrumpInt == 3) && (this.Diamonds()[m] > 1)) {
+                if ((this.Trump == 3) && (this.Diamonds()[m] > 1)) {
                     return [a[0], m + 26, m + 26]
                 }
-                if ((this.TrumpInt == 4) && (this.Clubs()[m] > 1)) {
+                if ((this.Trump == 4) && (this.Clubs()[m] > 1)) {
                     return [a[0], m + 39, m + 39]
                 }
             }
@@ -760,7 +757,7 @@ export class CurrentPoker {
 
         //顺序比较
         for (let i = 12; i > 0; i--) {
-            if (this.TrumpInt == 1) {
+            if (this.Trump == 1) {
                 let m = i - 1;
                 if (m == this.Rank) {
                     m--;
@@ -775,7 +772,7 @@ export class CurrentPoker {
                     }
                 }
             }
-            if (this.TrumpInt == 2) {
+            if (this.Trump == 2) {
                 if ((max - 13) == i) {
                     let m = i - 1;
                     if (m == this.Rank) {
@@ -790,7 +787,7 @@ export class CurrentPoker {
                     }
                 }
             }
-            if (this.TrumpInt == 3) {
+            if (this.Trump == 3) {
                 if ((max - 26) == i) {
                     let m = i - 1;
                     if (m == this.Rank) {
@@ -805,7 +802,7 @@ export class CurrentPoker {
                     }
                 }
             }
-            if (this.TrumpInt == 4) {
+            if (this.Trump == 4) {
                 if ((max - 39) == i) {
                     let m = i - 1;
                     if (m == this.Rank) {
@@ -824,7 +821,7 @@ export class CurrentPoker {
 
         //顺序比较
         for (let i = 12; i > 0; i--) {
-            if (this.TrumpInt != 1) {
+            if (this.Trump != 1) {
                 if (max == i) {
                     let m = i - 1;
                     if (m == this.Rank) {
@@ -838,7 +835,7 @@ export class CurrentPoker {
                     }
                 }
             }
-            if (this.TrumpInt != 2) {
+            if (this.Trump != 2) {
                 if ((max - 13) == i) {
                     let m = i - 1;
                     if (m == this.Rank) {
@@ -852,7 +849,7 @@ export class CurrentPoker {
                     }
                 }
             }
-            if (this.TrumpInt != 3) {
+            if (this.Trump != 3) {
                 if ((max - 26) == i) {
                     let m = i - 1;
                     if (m == this.Rank) {
@@ -867,7 +864,7 @@ export class CurrentPoker {
                     }
                 }
             }
-            if (this.TrumpInt != 4) {
+            if (this.Trump != 4) {
                 if ((max - 39) == i) {
                     let m = i - 1;
                     if (m == this.Rank) {
@@ -889,22 +886,22 @@ export class CurrentPoker {
     public GetNoRankNoSuitTractor(): number {
         //顺序比较
         for (let i = 12; i > 0; i--) {
-            if (this.TrumpInt != 1) {
+            if (this.Trump != 1) {
                 if ((this.HeartsNoRank()[i] > 1) && (this.HeartsNoRank()[i - 1] > 1)) {
                     return i;
                 }
             }
-            if (this.TrumpInt != 2) {
+            if (this.Trump != 2) {
                 if ((this.SpadesNoRank()[i] > 1) && (this.SpadesNoRank()[i - 1] > 1)) {
                     return (i + 13);
                 }
             }
-            if (this.TrumpInt != 3) {
+            if (this.Trump != 3) {
                 if ((this.DiamondsNoRank()[i] > 1) && (this.DiamondsNoRank()[i - 1] > 1)) {
                     return (i + 26);
                 }
             }
-            if (this.TrumpInt != 4) {
+            if (this.Trump != 4) {
                 if ((this.ClubsNoRank()[i] > 1) && (this.ClubsNoRank()[i - 1] > 1)) {
                     return (i + 39);
                 }
@@ -915,10 +912,10 @@ export class CurrentPoker {
     }
 
     public MasterRank(): number {
-        if (this.Trump == SuitEnums.Suit.Joker || this.TrumpInt == 0)
+        if (this.Trump == SuitEnums.Suit.Joker || this.Trump == 0)
             return 0;
 
-        let index: number = (this.TrumpInt - 1) * 13 + this.Rank;
+        let index: number = (this.Trump - 1) * 13 + this.Rank;
         return this.Cards[index];
     }
 
@@ -928,16 +925,16 @@ export class CurrentPoker {
 
     public GetMasterCardsCount(): number {
         let tmp = this.RedJoker() + this.BlackJoker() + this.MasterRank() + this.SubRank();
-        if (this.TrumpInt == 1) {
+        if (this.Trump == 1) {
             tmp += this.HeartsNoRankTotal();
         }
-        else if (this.TrumpInt == 2) {
+        else if (this.Trump == 2) {
             tmp += this.SpadesNoRankTotal();
         }
-        else if (this.TrumpInt == 3) {
+        else if (this.Trump == 3) {
             tmp += this.DiamondsNoRankTotal();
         }
-        else if (this.TrumpInt == 4) {
+        else if (this.Trump == 4) {
             tmp += this.ClubsNoRankTotal();
         }
 
@@ -1085,7 +1082,7 @@ export class CurrentPoker {
     }
 
     public HasSomeCards(suit: number): boolean {
-        if (suit == this.TrumpInt) {
+        if (suit == this.Trump) {
             let count = this.HeartsRankTotal() + this.SpadesRankTotal() + this.DiamondsRankTotal() + this.ClubsRankTotal();
             count = count + this.MasterRank() + this.SubRank() + this.RedJoker() + this.BlackJoker();
             if (suit == 1) {
@@ -1193,7 +1190,7 @@ export class CurrentPoker {
                 list.push(53);
             }
         }
-        else if (asuit == this.TrumpInt) {
+        else if (asuit == this.Trump) {
             if (asuit == 1) {
                 for (let i = 0; i < 13; i++) {
                     if (this.HeartsNoRank()[i] == 1) {
@@ -1545,25 +1542,25 @@ export class CurrentPoker {
             }
         }
 
-        if (this.TrumpInt != 1) {
+        if (this.Trump != 1) {
             if (this.HeartsRankTotal() > 0) {
                 rt = this.Rank;
                 return rt;
             }
         }
-        if (this.TrumpInt != 2) {
+        if (this.Trump != 2) {
             if (this.SpadesRankTotal() > 0) {
                 rt = this.Rank + 13;
                 return rt;
             }
         }
-        if (this.TrumpInt != 3) {
+        if (this.Trump != 3) {
             if (this.DiamondsRankTotal() > 0) {
                 rt = this.Rank + 26;
                 return rt;
             }
         }
-        if (this.TrumpInt != 4) {
+        if (this.Trump != 4) {
             if (this.ClubsRankTotal() > 0) {
                 rt = this.Rank + 39;
                 return rt;
@@ -1571,7 +1568,7 @@ export class CurrentPoker {
         }
 
         if (this.MasterRank() > 0) {
-            rt = (this.TrumpInt - 1) * 13 + this.Rank;
+            rt = (this.Trump - 1) * 13 + this.Rank;
             return rt;
         }
 

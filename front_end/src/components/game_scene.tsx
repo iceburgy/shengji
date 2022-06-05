@@ -55,6 +55,7 @@ const GetDistributedCard_RESPONSE = "GetDistributedCard"
 const NotifyCardsReady_RESPONSE = "NotifyCardsReady"
 const NotifyDumpingValidationResult_RESPONSE = "NotifyDumpingValidationResult" // failure
 const NotifyTryToDumpResult_RESPONSE = "NotifyTryToDumpResult" // both
+const NotifyStartTimer_RESPONSE = "NotifyStartTimer" // both
 
 const screenWidth = document.documentElement.clientWidth;
 const screenHeight = document.documentElement.clientHeight;
@@ -77,7 +78,11 @@ export class GameScene extends Phaser.Scene {
     public match: Match
     public mainForm: MainForm
     public cardImages: Phaser.GameObjects.GameObject[]
+    public cardImageSequence: Phaser.GameObjects.Text[]
     public toolbarImages: Phaser.GameObjects.GameObject[]
+    public sidebarImages: Phaser.GameObjects.GameObject[]
+    public scoreCardsImages: Phaser.GameObjects.GameObject[]
+    public last8CardsImages: Phaser.GameObjects.GameObject[]
     public showedCardImages: Phaser.GameObjects.GameObject[]
     public hallPlayerHeader: Phaser.GameObjects.Text
     public hallPlayerNames: Phaser.GameObjects.Text[]
@@ -110,7 +115,11 @@ export class GameScene extends Phaser.Scene {
         this.pokerTableChairNames = []
         this.match = new Match()
         this.cardImages = [];
+        this.cardImageSequence = [];
         this.toolbarImages = [];
+        this.sidebarImages = [];
+        this.scoreCardsImages = [];
+        this.last8CardsImages = [];
         this.showedCardImages = [];
         this.hallPlayerNames = [];
         this.clientMessages = [];
@@ -132,34 +141,34 @@ export class GameScene extends Phaser.Scene {
             frameWidth: Coordinates.toolbarSize,
             frameHeight: Coordinates.toolbarSize
         });
-        // this.load.audio("biyue1", biyue1);
-        // this.load.audio("draw", draw);
-        // this.load.audio("drawx", drawx);
-        // this.load.audio("equip1", equip1);
-        // this.load.audio("equip2", equip2);
-        // this.load.audio("fankui2", fankui2);
-        // this.load.audio("sha", sha);
-        // this.load.audio("sha_fire", sha_fire);
-        // this.load.audio("sha_thunder", sha_thunder);
-        // this.load.audio("tie", tie);
-        // this.load.audio("win", win);
-        // this.load.audio("zhu_junlve", zhu_junlve);
+        this.load.audio("biyue1", biyue1);
+        this.load.audio("draw", draw);
+        this.load.audio("drawx", drawx);
+        this.load.audio("equip1", equip1);
+        this.load.audio("equip2", equip2);
+        this.load.audio("fankui2", fankui2);
+        this.load.audio("sha", sha);
+        this.load.audio("sha_fire", sha_fire);
+        this.load.audio("sha_thunder", sha_thunder);
+        this.load.audio("tie", tie);
+        this.load.audio("win", win);
+        this.load.audio("zhu_junlve", zhu_junlve);
     }
 
     create() {
         this.add.image(0, 0, 'bg2').setOrigin(0).setDisplaySize(screenWidth, screenHeight);
-        // this.soundbiyue1 = this.sound.add("biyue1", { volume: this.soundVolume });
-        // this.sounddraw = this.sound.add("draw", { volume: this.soundVolume });
-        // this.sounddrawx = this.sound.add("drawx", { volume: this.soundVolume });
-        // this.soundequip1 = this.sound.add("equip1", { volume: this.soundVolume });
-        // this.soundequip2 = this.sound.add("equip2", { volume: this.soundVolume });
-        // this.soundfankui2 = this.sound.add("fankui2", { volume: this.soundVolume });
-        // this.soundsha = this.sound.add("sha", { volume: this.soundVolume });
-        // this.soundsha_fire = this.sound.add("sha_fire", { volume: this.soundVolume });
-        // this.soundsha_thunder = this.sound.add("sha_thunder", { volume: this.soundVolume });
-        // this.soundtie = this.sound.add("tie", { volume: this.soundVolume });
-        // this.soundwin = this.sound.add("win", { volume: this.soundVolume });
-        // this.soundzhu_junlve = this.sound.add("zhu_junlve", { volume: this.soundVolume });
+        this.soundbiyue1 = this.sound.add("biyue1", { volume: this.soundVolume });
+        this.sounddraw = this.sound.add("draw", { volume: this.soundVolume });
+        this.sounddrawx = this.sound.add("drawx", { volume: this.soundVolume });
+        this.soundequip1 = this.sound.add("equip1", { volume: this.soundVolume });
+        this.soundequip2 = this.sound.add("equip2", { volume: this.soundVolume });
+        this.soundfankui2 = this.sound.add("fankui2", { volume: this.soundVolume });
+        this.soundsha = this.sound.add("sha", { volume: this.soundVolume });
+        this.soundsha_fire = this.sound.add("sha_fire", { volume: this.soundVolume });
+        this.soundsha_thunder = this.sound.add("sha_thunder", { volume: this.soundVolume });
+        this.soundtie = this.sound.add("tie", { volume: this.soundVolume });
+        this.soundwin = this.sound.add("win", { volume: this.soundVolume });
+        this.soundzhu_junlve = this.sound.add("zhu_junlve", { volume: this.soundVolume });
 
         this.websocket = new WebSocket(`ws://${this.hostName}/ws`)
         this.websocket.onopen = this.onopen.bind(this)
@@ -175,7 +184,8 @@ export class GameScene extends Phaser.Scene {
         this.mainForm = new MainForm(this)
         CommonMethods.BuildCardNumMap()
         // } catch (e) {
-        //     document.body.innerHTML += `<div>!!! Error: ${e}</div>`
+        //     // alert("error")
+        //     document.body.innerHTML = `<div>!!! onopen Error: ${e}</div>`
         // }
     }
 
@@ -211,10 +221,18 @@ export class GameScene extends Phaser.Scene {
             this.handleNotifyDumpingValidationResult(objList);
         } else if (messageType === NotifyTryToDumpResult_RESPONSE) {
             this.handleNotifyTryToDumpResult(objList);
+        } else if (messageType === NotifyStartTimer_RESPONSE) {
+            this.handleNotifyStartTimer(objList);
         }
         // } catch (e) {
-        //     document.body.innerHTML += `<div>!!! Error: ${e}</div>`
+        //     // alert("error")
+        //     document.body.innerHTML = `<div>!!! onmessage Error: ${e}</div>`
         // }
+    }
+
+    private handleNotifyStartTimer(objList: []) {
+        var result: number = objList[0];
+        this.mainForm.tractorPlayer.NotifyStartTimer(result)
     }
 
     private handleNotifyDumpingValidationResult(objList: []) {
@@ -238,7 +256,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     private handleNotifyGameHall(objList: []) {
-        this.mainForm.tractorPlayer.destroyAllClientMessages(this);
+        this.mainForm.tractorPlayer.destroyAllClientMessages();
         this.mainForm.destroyGameRoom();
         this.destroyGameHall();
         this.drawGameHall(objList);
@@ -246,7 +264,7 @@ export class GameScene extends Phaser.Scene {
 
     private handleNotifyMessage(objList: []) {
         var msgs = objList[0];
-        this.mainForm.tractorPlayer.NotifyMessage(this, msgs)
+        this.mainForm.tractorPlayer.NotifyMessage(msgs)
     }
 
     private handleNotifyRoomSetting(objList: []) {

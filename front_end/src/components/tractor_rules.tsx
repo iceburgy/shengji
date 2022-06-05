@@ -4,10 +4,8 @@ import { PokerHelper } from "./poker_helper";
 import { ShowingCardsValidationResult } from "./showing_cards_validation_result";
 
 export class TractorRules {
-
     constructor() {
     }
-
 
     public static GetCardNumberofEachPlayer(playerCount: number): number {
         if (playerCount == 4)
@@ -17,7 +15,6 @@ export class TractorRules {
 
         return 25;
     }
-
 
     public static IsValid(currentTrickState: CurrentTrickState, selectedCards: number[], currentCards: CurrentPoker): ShowingCardsValidationResult {
         let res = new ShowingCardsValidationResult()
@@ -30,14 +27,14 @@ export class TractorRules {
         })
 
         var showingCardsCp = new CurrentPoker();
-        showingCardsCp.TrumpInt = currentCards.Trump;
+        showingCardsCp.Trump = currentCards.Trump;
         showingCardsCp.Rank = currentCards.Rank;
         selectedCards.forEach(showingCard => {
             showingCardsCp.AddCard(showingCard);
         })
 
         var leadingCardsCp = new CurrentPoker();
-        leadingCardsCp.TrumpInt = currentCards.Trump;
+        leadingCardsCp.Trump = currentCards.Trump;
         leadingCardsCp.Rank = currentCards.Rank;
         currentTrickState.LeadingCards().forEach(card => {
             leadingCardsCp.AddCard(card);

@@ -12,16 +12,7 @@ import { MainForm } from './main_form';
 import { SuitEnums } from './suit_enums';
 import { TractorRules } from './tractor_rules';
 import { ShowingCardsValidationResult } from './showing_cards_validation_result';
-
-const screenWidth = document.documentElement.clientWidth;
-const screenHeight = document.documentElement.clientHeight;
-const roomNameTextPosition = { x: screenWidth - 240, y: 10 }
-
-const clientMessagePosition = { x: 400, y: 240 }
-const lineOffsetY = 40
-
-const hallPlayerHeaderPosition = { x: 50, y: 160 }
-const hallPlayerTopPosition = { x: 50, y: 240 }
+import { Coordinates } from './coordinates';
 
 const PlayerMakeTrump_REQUEST = "PlayerMakeTrump"
 
@@ -59,27 +50,67 @@ export class TractorPlayer {
         this.playerLocalCache = new PlayerLocalCache()
     }
 
-    public destroyAllClientMessages(gameScene: GameScene) {
-        if (gameScene.clientMessages == null || gameScene.clientMessages.length == 0) return
-        gameScene.clientMessages.forEach(msg => {
+    public destroyAllClientMessages() {
+        if (this.mainForm.gameScene.clientMessages == null || this.mainForm.gameScene.clientMessages.length == 0) return
+        this.mainForm.gameScene.clientMessages.forEach(msg => {
             msg.destroy();
         });
     }
 
-    public NotifyMessage(gameScene: GameScene, msgs: string[]) {
-        this.destroyAllClientMessages(gameScene)
+    public NotifyMessage(msgs: string[]) {
+        this.destroyAllClientMessages()
         if (msgs == null || msgs.length == 0) {
             return
         }
 
+        let posY = Coordinates.clientMessagePosition.y - (msgs.length - 1) / 2 * Coordinates.lineOffsetY
         for (let i = 0; i < msgs.length; i++) {
-            gameScene.clientMessages.push(gameScene.add.text(clientMessagePosition.x, clientMessagePosition.y + i * lineOffsetY, msgs[i]).setColor("yellow").setFontSize(28).setShadow(2, 2, "#333333", 2, true, true))
+            let m = msgs[i]
+            if (m.includes("获胜！")) {
+                if (this.mainForm.enableSound) this.mainForm.gameScene.soundwin.play()
+
+                // 播放烟花
+                // if (this.ThisPlayer.CurrentRoomSetting.RoomOwner == this.ThisPlayer.MyOwnId)
+                // {
+                //     Bitmap[] emojiList = this.drawingFormHelper.emojiDict[EmojiType.Fireworks];
+                //     int emojiListSize = emojiList.Length;
+                //     int emojiRandomIndex = CommonMethods.RandomNext(emojiListSize);
+                //     ThisPlayer.SendEmoji((int)EmojiType.Fireworks, emojiRandomIndex, true);
+                // }
+            }
+            else if (m == CommonMethods.reenterRoomSignal) {
+                if (!this.isObserver) {
+                    this.IsTryingReenter = true;
+                    // this.btnEnterHall.Hide();
+                    // this.btnReplay.Hide();
+                }
+            }
+            else if (m == CommonMethods.resumeGameSignal) {
+                if (!this.isObserver) {
+                    this.IsTryingResumeGame = true;
+                }
+            }
+            else if (m.includes("新游戏即将开始")) {
+                //新游戏开始前播放提示音，告诉玩家要抢庄
+                if (this.mainForm.enableSound) this.mainForm.gameScene.soundwin.play()
+            }
+            else if (m.includes("罚分")) {
+                //甩牌失败播放提示音
+                if (this.mainForm.enableSound) this.mainForm.gameScene.soundfankui2.play()
+            }
+
+
+            this.mainForm.gameScene.clientMessages.push(this.mainForm.gameScene.add.text(Coordinates.clientMessagePosition.x, posY + i * Coordinates.lineOffsetY, m)
+                .setColor("yellow")
+                .setFontSize(28)
+                .setShadow(2, 2, "#333333", 2, true, true))
         }
     }
 
     public NotifyRoomSetting(gameScene: GameScene, roomSetting: RoomSetting, showMessage: boolean) {
         this.CurrentRoomSetting = roomSetting
-        gameScene.roomUIControls.texts.push(gameScene.add.text(roomNameTextPosition.x, roomNameTextPosition.y, roomSetting.RoomName).setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true))
+        gameScene.roomUIControls.texts.push(gameScene.add.text(Coordinates.roomNameTextPosition.x, Coordinates.roomNameTextPosition.y, `房间：${roomSetting.RoomName}`).setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true))
+        gameScene.roomUIControls.texts.push(gameScene.add.text(Coordinates.roomOwnerTextPosition.x, Coordinates.roomOwnerTextPosition.y, `房主：${roomSetting.RoomOwner}`).setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true))
 
         if (showMessage) {
             var msgs = []
@@ -111,7 +142,7 @@ export class TractorPlayer {
                 }
             }
             msgs.push(mandRanksString)
-            this.NotifyMessage(gameScene, msgs)
+            this.NotifyMessage(msgs)
         }
     }
 
@@ -217,11 +248,9 @@ export class TractorPlayer {
             if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCardsFinished) {
                 this.mainForm.AllCardsGot();
             }
-
             else if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingLast8Cards) {
                 this.mainForm.DistributingLast8Cards()
             }
-
             else if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
                 this.mainForm.DiscardingLast8()
             }
@@ -234,12 +263,9 @@ export class TractorPlayer {
                 this.mainForm.AllCardsGot();
                 this.mainForm.ShowingCardBegan();
             }
-
-            // else if (currentHandState.CurrentHandStep == SuitEnums.HandStep.Ending)
-            // {
-            //     if (HandEnding != null)
-            //         HandEnding();
-            // }
+            else if (currentHandState.CurrentHandStep == SuitEnums.HandStep.Ending) {
+                this.mainForm.HandEnding();
+            }
             // else if (currentHandState.CurrentHandStep == SuitEnums.HandStep.SpecialEnding)
             // {
             //     if (SpecialEndingEvent != null)
@@ -262,9 +288,8 @@ export class TractorPlayer {
             this.CurrentHandState.PlayerHoldingCards != undefined &&
             this.CurrentHandState.PlayerHoldingCards[this.PlayerId] != undefined) {
             //即时更新旁观手牌
-            let tempCP = new CurrentPoker()
-            tempCP.CloneFrom(this.CurrentHandState.PlayerHoldingCards[this.PlayerId])
-            this.CurrentPoker.CloneFrom(tempCP)
+            this.CurrentPoker = new CurrentPoker()
+            this.CurrentPoker.CloneFrom(this.CurrentHandState.PlayerHoldingCards[this.PlayerId])
             this.mainForm.ObservePlayerByIDEvent()
         }
     }
@@ -408,5 +433,9 @@ export class TractorPlayer {
     // handle both
     public NotifyTryToDumpResult(result: ShowingCardsValidationResult) {
         this.mainForm.NotifyTryToDumpResultEventHandler(result)
+    }
+
+    public NotifyStartTimer(timerLength: number) {
+        this.mainForm.NotifyStartTimerEventHandler(timerLength)
     }
 }
