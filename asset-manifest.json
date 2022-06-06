@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/shengjiweb/static/css/main.5ad0da08.css",
-    "main.js": "/shengjiweb/static/js/main.c77997f4.js",
+    "main.js": "/shengjiweb/static/js/main.c1c59aef.js",
     "static/js/787.22edae46.chunk.js": "/shengjiweb/static/js/787.22edae46.chunk.js",
     "static/media/bg2.jpg": "/shengjiweb/static/media/bg2.c6e84f6c4a8a996367fc.jpg",
     "static/media/poker_table.png": "/shengjiweb/static/media/poker_table.1952f2d2d789e62f9c3b.png",
@@ -24,11 +24,11 @@
     "static/media/equip1.mp3": "/shengjiweb/static/media/equip1.1914d11ed7fb283a0767.mp3",
     "index.html": "/shengjiweb/index.html",
     "main.5ad0da08.css.map": "/shengjiweb/static/css/main.5ad0da08.css.map",
-    "main.c77997f4.js.map": "/shengjiweb/static/js/main.c77997f4.js.map",
+    "main.c1c59aef.js.map": "/shengjiweb/static/js/main.c1c59aef.js.map",
     "787.22edae46.chunk.js.map": "/shengjiweb/static/js/787.22edae46.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5ad0da08.css",
-    "static/js/main.c77997f4.js"
+    "static/js/main.c1c59aef.js"
   ]
 }
