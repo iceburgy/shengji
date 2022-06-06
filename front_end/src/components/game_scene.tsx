@@ -200,8 +200,8 @@ export class GameScene extends Phaser.Scene {
         const messageType = data["messageType"]
         const playerID = data["playerID"]
         const content = data["content"]
-        console.log(messageType)
-        console.log(content)
+        // console.log(messageType)
+        // console.log(content)
 
         const objList = JSON.parse(content)
         if (objList == null || objList.length == 0) return
