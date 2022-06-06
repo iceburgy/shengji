@@ -170,9 +170,14 @@ export class GameScene extends Phaser.Scene {
         this.soundwin = this.sound.add("win", { volume: this.soundVolume });
         this.soundzhu_junlve = this.sound.add("zhu_junlve", { volume: this.soundVolume });
 
-        this.websocket = new WebSocket(`ws://${this.hostName}/ws`)
-        this.websocket.onopen = this.onopen.bind(this)
-        this.websocket.onmessage = this.onmessage.bind(this)
+        try {
+            this.websocket = new WebSocket(`ws://${this.hostName}/ws`)
+            this.websocket.onopen = this.onopen.bind(this)
+            this.websocket.onmessage = this.onmessage.bind(this)
+        } catch (e) {
+            // alert("error")
+            document.body.innerHTML = `<div>检测到您的浏览器尚未设置，请参照<a href="https://bit.ly/chromstep">此图解</a>先进行相应设置</div>`
+        }
     }
 
     onopen() {
