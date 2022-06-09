@@ -120,6 +120,39 @@ export class CurrentTrickState {
         return playerId;
     }
 
+    public NextPlayerByID(playerId: string): string {
+        let nextPlayer = "";
+        if (!this.ShowedCards || !this.ShowedCards[playerId])
+            return "";
+
+
+        let afterLeader = false;
+        //find next player to show card after learder
+        for (const [key, value] of Object.entries(this.ShowedCards)) {
+            if (key != playerId && afterLeader == false)
+                continue;
+            else if (key == playerId) // search from learder
+            {
+                afterLeader = true;
+            }
+            else if (afterLeader) {
+                nextPlayer = key;
+                break;
+            }
+        }
+
+
+        if (!nextPlayer) {
+            for (const [key, value] of Object.entries(this.ShowedCards)) {
+                if (key != playerId) {
+                    nextPlayer = key;
+                }
+                break;
+            }
+        }
+        return nextPlayer;
+    }
+
     public AllPlayedShowedCards(): boolean {
         for (const [key, value] of Object.entries(this.ShowedCards)) {
             if ((value as number[]).length == 0)

@@ -11,7 +11,6 @@ export class CurrentPoker {
             this.Cards[i] = 0
         }
         this.Rank = rank !== undefined ? rank : 0
-        this.Cards = cards !== undefined ? cards : this.Cards
         this.Trump = suit !== undefined ? suit : 0
         if (cards !== undefined) {
             var temp: number[] = cards as Array<number>
@@ -1581,6 +1580,12 @@ export class CurrentPoker {
             return rt;
         }
         return rt;
+    }
+
+    //全部清空
+    public Clear() {
+        this.Cards = new Array(54)
+        this.Cards.fill(0)
     }
 
 }

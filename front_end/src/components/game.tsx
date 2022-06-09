@@ -20,6 +20,9 @@ export const GameScreen = ({ hostName, playerName }: GameScreenProps) => {
             scene: [gameScence],
             audio: {
                 disableWebAudio: true
+            },
+            dom: {
+                createContainer: true
             }
         };
         new Phaser.Game(config);

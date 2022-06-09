@@ -7,6 +7,7 @@ import { SuitEnums } from './suit_enums';
 import { TractorRules } from './tractor_rules';
 import { ShowingCardsValidationResult } from './showing_cards_validation_result';
 import { start } from 'repl';
+import { PokerHelper } from './poker_helper';
 
 const CardsReady_REQUEST = "CardsReady"
 
@@ -15,10 +16,13 @@ export class DrawingFormHelper {
 
     private startX: number = 0
     private suitSequence: number
+    private isDragging: boolean
+
 
     constructor(mf: MainForm) {
         this.mainForm = mf
         this.suitSequence = 0
+        this.isDragging = false
     }
 
     public IGetCard() {
@@ -238,7 +242,7 @@ export class DrawingFormHelper {
             .setData("serverCardNumber", serverCardNumber)
             .setData("cardsOrderNumber", this.mainForm.cardsOrderNumber)
         this.mainForm.gameScene.cardImages.push(image);
-
+        this.mainForm.gameScene.input.setDraggable(image);
         let leftCenter = image.getLeftCenter()
         let seqText = this.mainForm.gameScene.add.text(leftCenter.x + 2, leftCenter.y + 13, this.suitSequence.toString()).setColor("gray").setFontSize(Coordinates.suitSequenceSize)
         this.mainForm.gameScene.cardImageSequence.push(seqText);
@@ -247,25 +251,33 @@ export class DrawingFormHelper {
         if (this.mainForm.myCardIsReady[this.mainForm.cardsOrderNumber] === undefined) {
             this.mainForm.myCardIsReady[this.mainForm.cardsOrderNumber] = false
         }
-        image.on('pointerup', () => {
-            if (this.mainForm.tractorPlayer.isObserver) return
-            if (this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing ||
-                this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
-                if (image.data === null || !image.getData("status") || image.getData("status") === "down") {
-                    image.setData("status", "up");
-                    image.y -= 30;
-                    this.mainForm.myCardIsReady[image.getData("cardsOrderNumber")] = true
-                    this.mainForm.gameScene.sendMessageToServer(CardsReady_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.mainForm.myCardIsReady));
-                    this.validateSelectedCards();
-                } else {
-                    image.setData("status", "down");
-                    image.y += 30;
-                    this.mainForm.myCardIsReady[image.getData("cardsOrderNumber")] = false
-                    this.mainForm.gameScene.sendMessageToServer(CardsReady_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.mainForm.myCardIsReady));
-                    this.validateSelectedCards();
+        if (!this.mainForm.tractorPlayer.isObserver) {
+            // left click
+            image.on('dragstart', (pointer: Phaser.Input.Pointer) => {
+                if (pointer.leftButtonDown()) {
+                    this.handleSelectingCard(image)
+                    this.isDragging = true
                 }
-            }
-        });
+            });
+            image.on('dragend', (pointer: Phaser.Input.Pointer) => {
+                if (pointer.leftButtonDown()) {
+                    this.isDragging = false
+                }
+            });
+            image.on('pointerover', (pointer: Phaser.Input.Pointer) => {
+                if (pointer.leftButtonDown() && this.isDragging) {
+                    this.handleSelectingCard(image)
+                }
+            });
+
+            // right click
+            image.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+                if (pointer.rightButtonDown()) {
+                    this.handleSelectingCardRightClick(image)
+                }
+            });
+        }
+
         // if I made trump, move it up by 30px
         var trumpMadeCard = (this.mainForm.tractorPlayer.CurrentHandState.Trump - 1) * 13 + this.mainForm.tractorPlayer.CurrentHandState.Rank;
         if (this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker == SuitEnums.TrumpExposingPoker.PairBlackJoker)
@@ -301,6 +313,224 @@ export class DrawingFormHelper {
         this.mainForm.cardsOrderNumber++
     }
 
+    private handleSelectingCard(image: Phaser.GameObjects.Sprite) {
+        if (this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing ||
+            this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
+            if (image.data === null || !image.getData("status") || image.getData("status") === "down") {
+                image.setData("status", "up");
+                image.y -= 30;
+                this.mainForm.myCardIsReady[image.getData("cardsOrderNumber")] = true
+                this.mainForm.gameScene.sendMessageToServer(CardsReady_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.mainForm.myCardIsReady));
+                this.validateSelectedCards();
+            } else {
+                image.setData("status", "down");
+                image.y += 30;
+                this.mainForm.myCardIsReady[image.getData("cardsOrderNumber")] = false
+                this.mainForm.gameScene.sendMessageToServer(CardsReady_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.mainForm.myCardIsReady));
+                this.validateSelectedCards();
+            }
+        }
+    }
+
+    private handleSelectingCardRightClick(image: Phaser.GameObjects.Sprite) {
+        //统计已选中的牌张数
+        let readyCount: number = 0;
+        let crlength = this.mainForm.myCardIsReady.length
+        for (let ri = 0; ri < crlength; ri++) {
+            if (this.mainForm.myCardIsReady[ri]) readyCount++;
+        }
+        let showingCardsCp = new CurrentPoker();
+        showingCardsCp.Trump = this.mainForm.tractorPlayer.CurrentHandState.Trump
+        showingCardsCp.Rank = this.mainForm.tractorPlayer.CurrentHandState.Rank;
+
+        let i = image.getData("cardsOrderNumber")
+        let b = this.mainForm.myCardIsReady[i];
+        this.mainForm.myCardIsReady[i] = !b;
+        let clickedCardNumber = image.getData("serverCardNumber")
+        let isClickedTrump = PokerHelper.IsTrump(clickedCardNumber, showingCardsCp.Trump, showingCardsCp.Rank);
+        //响应右键的3种情况：
+        //1. 首出（默认）
+        let selectMoreCount = 0;
+        for (let left = i - 1; left >= 0; left--) {
+            let toAddImage = (this.mainForm.gameScene.cardImages[left] as Phaser.GameObjects.Sprite)
+            let toAddCardNumber = toAddImage.getData("serverCardNumber")
+
+            if (PokerHelper.GetSuit(toAddCardNumber) == PokerHelper.GetSuit(clickedCardNumber) ||
+                PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && isClickedTrump) selectMoreCount++;
+            else break;
+        }
+
+        let isLeader = this.mainForm.tractorPlayer.CurrentTrickState.Learder == this.mainForm.tractorPlayer.PlayerId;
+        if (this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
+            //2. 埋底牌
+            selectMoreCount = Math.min(selectMoreCount, 8 - 1 - readyCount);
+        }
+        else if (this.mainForm.tractorPlayer.CurrentTrickState != undefined && this.mainForm.tractorPlayer.CurrentTrickState.LeadingCards().length > 0) {
+            //3. 跟出
+            selectMoreCount = Math.min(selectMoreCount, this.mainForm.tractorPlayer.CurrentTrickState.LeadingCards().length - 1 - readyCount);
+        }
+
+        if (!b) {
+            let cardsToDump: number[] = []
+            let cardsToDumpCardNumber: number[] = []
+
+            let maxCard = showingCardsCp.Rank == 12 ? 11 : 12;
+            let selectTopToDump = !isClickedTrump && clickedCardNumber % 13 == maxCard || isClickedTrump && clickedCardNumber == 53; //如果右键点的A或者大王，且满足甩多张的条件，则向左选中所有本门合理可甩的牌
+            if (isLeader && selectTopToDump) {
+                let singleCardFound = false;
+                for (let j = 1; j <= selectMoreCount; j++) {
+                    let toAddImage = (this.mainForm.gameScene.cardImages[i - j] as Phaser.GameObjects.Sprite)
+                    let toAddCardNumber = toAddImage.getData("serverCardNumber")
+                    let toAddCardImageOnRightImage = (this.mainForm.gameScene.cardImages[i - j + 1] as Phaser.GameObjects.Sprite)
+                    let toAddCardNumberOnRight = toAddCardImageOnRightImage.getData("serverCardNumber")
+                    //如果候选牌是同一花色
+                    if (PokerHelper.GetSuit(toAddCardNumber) == PokerHelper.GetSuit(clickedCardNumber) ||
+                        PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && isClickedTrump) {
+                        let isSingleCard = toAddCardNumber != toAddCardNumberOnRight;
+                        if (isSingleCard) {
+                            if (singleCardFound) {
+                                showingCardsCp.Clear();
+                                break;
+                            }
+                            else {
+                                singleCardFound = true;
+                            }
+                        }
+                        showingCardsCp.AddCard(toAddCardNumberOnRight);
+                        cardsToDump.push(i - j + 1);
+                        cardsToDumpCardNumber.push(toAddCardNumberOnRight);
+                        showingCardsCp.AddCard(toAddCardNumberOnRight);
+
+                        if (!isSingleCard) {
+                            cardsToDump.push(i - j);
+                            cardsToDumpCardNumber.push(toAddCardNumberOnRight);
+                        }
+
+                        if (j > 1) {
+                            let tractorCount = showingCardsCp.GetTractorOfAnySuit().length;
+                            let needToBreak = false;
+                            while (cardsToDumpCardNumber.length > 0 && !(tractorCount > 1 && tractorCount * 2 == showingCardsCp.Count())) {
+                                needToBreak = true;
+                                let totalCount = cardsToDumpCardNumber.length;
+                                let cardNumToDel = cardsToDumpCardNumber[cardsToDumpCardNumber.length - 1];
+                                showingCardsCp.RemoveCard(cardNumToDel);
+                                showingCardsCp.RemoveCard(cardNumToDel);
+
+                                cardsToDumpCardNumber.splice(totalCount - 1, 1);
+                                cardsToDump.splice(totalCount - 1, 1);
+
+                                if (cardsToDumpCardNumber.length > 0 && cardsToDumpCardNumber[totalCount - 2] == cardNumToDel) {
+                                    cardsToDumpCardNumber.splice(totalCount - 2, 1);
+                                    cardsToDump.splice(totalCount - 2, 1);
+                                }
+                            }
+                            if (needToBreak) {
+                                break;
+                            }
+                        }
+
+                        if (!isSingleCard) {
+                            j++;
+                        }
+
+                        //特殊情况处理，最后一个单张顶张进不到下个循环，须在上轮循环处理
+                        if (j == selectMoreCount && !singleCardFound) {
+                            let toAddCardImageOnRightImage = (this.mainForm.gameScene.cardImages[i - j] as Phaser.GameObjects.Sprite)
+                            let toAddCardNumberOnRight = toAddCardImageOnRightImage.getData("serverCardNumber")
+                            showingCardsCp.AddCard(toAddCardNumberOnRight);
+                            showingCardsCp.AddCard(toAddCardNumberOnRight);
+                            let tractorCount = showingCardsCp.GetTractorOfAnySuit().length;
+                            if (tractorCount > 1 && tractorCount * 2 == showingCardsCp.Count()) {
+                                cardsToDump.push(i - j);
+                            }
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+
+            if (cardsToDump.length >= 2) {
+                cardsToDump.forEach(c => {
+                    this.mainForm.myCardIsReady[c] = !b;
+                })
+            }
+            else {
+                showingCardsCp.Clear();
+                let selectAll = false; //如果右键点的散牌，则向左选中所有本门花色的牌
+                for (let j = 1; j <= selectMoreCount; j++) {
+                    let toAddImage = (this.mainForm.gameScene.cardImages[i - j] as Phaser.GameObjects.Sprite)
+                    let toAddCardNumber = toAddImage.getData("serverCardNumber")
+                    let toAddCardImageOnRightImage = (this.mainForm.gameScene.cardImages[i - j + 1] as Phaser.GameObjects.Sprite)
+                    let toAddCardNumberOnRight = toAddCardImageOnRightImage.getData("serverCardNumber")
+                    //如果候选牌是同一花色
+                    if (PokerHelper.GetSuit(toAddCardNumber) == PokerHelper.GetSuit(clickedCardNumber) ||
+                        PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && isClickedTrump) {
+                        if (isLeader) {
+                            //第一个出，候选牌为对子，拖拉机
+                            if (!selectAll) {
+                                showingCardsCp.AddCard(toAddCardNumberOnRight);
+                                showingCardsCp.AddCard(toAddCardNumber);
+                            }
+
+                            if (showingCardsCp.Count() == 2 && (showingCardsCp.GetPairs().length == 1) || //如果是一对
+                                ((showingCardsCp.GetTractorOfAnySuit().length > 1) &&
+                                    showingCardsCp.Count() == showingCardsCp.GetTractorOfAnySuit().length * 2))  //如果是拖拉机
+                            {
+                                this.mainForm.myCardIsReady[i - j] = !b;
+                                this.mainForm.myCardIsReady[i - j + 1] = !b;
+                                j++;
+                            }
+                            else if (j == 1 || selectAll) {
+                                selectAll = true;
+                                this.mainForm.myCardIsReady[i - j] = !b;
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                        else {
+                            //埋底或者跟出
+                            this.mainForm.myCardIsReady[i - j] = !b;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+        }
+        else {
+            for (let j = 1; j <= i; j++) {
+                let toAddImage = (this.mainForm.gameScene.cardImages[i - j] as Phaser.GameObjects.Sprite)
+                let toAddCardNumber = toAddImage.getData("serverCardNumber")
+                let toAddCardImageOnRightImage = (this.mainForm.gameScene.cardImages[i - j + 1] as Phaser.GameObjects.Sprite)
+                let toAddCardNumberOnRight = toAddCardImageOnRightImage.getData("serverCardNumber")
+                //如果候选牌是同一花色
+                if (PokerHelper.GetSuit(toAddCardNumber) == PokerHelper.GetSuit(clickedCardNumber) ||
+                    PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && isClickedTrump) {
+                    this.mainForm.myCardIsReady[i - j] = !b;
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        this.mainForm.SelectedCards.length = 0
+
+        for (let k = 0; k < crlength; k++) {
+            if (this.mainForm.myCardIsReady[k]) {
+                let toAddImage = (this.mainForm.gameScene.cardImages[k] as Phaser.GameObjects.Sprite)
+                let toAddCardNumber = toAddImage.getData("serverCardNumber")
+                this.mainForm.SelectedCards.push(toAddCardNumber);
+            }
+        }
+
+        this.mainForm.drawingFormHelper.DrawMyPlayingCards();
+        this.mainForm.gameScene.sendMessageToServer(CardsReady_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.mainForm.myCardIsReady));
+    }
+
     // with colorful icons if applicabl
     public reDrawToolbar() {
         this.destroyToolbar();
@@ -312,16 +542,24 @@ export class DrawingFormHelper {
         let x = Coordinates.toolbarPosition.x
         let y = Coordinates.toolbarPosition.y
         for (let i = 0; i < 5; i++) {
+            let imagebar = this.mainForm.gameScene.add.sprite(x, y, 'suitsbarImage', i).setOrigin(0, 0).setInteractive()
+            this.mainForm.gameScene.toolbarImages.push(imagebar);
+
             let isSuiteAvailable = availableTrump.includes(i + 1)
             let suiteOffset = isSuiteAvailable ? 0 : 5;
-            let image = this.mainForm.gameScene.add.sprite(x, y, 'suitsImage', i + suiteOffset).setOrigin(0, 0).setInteractive()
+            let image = this.mainForm.gameScene.add.sprite(x + 10, y + 10, 'suitsImage', i + suiteOffset)
+                .setOrigin(0, 0)
+                .setInteractive()
+                .setDisplaySize(30, 30)
 
-            if (isSuiteAvailable) {
+            if (isSuiteAvailable && !this.mainForm.tractorPlayer.isObserver) {
+                let trumpExpIndex = this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker + 1
+                if (i == 4 && this.mainForm.tractorPlayer.CurrentPoker.RedJoker() == 2) trumpExpIndex = SuitEnums.TrumpExposingPoker.PairRedJoker
+                else if (this.mainForm.tractorPlayer.CurrentPoker.BlackJoker() == 2) trumpExpIndex = SuitEnums.TrumpExposingPoker.PairBlackJoker
+                imagebar.on('pointerup', () => {
+                    this.mainForm.tractorPlayer.ExposeTrump(trumpExpIndex, i + 1);
+                })
                 image.on('pointerup', () => {
-                    if (this.mainForm.tractorPlayer.isObserver) return
-                    let trumpExpIndex = this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker + 1
-                    if (i == 4 && this.mainForm.tractorPlayer.CurrentPoker.RedJoker() == 2) trumpExpIndex = SuitEnums.TrumpExposingPoker.PairRedJoker
-                    else if (this.mainForm.tractorPlayer.CurrentPoker.BlackJoker() == 2) trumpExpIndex = SuitEnums.TrumpExposingPoker.PairBlackJoker
                     this.mainForm.tractorPlayer.ExposeTrump(trumpExpIndex, i + 1);
                 })
             }
@@ -380,6 +618,10 @@ export class DrawingFormHelper {
             image.destroy();
         })
         this.mainForm.gameScene.showedCardImages = []
+
+        if (this.mainForm.gameScene.OverridingFlagImage) {
+            this.mainForm.gameScene.OverridingFlagImage.destroy()
+        }
     }
 
     // drawing showed cards
@@ -463,6 +705,7 @@ export class DrawingFormHelper {
     }
 
     public DrawFinishedSendedCards() {
+        this.mainForm.tractorPlayer.destroyAllClientMessages()
         this.destroyScoreImageAndCards()
         this.destroyLast8Cards()
         this.destroyAllShowedCards()
@@ -562,4 +805,105 @@ export class DrawingFormHelper {
         this.DrawShowedCards(allCards, posX, posY, this.mainForm.gameScene.last8CardsImages, scale)
     }
 
+    public DrawDiscardedCardsBackground() {
+        //画8张底牌
+        let last8Images: Phaser.GameObjects.Sprite[] = []
+        let x = Coordinates.distributingLast8Position.x
+        let y = Coordinates.distributingLast8Position.y
+        let cardBackIndex = 54
+        for (let i = 0; i < 8; i++) {
+            let image = this.mainForm.gameScene.add.sprite(x, y, 'poker', cardBackIndex)
+                .setOrigin(0, 0)
+                .setInteractive()
+            last8Images.push(image);
+            x += Coordinates.handCardOffset / 4
+        }
+        //隐藏
+        setTimeout(() => {
+            last8Images.forEach(image => {
+                image.destroy();
+            })
+            last8Images.length = 0
+        }, 2000);
+    }
+
+    //基于庄家相对于自己所在的位置，画庄家获得底牌的动画
+    public DrawDistributingLast8Cards(position: number) {
+        //画8张底牌
+        let last8Images: Phaser.GameObjects.Sprite[] = []
+        let x = Coordinates.distributingLast8Position.x
+        let y = Coordinates.distributingLast8Position.y
+        let cardBackIndex = 54
+        for (let i = 0; i < 8; i++) {
+            let image = this.mainForm.gameScene.add.sprite(x, y, 'poker', cardBackIndex)
+                .setOrigin(0, 0)
+                .setInteractive()
+            last8Images.push(image);
+            x += Coordinates.handCardOffset / 4
+        }
+        //分发
+        setTimeout(() => {
+            for (let i = 0; i < 8; i++) {
+                let curImage: Phaser.GameObjects.Sprite = last8Images[i]
+                let pos = curImage.getTopLeft()
+                let movingDir = [
+                    { x: pos.x, y: pos.y },
+                    { x: Coordinates.screenWid - Coordinates.distributingLast8MaxEdge - Coordinates.cardWidth, y: pos.y },
+                    { x: Coordinates.screenWid * 0.5 - Coordinates.cardWidth / 2, y: Coordinates.distributingLast8MaxEdge },
+                    { x: Coordinates.distributingLast8MaxEdge, y: pos.y },
+                ]
+                this.mainForm.gameScene.tweens.add({
+                    targets: last8Images[i],
+                    x: movingDir[position - 1].x,
+                    y: movingDir[position - 1].y,
+                    delay: (7 - i) * 100,
+                    duration: 200,
+                    ease: "Cubic.easeOut"
+                });
+            }
+        }, 200);
+        //隐藏
+        setTimeout(() => {
+            last8Images.forEach(image => {
+                image.destroy();
+            })
+            last8Images.length = 0
+        }, 1500);
+    }
+
+    public DrawOverridingFlag(cardsCount: number, position: number, winType: number) {
+        if (this.mainForm.gameScene.OverridingFlagImage) {
+            this.mainForm.gameScene.OverridingFlagImage.destroy()
+        }
+
+        let posInd = position - 1
+        let x = Coordinates.showedCardsPositions[posInd].x
+        let y = Coordinates.showedCardsPositions[posInd].y
+        switch (posInd) {
+            case 0:
+                x = x - (cardsCount - 1) * Coordinates.handCardOffset / 2
+                break;
+            case 1:
+                x = x - (cardsCount - 1) * Coordinates.handCardOffset
+                break;
+            case 2:
+                x = x - (cardsCount - 1) * Coordinates.handCardOffset / 2
+                break;
+            case 3:
+                break;
+            default:
+                break;
+        }
+        y = y + Coordinates.cardHeigh - Coordinates.overridingFlagHeight
+        let image = this.mainForm.gameScene.add.image(x, y, this.mainForm.gameScene.overridingLabelImages[winType])
+            .setOrigin(0, 0)
+            .setDisplaySize(Coordinates.overridingFlagWidth, Coordinates.overridingFlagHeight)
+        this.mainForm.gameScene.OverridingFlagImage = image
+        this.mainForm.gameScene.showedCardImages.push(image);
+    }
+
+    // private  setOverridingLabel( position:number, sizeLevel:number) {
+    //     this.overridingFlagLabels[position - 1].Location = new System.Drawing.Point(this.overridingFlagLocations[sizeLevel][position - 1][0], this.overridingFlagLocations[sizeLevel][position - 1][1]);
+    //     this.overridingFlagLabels[position - 1].Size = new System.Drawing.Size(this.overridingFlagSizes[sizeLevel][0], this.overridingFlagSizes[sizeLevel][1]);
+    // }
 }

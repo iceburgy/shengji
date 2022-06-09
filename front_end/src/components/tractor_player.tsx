@@ -58,11 +58,11 @@ export class TractorPlayer {
     }
 
     public NotifyMessage(msgs: string[]) {
-        this.destroyAllClientMessages()
         if (msgs == null || msgs.length == 0) {
             return
         }
 
+        this.destroyAllClientMessages()
         let posY = Coordinates.clientMessagePosition.y - (msgs.length - 1) / 2 * Coordinates.lineOffsetY
         for (let i = 0; i < msgs.length; i++) {
             let m = msgs[i]

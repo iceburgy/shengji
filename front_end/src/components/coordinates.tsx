@@ -6,6 +6,8 @@ const screenHeight = document.documentElement.clientHeight;
 export class Coordinates {
     // 屏幕左上角为坐标原点 (0, 0), 横轴为 x, 纵轴为 y
     // 右边无法显示的区域
+    static screenWid = screenWidth
+    static screenHei = screenHeight
     static hiddenWidth = 20
 
     // hall controls
@@ -13,19 +15,20 @@ export class Coordinates {
     static hallPlayerTopPosition = { x: 50, y: 240 }
 
     // room controls
-    static clientMessagePosition = { x: 400, y: screenHeight * 0.5 }
+    static clientMessagePosition = { x: screenWidth * 0.5 - 200, y: screenHeight * 0.5 }
     static lineOffsetY = 40
 
     static cardWidth = 90
     static cardHeigh = 120
     static handCardOffset = 24
     static suitSequenceSize = 15
+    static overridingFlagHeight = 40
+    static overridingFlagWidth = Coordinates.overridingFlagHeight * 3 / 2
     // account for maximum of five suites, with 4 gaps, shift to left by 2 gaps
     static handCardPositionCenter = { x: screenWidth * 0.5 - Coordinates.cardWidth / 2 - Coordinates.handCardOffset * 2, y: screenHeight - 200 }
     static toolbarSize = 50
     static toolbarPosition = { x: screenWidth - 360, y: Coordinates.handCardPositionCenter.y - 100 - 20 }
     static btnPigPosition = { x: screenWidth * 0.6, y: Coordinates.handCardPositionCenter.y - 100 }
-
 
     static btnLowerSize = 100
     static btnReadyPosition = { x: 10, y: screenHeight - 60 }
@@ -80,4 +83,9 @@ export class Coordinates {
 
     static countDownPosition = { x: screenWidth * 0.1, y: Coordinates.showedCardsPositions[0].y }
     static countDownSzie = 60
+
+    // distributing last 8
+    static distributingLast8MaxEdge = 30
+    static distributingLast8Position = { x: screenWidth * 0.5 - (Coordinates.cardWidth / 2) - Coordinates.handCardOffset * 3.5, y: screenHeight * 0.5 - Coordinates.cardHeigh / 2 }
+
 }

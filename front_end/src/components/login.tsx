@@ -5,6 +5,9 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { red, grey } from '@mui/material/colors';
 import Button from '@mui/material/Button';
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies();
 
 export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, setIsSetName }: any) => {
     return (
@@ -53,7 +56,11 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                         textAlign: "center",
                     }}
                 >
-                    <Button variant="contained" color="success" size="large" onClick={() => setIsSetName(true)}>进入大厅</Button>
+                    <Button variant="contained" color="success" size="large" onClick={() => {
+                        setIsSetName(true);
+                        cookies.set('hostName', hostName, { path: '/' });
+                        cookies.set('playerName', playerName, { path: '/' });
+                    }}>进入大厅</Button>
                 </CardContent>
             </CardContent>
         </Card>

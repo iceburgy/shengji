@@ -3,10 +3,16 @@ import Phaser from "phaser";
 import bgimage from "../assets/bg2.jpg"
 import pokerImage from "../assets/poker.png"
 import suitsImage from "../assets/suits.png"
+import suitsbarImage from "../assets/suitsbar.png"
 import beginGame from "../assets/btn/begin.png"
 import prepareOk from "../assets/btn/prepare_ok.png"
 import pokerTable from "../assets/btn/poker_table.png"
 import pokerChair from "../assets/btn/poker_chair.png"
+import bagua from "../assets/bagua.png"
+import huosha from "../assets/huosha.png"
+import leisha from "../assets/leisha.png"
+import pusha from "../assets/sha.png"
+import zhugong from "../assets/zhugong.png"
 import biyue1 from '../assets/music/biyue1.mp3';
 import draw from '../assets/music/draw.mp3';
 import drawx from '../assets/music/drawx.mp3';
@@ -35,7 +41,9 @@ import { MainForm } from "./main_form";
 import { Coordinates } from "./coordinates";
 import { CommonMethods } from "./common_methods";
 import { ShowingCardsValidationResult } from "./showing_cards_validation_result";
+import Cookies from 'universal-cookie';
 
+const cookies = new Cookies();
 const SET_PLAYER_NAME_REQUEST = "set_player_name"
 const PLAYER_ENTER_HALL_REQUEST = "PlayerEnterHall"
 const PLAYER_ENTER_ROOM_REQUEST = "PlayerEnterRoom"
@@ -84,6 +92,8 @@ export class GameScene extends Phaser.Scene {
     public scoreCardsImages: Phaser.GameObjects.GameObject[]
     public last8CardsImages: Phaser.GameObjects.GameObject[]
     public showedCardImages: Phaser.GameObjects.GameObject[]
+    public OverridingFlagImage: Phaser.GameObjects.Image
+    public overridingLabelImages: string[]
     public hallPlayerHeader: Phaser.GameObjects.Text
     public hallPlayerNames: Phaser.GameObjects.Text[]
     public clientMessages: Phaser.GameObjects.Text[]
@@ -91,16 +101,11 @@ export class GameScene extends Phaser.Scene {
     public soundbiyue1: Phaser.Sound.BaseSound;
     public sounddraw: Phaser.Sound.BaseSound;
     public sounddrawx: Phaser.Sound.BaseSound;
-    public soundequip1: Phaser.Sound.BaseSound;
-    public soundequip2: Phaser.Sound.BaseSound;
+    public soundPlayersShowCard: Phaser.Sound.BaseSound[];
     public soundfankui2: Phaser.Sound.BaseSound;
-    public soundsha: Phaser.Sound.BaseSound;
-    public soundsha_fire: Phaser.Sound.BaseSound;
-    public soundsha_thunder: Phaser.Sound.BaseSound;
     public soundtie: Phaser.Sound.BaseSound;
     public soundwin: Phaser.Sound.BaseSound;
-    public soundzhu_junlve: Phaser.Sound.BaseSound;
-    public soundsoundVolume: number
+    public soundVolume: number
 
     constructor(hostName, playerName: string) {
         super("GameScene")
@@ -121,10 +126,11 @@ export class GameScene extends Phaser.Scene {
         this.scoreCardsImages = [];
         this.last8CardsImages = [];
         this.showedCardImages = [];
+        this.overridingLabelImages = [];
         this.hallPlayerNames = [];
         this.clientMessages = [];
         this.roomUIControls = { images: [], texts: [] };
-        this.soundVolume = 0.5
+        this.soundVolume = cookies.get("soundVolume")
     }
 
     preload() {
@@ -133,11 +139,27 @@ export class GameScene extends Phaser.Scene {
         this.load.image("prepareOk", prepareOk)
         this.load.image("pokerTable", pokerTable)
         this.load.image("pokerChair", pokerChair)
+        this.load.image("bagua", bagua)
+        this.load.image("huosha", huosha)
+        this.load.image("leisha", leisha)
+        this.load.image("pusha", pusha)
+        this.load.image("zhugong", zhugong)
+        this.overridingLabelImages = [
+            "bagua",
+            "zhugong",
+            "pusha",
+            "huosha",
+            "leisha",
+        ]
         this.load.spritesheet('poker', pokerImage, {
             frameWidth: Coordinates.cardWidth,
             frameHeight: Coordinates.cardHeigh
         });
         this.load.spritesheet('suitsImage', suitsImage, {
+            frameWidth: Coordinates.toolbarSize,
+            frameHeight: Coordinates.toolbarSize
+        });
+        this.load.spritesheet('suitsbarImage', suitsbarImage, {
             frameWidth: Coordinates.toolbarSize,
             frameHeight: Coordinates.toolbarSize
         });
@@ -153,40 +175,40 @@ export class GameScene extends Phaser.Scene {
         this.load.audio("tie", tie);
         this.load.audio("win", win);
         this.load.audio("zhu_junlve", zhu_junlve);
+        this.load.html('settingsForm', '../assets/text/settings_form.html');
     }
 
     create() {
         this.add.image(0, 0, 'bg2').setOrigin(0).setDisplaySize(screenWidth, screenHeight);
-        this.soundbiyue1 = this.sound.add("biyue1", { volume: this.soundVolume });
-        this.sounddraw = this.sound.add("draw", { volume: this.soundVolume });
-        this.sounddrawx = this.sound.add("drawx", { volume: this.soundVolume });
-        this.soundequip1 = this.sound.add("equip1", { volume: this.soundVolume });
-        this.soundequip2 = this.sound.add("equip2", { volume: this.soundVolume });
-        this.soundfankui2 = this.sound.add("fankui2", { volume: this.soundVolume });
-        this.soundsha = this.sound.add("sha", { volume: this.soundVolume });
-        this.soundsha_fire = this.sound.add("sha_fire", { volume: this.soundVolume });
-        this.soundsha_thunder = this.sound.add("sha_thunder", { volume: this.soundVolume });
-        this.soundtie = this.sound.add("tie", { volume: this.soundVolume });
-        this.soundwin = this.sound.add("win", { volume: this.soundVolume });
-        this.soundzhu_junlve = this.sound.add("zhu_junlve", { volume: this.soundVolume });
-
         try {
-            this.websocket = new WebSocket(`ws://${this.hostName}/ws`)
+            this.websocket = new WebSocket(`ws://${this.hostName}`)
+            this.websocket.onerror = this.onerror.bind(this)
             this.websocket.onopen = this.onopen.bind(this)
             this.websocket.onmessage = this.onmessage.bind(this)
         } catch (e) {
-            // alert("error")
-            document.body.innerHTML = `<div>检测到您的浏览器尚未设置，请参照<a href="https://bit.ly/chromstep">此图解</a>先进行相应设置</div>`
+            let errString = e.toString()
+            if (errString.toLowerCase().includes(CommonMethods.wsErrorType_Insecure)) {
+                document.body.innerHTML = `<div>检测到您的浏览器尚未设置，请参照<a href="#" onclick="javascript:{window.open('https://bit.ly/chromstep')}">此图解</a>先进行相应设置</div>`
+            } else {
+                document.body.innerHTML = `<div>!!! 尝试链接服务器失败，错误信息：${errString}</div>`
+                console.log(e);
+            }
         }
     }
-
+    onerror(e) {
+        document.body.innerHTML = `<div>!!! 尝试链接服务器失败，服务器地址：${this.hostName}</div>`
+        console.error(JSON.stringify(e));
+    }
     onopen() {
         // try {
         console.log("连接成功")
+
         this.sendMessageToServer(PLAYER_ENTER_HALL_REQUEST, this.playerName, JSON.stringify({
             playerName: this.playerName,
         }))
         this.mainForm = new MainForm(this)
+        this.loadAudioFiles()
+        this.input.mouse.disableContextMenu();
         CommonMethods.BuildCardNumMap()
         // } catch (e) {
         //     // alert("error")
@@ -291,6 +313,28 @@ export class GameScene extends Phaser.Scene {
     private handleNotifyCurrentTrickState(objList: []) {
         var currentTrickState: CurrentTrickState = objList[0];
         this.mainForm.tractorPlayer.NotifyCurrentTrickState(currentTrickState)
+    }
+
+    public loadAudioFiles() {
+        this.mainForm.enableSound = this.soundVolume > 0
+        this.soundbiyue1 = this.sound.add("biyue1", { volume: this.soundVolume });
+        this.sounddraw = this.sound.add("draw", { volume: this.soundVolume });
+        this.sounddrawx = this.sound.add("drawx", { volume: this.soundVolume });
+        this.soundPlayersShowCard = [
+            this.sound.add("equip1", { volume: this.soundVolume }),
+            this.sound.add("equip2", { volume: this.soundVolume }),
+            this.sound.add("zhu_junlve", { volume: this.soundVolume }),
+            this.sound.add("sha", { volume: this.soundVolume }),
+            this.sound.add("sha_fire", { volume: this.soundVolume }),
+            this.sound.add("sha_thunder", { volume: this.soundVolume }),
+        ]
+        this.soundfankui2 = this.sound.add("fankui2", { volume: this.soundVolume });
+        this.soundtie = this.sound.add("tie", { volume: this.soundVolume });
+        this.soundwin = this.sound.add("win", { volume: this.soundVolume });
+    }
+
+    public saveAudioVolume() {
+        cookies.set('soundVolume', this.soundVolume, { path: '/' });
     }
 
     public drawGameHall(objList: []) {
