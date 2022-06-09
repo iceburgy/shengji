@@ -25,6 +25,10 @@ import sha from '../assets/music/sha.mp3';
 import tie from '../assets/music/tie.mp3';
 import win from '../assets/music/win.mp3';
 import zhu_junlve from '../assets/music/zhu_junlve.mp3';
+import walkerjson from '../assets/animations/walker.json';
+import walkerpng from '../assets/animations/walker.png';
+import sf2ryujson from '../assets/animations/sf2ryu.json';
+import sf2ryupng from '../assets/animations/sf2ryu.png';
 
 import { nanoid } from 'nanoid'
 import { Match } from './match';
@@ -67,7 +71,8 @@ const NotifyStartTimer_RESPONSE = "NotifyStartTimer" // both
 
 const screenWidth = document.documentElement.clientWidth;
 const screenHeight = document.documentElement.clientHeight;
-var xInit = 512;
+const dummyValue = "dummyValue"
+const IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
 
 interface Player {
     name: string
@@ -76,6 +81,7 @@ interface Player {
 
 export class GameScene extends Phaser.Scene {
     public hostName
+    public hostNameOriginal
     public playerName
     public websocket: WebSocket | null
     public players: Player[]
@@ -110,6 +116,7 @@ export class GameScene extends Phaser.Scene {
     constructor(hostName, playerName: string) {
         super("GameScene")
         this.hostName = hostName
+        this.hostNameOriginal = hostName
         this.playerName = playerName
         this.existPlayers = [1]
         this.players = [{ name: playerName, prepare: false }, null, null, null]
@@ -130,7 +137,11 @@ export class GameScene extends Phaser.Scene {
         this.hallPlayerNames = [];
         this.clientMessages = [];
         this.roomUIControls = { images: [], texts: [] };
-        this.soundVolume = cookies.get("soundVolume")
+        this.soundVolume = cookies.get("soundVolume");
+
+        if (!IPPort.exec(this.hostName)) {
+            this.processAuth();
+        }
     }
 
     preload() {
@@ -176,6 +187,9 @@ export class GameScene extends Phaser.Scene {
         this.load.audio("win", win);
         this.load.audio("zhu_junlve", zhu_junlve);
         this.load.html('settingsForm', '../assets/text/settings_form.html');
+
+        this.load.atlas('walker', walkerpng, walkerjson);
+        this.load.atlas('sf2ryu', sf2ryupng, sf2ryujson);
     }
 
     create() {
@@ -196,7 +210,7 @@ export class GameScene extends Phaser.Scene {
         }
     }
     onerror(e) {
-        document.body.innerHTML = `<div>!!! 尝试链接服务器失败，服务器地址：${this.hostName}</div>`
+        document.body.innerHTML = `<div>!!! 尝试链接服务器失败，请确认输入信息无误：${this.hostNameOriginal}</div>`
         console.error(JSON.stringify(e));
     }
     onopen() {
@@ -313,6 +327,15 @@ export class GameScene extends Phaser.Scene {
     private handleNotifyCurrentTrickState(objList: []) {
         var currentTrickState: CurrentTrickState = objList[0];
         this.mainForm.tractorPlayer.NotifyCurrentTrickState(currentTrickState)
+    }
+
+    private processAuth() {
+        var CryptoJS = require("crypto-js");
+        var bytes = CryptoJS.AES.decrypt(this.hostName, dummyValue);
+        var originalText = bytes.toString(CryptoJS.enc.Utf8);
+        if (bytes && bytes.sigBytes > 0 > 0 && originalText) {
+            this.hostName = originalText
+        }
     }
 
     public loadAudioFiles() {

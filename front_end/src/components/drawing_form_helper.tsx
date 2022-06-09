@@ -906,4 +906,46 @@ export class DrawingFormHelper {
     //     this.overridingFlagLabels[position - 1].Location = new System.Drawing.Point(this.overridingFlagLocations[sizeLevel][position - 1][0], this.overridingFlagLocations[sizeLevel][position - 1][1]);
     //     this.overridingFlagLabels[position - 1].Size = new System.Drawing.Size(this.overridingFlagSizes[sizeLevel][0], this.overridingFlagSizes[sizeLevel][1]);
     // }
+
+    public DrawWalker(){
+        const animConfig = {
+            key: 'walk',
+            frames: 'walker',
+            frameRate: 60,
+            repeat: -1
+        };
+
+        this.mainForm.gameScene.anims.create(animConfig);
+
+        const sprite = this.mainForm.gameScene.add.sprite(Coordinates.screenWid, 484, 'walker', 'frame_0000');
+
+        sprite.play('walk');
+
+        this.mainForm.gameScene.tweens.add({
+            targets: sprite,
+            x: 0-sprite.width/4,
+            y: 484,
+            delay: 500,
+            duration: 5000,
+            ease: "Cubic.easeInOut"
+        });
+        setTimeout(() => {
+            sprite.destroy();
+        }, 6000);
+    }
+
+    public DrawSf2ryu(){
+        this.mainForm.gameScene.anims.create({
+            key: 'hadoken',
+            frames: this.mainForm.gameScene.anims.generateFrameNames('sf2ryu', { prefix: 'frame_', end: 15, zeroPad: 2 }),
+            yoyo: false,
+            repeat: -1
+        });
+
+        var ryu = this.mainForm.gameScene.add.sprite(400, 350,'sf2ryu').play('hadoken').setScale(3);
+
+        setTimeout(() => {
+            ryu.destroy();
+        }, 6000);
+    }
 }

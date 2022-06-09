@@ -25,9 +25,8 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                 }}
             >
                 <TextField
-                    label="请输入服务器地址"
+                    label="服务器地址或者访问密钥"
                     color="error"
-                    focused
                     margin='normal'
                     value={hostName}
                     onChange={e => {
@@ -40,7 +39,6 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                 <TextField
                     label="请输入一个昵称"
                     color="error"
-                    focused
                     margin='normal'
                     value={playerName}
                     onChange={e => {
