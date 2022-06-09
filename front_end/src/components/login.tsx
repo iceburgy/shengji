@@ -6,10 +6,12 @@ import Typography from '@mui/material/Typography';
 import { red, grey } from '@mui/material/colors';
 import Button from '@mui/material/Button';
 import Cookies from 'universal-cookie';
+import { Link } from "@mui/material";
+import { LoginNoticeScreen } from './login_notice';
 
 const cookies = new Cookies();
 
-export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, setIsSetName }: any) => {
+export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, setIsSetName, showNotice }: any) => {
     return (
         <Card sx={{ height: '100vh' }}>
             <CardContent sx={{ bgcolor: red[500], height: '5vh' }}>
@@ -60,6 +62,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                         cookies.set('playerName', playerName, { path: '/' });
                     }}>进入大厅</Button>
                 </CardContent>
+                {showNotice==='none'?'':<LoginNoticeScreen/>}
             </CardContent>
         </Card>
     )

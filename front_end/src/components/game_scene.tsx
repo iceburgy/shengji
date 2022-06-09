@@ -216,6 +216,7 @@ export class GameScene extends Phaser.Scene {
     onopen() {
         // try {
         console.log("连接成功")
+        cookies.set('showNotice', 'none', { path: '/' });
 
         this.sendMessageToServer(PLAYER_ENTER_HALL_REQUEST, this.playerName, JSON.stringify({
             playerName: this.playerName,
