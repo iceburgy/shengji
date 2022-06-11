@@ -12,6 +12,9 @@ export class GameState {
     }
 
     public CloneFrom(from: GameState) {
+        this.Players = new Array(4)
+        this.PlayerToIP = {}
+        this.startNextHandStarter = new PlayerEntity()
         for (let i = 0; i < from.Players.length; i++) {
             var p = from.Players[i]
             if (p == undefined || p == null) continue

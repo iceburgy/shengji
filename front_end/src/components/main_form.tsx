@@ -385,6 +385,7 @@ export class MainForm {
         this.lblNickNames[0].setText(this.tractorPlayer.MyOwnId)
         this.drawingFormHelper.destroyAllCards()
         this.drawingFormHelper.destroyAllShowedCards()
+        this.tractorPlayer.destroyAllClientMessages()
         this.drawingFormHelper.destroyToolbar()
         this.drawingFormHelper.destroySidebar()
         this.drawingFormHelper.destroyScoreImageAndCards()
@@ -637,6 +638,7 @@ export class MainForm {
         if (!this.tractorPlayer.ShowLastTrickCards) {
             //擦掉上一把
             if (this.tractorPlayer.CurrentTrickState.CountOfPlayerShowedCards() == 1) {
+                this.tractorPlayer.destroyAllClientMessages()
                 this.drawingFormHelper.destroyAllShowedCards()
                 this.drawingFormHelper.DrawScoreImageAndCards();
             }
@@ -767,6 +769,7 @@ export class MainForm {
 
     private init() {
         //每次初始化都重绘背景
+        this.tractorPlayer.destroyAllClientMessages()
         this.drawingFormHelper.destroyAllCards()
         this.drawingFormHelper.destroyAllShowedCards()
         this.drawingFormHelper.destroyToolbar()
@@ -778,7 +781,9 @@ export class MainForm {
 
     private setStartLabels() {
         var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)
+        let newReady = false;
         for (let i = 0; i < 4; i++) {
+            let oldStatus = this.lblStarters[i].text;
             this.lblStarters[i].setVisible(true)
 
             var curPlayer = this.tractorPlayer.CurrentGameState.Players[curIndex];
@@ -797,8 +802,21 @@ export class MainForm {
             else {
                 this.lblStarters[i].setText(`${curIndex + 1}`)
             }
+            let newStatus = this.lblStarters[i].text;
+            let readyStatus = `${curIndex + 1}`;
+            if (curPlayer && this.playerBecomeReady(oldStatus, newStatus, readyStatus)) {
+                newReady = true;
+            }
             curIndex = (curIndex + 1) % 4
         }
+        if (newReady && this.enableSound) {
+            if (CommonMethods.AllReady(this.tractorPlayer.CurrentGameState.Players)) this.gameScene.soundtie.play()
+            else this.gameScene.soundRecoverhp.play()
+        }
+    }
+
+    private playerBecomeReady(oldStatus: string, newStatus: string, readyStatus: string): boolean {
+        return oldStatus != readyStatus && newStatus == readyStatus;
     }
 
     private btnReady_Click(mf: MainForm) {
@@ -1010,6 +1028,7 @@ export class MainForm {
         //擦掉出牌区
         this.drawingFormHelper.destroyAllShowedCards();
         this.drawingFormHelper.DrawScoreImageAndCards();
+        this.tractorPlayer.destroyAllClientMessages()
         let cardsCount = 0
         if (this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick != null) {
             for (const [key, value] of Object.entries(this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick)) {
@@ -1043,7 +1062,7 @@ export class MainForm {
                 mf.ShowLastTrickAndTumpMade(mf);
             }
             else {
-                mf.ThisPlayer_PlayerCurrentTrickShowedCards(mf);
+                mf.PlayerCurrentTrickShowedCards();
             }
         }
         //一局结束时右键查看最后一轮各家所出的牌，缩小至一半，放在左下角
@@ -1064,14 +1083,16 @@ export class MainForm {
         mf.tractorPlayer.destroyAllClientMessages()
 
         mf.tractorPlayer.NotifyMessage(["回看上轮出牌"]);
-        // //查看谁亮过什么牌
-        // mf.drawingFormHelper.TrumpMadeCardsShow();
+
         //绘制上一轮各家所出的牌，缩小至一半，放在左下角，或者重画当前轮各家所出的牌
-        mf.ThisPlayer_PlayerLastTrickShowedCards(mf);
+        mf.PlayerLastTrickShowedCards(mf);
+
+        //查看谁亮过什么牌
+        mf.drawingFormHelper.TrumpMadeCardsShowFromLastTrick();
     }
 
-    //绘制上一轮各家所出的牌
-    private ThisPlayer_PlayerLastTrickShowedCards(mf: MainForm) {
+    //绘制上一轮各家所出的牌，缩小一半
+    private PlayerLastTrickShowedCards(mf: MainForm) {
         let lastLeader = mf.tractorPlayer.CurrentTrickState.serverLocalCache.lastLeader;
         if (!lastLeader || !mf.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards ||
             Object.keys(mf.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards).length == 0) return;
@@ -1089,37 +1110,10 @@ export class MainForm {
             let position = mf.PlayerPosition[key];
             let cards: number[] = value as number[]
             cardsCount = cards.length
-            mf.drawingFormHelper.DrawShowedCardsByPosition(cards, position)
+            mf.drawingFormHelper.DrawShowedCardsByPositionFromLastTrick(cards, position)
         }
         let winnerID = TractorRules.GetWinner(trickState);
         let tempIsWinByTrump = mf.IsWinningWithTrump(trickState, winnerID);
-        mf.drawingFormHelper.DrawOverridingFlag(cardsCount, mf.PlayerPosition[winnerID], tempIsWinByTrump - 1);
-    }
-
-    //绘制当前轮各家所出的牌（仅用于切换视角或当前回合大牌变更时）
-    private ThisPlayer_PlayerCurrentTrickShowedCards(mf: MainForm) {
-        //擦掉出牌区
-        mf.drawingFormHelper.destroyAllShowedCards()
-        mf.tractorPlayer.destroyAllClientMessages()
-        let cardsCount = 0
-
-        if (mf.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick) {
-            for (const [key, value] of Object.entries(mf.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick)) {
-                let cards: number[] = value as number[]
-                cardsCount = cards.length
-                let position = mf.PlayerPosition[key];
-                mf.drawingFormHelper.DrawShowedCardsByPosition(value as number[], position)
-            }
-        }
-        // todo
-        //重画亮过的牌
-        // if (mf.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
-        //     mf.drawingFormHelper.TrumpMadeCardsShow();
-        // }
-
-        //重画大牌标记
-        if (mf.tractorPlayer.playerLocalCache.WinnderID && cardsCount > 0) {
-            mf.drawingFormHelper.DrawOverridingFlag(cardsCount, mf.PlayerPosition[mf.tractorPlayer.playerLocalCache.WinnderID], mf.tractorPlayer.playerLocalCache.WinResult - 1);
-        }
+        mf.drawingFormHelper.DrawOverridingFlagFromLastTrick(cardsCount, mf.PlayerPosition[winnerID], tempIsWinByTrump - 1);
     }
 }

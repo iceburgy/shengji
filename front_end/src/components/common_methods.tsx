@@ -222,9 +222,18 @@ export class CommonMethods {
     }
 
     public static AllOnline(players: PlayerEntity[]): boolean {
-        players.forEach(player => {
-            if (player == null || player.IsOffline) return false;
-        })
+        for (let i = 0; i < 4; i++) {
+            if (players[i] == null || players[i].IsOffline) return false;
+
+        }
+        return true;
+    }
+
+    public static AllReady(players: PlayerEntity[]): boolean {
+        for (let i = 0; i < 4; i++) {
+            if (players[i] == null || !players[i].IsReadyToStart) return false;
+
+        }
         return true;
     }
 

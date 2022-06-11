@@ -8,6 +8,7 @@ import { TractorRules } from './tractor_rules';
 import { ShowingCardsValidationResult } from './showing_cards_validation_result';
 import { start } from 'repl';
 import { PokerHelper } from './poker_helper';
+import { TrumpState } from './trump_state';
 
 const CardsReady_REQUEST = "CardsReady"
 
@@ -16,13 +17,12 @@ export class DrawingFormHelper {
 
     private startX: number = 0
     private suitSequence: number
-    private isDragging: boolean
+    public isDragging: any
 
 
     constructor(mf: MainForm) {
         this.mainForm = mf
         this.suitSequence = 0
-        this.isDragging = false
     }
 
     public IGetCard() {
@@ -256,16 +256,14 @@ export class DrawingFormHelper {
             image.on('dragstart', (pointer: Phaser.Input.Pointer) => {
                 if (pointer.leftButtonDown()) {
                     this.handleSelectingCard(image)
-                    this.isDragging = true
+                    this.isDragging = image
                 }
             });
             image.on('dragend', (pointer: Phaser.Input.Pointer) => {
-                if (pointer.leftButtonDown()) {
-                    this.isDragging = false
-                }
+                this.isDragging = undefined
             });
             image.on('pointerover', (pointer: Phaser.Input.Pointer) => {
-                if (pointer.leftButtonDown() && this.isDragging) {
+                if (pointer.leftButtonDown() && this.isDragging !== image) {
                     this.handleSelectingCard(image)
                 }
             });
@@ -556,10 +554,10 @@ export class DrawingFormHelper {
                 let trumpExpIndex = this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker + 1
                 if (i == 4 && this.mainForm.tractorPlayer.CurrentPoker.RedJoker() == 2) trumpExpIndex = SuitEnums.TrumpExposingPoker.PairRedJoker
                 else if (this.mainForm.tractorPlayer.CurrentPoker.BlackJoker() == 2) trumpExpIndex = SuitEnums.TrumpExposingPoker.PairBlackJoker
-                imagebar.on('pointerup', () => {
+                imagebar.on('pointerdown', () => {
                     this.mainForm.tractorPlayer.ExposeTrump(trumpExpIndex, i + 1);
                 })
-                image.on('pointerup', () => {
+                image.on('pointerdown', () => {
                     this.mainForm.tractorPlayer.ExposeTrump(trumpExpIndex, i + 1);
                 })
             }
@@ -581,9 +579,57 @@ export class DrawingFormHelper {
         else if (this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker == SuitEnums.TrumpExposingPoker.PairRedJoker)
             trumpMadeCard = 53;
 
-        this.DrawShowedCardsByPosition([trumpMadeCard], posID)
         if (this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker > SuitEnums.TrumpExposingPoker.SingleRank) {
             this.DrawShowedCardsByPosition([trumpMadeCard, trumpMadeCard], posID)
+        } else {
+            this.DrawShowedCardsByPosition([trumpMadeCard], posID)
+        }
+    }
+
+    public TrumpMadeCardsShowFromLastTrick() {
+        let trumpDict: any = {}
+        let lastTrumpStates: TrumpState[] = this.mainForm.tractorPlayer.CurrentHandState.LastTrumpStates
+        lastTrumpStates.forEach(lastHandState => {
+            let key1 = lastHandState.TrumpMaker;
+            if (!Object.keys(trumpDict).includes(key1)) {
+                trumpDict[key1] = []
+            }
+            let val1 = trumpDict[key1];
+
+            let key2: number = lastHandState.Trump;
+            if (!Object.keys(val1).includes(key2.toString())) {
+                val1[key2] = lastHandState;
+            }
+            let val2: TrumpState = val1[key2];
+            val2.TrumpExposingPoker = Math.max(val2.TrumpExposingPoker, lastHandState.TrumpExposingPoker);
+        })
+
+        for (const [key, value] of Object.entries(trumpDict)) {
+            let player = key;
+            let posIndex = this.mainForm.PlayerPosition[player];
+            let suitToTrumInfo: any = value;
+
+            let allTrumpCards: number[] = []
+            for (const [key, value] of Object.entries(suitToTrumInfo)) {
+                let trump: number = parseInt(key);
+                let trumpInfo: TrumpState = value as TrumpState;
+
+                var trumpMadeCard = (trump - 1) * 13 + this.mainForm.tractorPlayer.CurrentHandState.Rank;
+
+                if (trumpInfo.TrumpExposingPoker == SuitEnums.TrumpExposingPoker.PairBlackJoker)
+                    trumpMadeCard = 52;
+                else if (trumpInfo.TrumpExposingPoker == SuitEnums.TrumpExposingPoker.PairRedJoker)
+                    trumpMadeCard = 53;
+
+                let count = 1;
+                if (trumpInfo.TrumpExposingPoker > SuitEnums.TrumpExposingPoker.SingleRank) {
+                    count = 2;
+                }
+                for (let i = 0; i < count; i++) {
+                    allTrumpCards.push(trumpMadeCard)
+                }
+            }
+            this.DrawTrumpMadeCardsByPositionFromLastTrick(allTrumpCards, posIndex)
         }
     }
 
@@ -646,6 +692,50 @@ export class DrawingFormHelper {
                 break;
         }
         this.DrawShowedCards(cards, x, y, this.mainForm.gameScene.showedCardImages, 1)
+    }
+
+    // drawing showed cards from last trick
+    public DrawShowedCardsByPositionFromLastTrick(cards: number[], pos: number) {
+        let coords = this.getShowedCardsCoordinatesByPositionFromLastTrick(pos, cards.length)
+        this.DrawShowedCards(cards, coords.x, coords.y, this.mainForm.gameScene.showedCardImages, 0.5)
+    }
+
+    // drawing showed cards from last trick
+    public DrawTrumpMadeCardsByPositionFromLastTrick(cards: number[], pos: number) {
+        let coords = this.getShowedCardsCoordinatesByPositionFromLastTrick(pos, cards.length)
+        if (pos === 2 || pos === 4) {
+            if (pos == 2) coords.x = Coordinates.screenWid - 10 - Coordinates.hiddenWidth - Coordinates.cardWidth - Coordinates.handCardOffset * (cards.length - 1)
+            else coords.x = 10
+            coords.y = coords.y - Coordinates.cardHeigh
+        }
+        this.DrawShowedCards(cards, coords.x, coords.y, this.mainForm.gameScene.showedCardImages, 1)
+    }
+
+    private getShowedCardsCoordinatesByPositionFromLastTrick(pos: number, count: number): any {
+        let posInd = pos - 1
+        let x = Coordinates.showedCardsPositions[posInd].x
+        let y = Coordinates.showedCardsPositions[posInd].y
+        switch (posInd) {
+            case 0:
+                x = x + Coordinates.cardWidth / 4 - (count - 1) * Coordinates.handCardOffset / 4
+                y = y - Coordinates.cardHeigh / 2
+                break;
+            case 1:
+                x = x - (count - 1) * Coordinates.handCardOffset / 2 - Coordinates.cardWidth / 2
+                y = y + Coordinates.cardHeigh / 4
+                break;
+            case 2:
+                x = x + Coordinates.cardWidth / 4 - (count - 1) * Coordinates.handCardOffset / 4
+                y = y + Coordinates.cardHeigh
+                break;
+            case 3:
+                x = x + Coordinates.cardWidth
+                y = y + Coordinates.cardHeigh / 4
+                break;
+            default:
+                break;
+        }
+        return { x: x, y: y }
     }
 
     public DrawSidebarFull() {
@@ -902,12 +992,20 @@ export class DrawingFormHelper {
         this.mainForm.gameScene.showedCardImages.push(image);
     }
 
-    // private  setOverridingLabel( position:number, sizeLevel:number) {
-    //     this.overridingFlagLabels[position - 1].Location = new System.Drawing.Point(this.overridingFlagLocations[sizeLevel][position - 1][0], this.overridingFlagLocations[sizeLevel][position - 1][1]);
-    //     this.overridingFlagLabels[position - 1].Size = new System.Drawing.Size(this.overridingFlagSizes[sizeLevel][0], this.overridingFlagSizes[sizeLevel][1]);
-    // }
+    public DrawOverridingFlagFromLastTrick(cardsCount: number, position: number, winType: number) {
+        if (this.mainForm.gameScene.OverridingFlagImage) {
+            this.mainForm.gameScene.OverridingFlagImage.destroy()
+        }
+        let coords = this.getShowedCardsCoordinatesByPositionFromLastTrick(position, cardsCount)
+        coords.y = coords.y + Coordinates.cardHeigh / 2 - Coordinates.overridingFlagHeight / 2
+        let image = this.mainForm.gameScene.add.image(coords.x, coords.y, this.mainForm.gameScene.overridingLabelImages[winType])
+            .setOrigin(0, 0)
+            .setDisplaySize(Coordinates.overridingFlagWidth / 2, Coordinates.overridingFlagHeight / 2)
+        this.mainForm.gameScene.OverridingFlagImage = image
+        this.mainForm.gameScene.showedCardImages.push(image);
+    }
 
-    public DrawWalker(){
+    public DrawWalker() {
         const animConfig = {
             key: 'walk',
             frames: 'walker',
@@ -923,7 +1021,7 @@ export class DrawingFormHelper {
 
         this.mainForm.gameScene.tweens.add({
             targets: sprite,
-            x: 0-sprite.width/4,
+            x: 0 - sprite.width / 4,
             y: 484,
             delay: 500,
             duration: 5000,
@@ -934,7 +1032,7 @@ export class DrawingFormHelper {
         }, 6000);
     }
 
-    public DrawSf2ryu(){
+    public DrawSf2ryu() {
         this.mainForm.gameScene.anims.create({
             key: 'hadoken',
             frames: this.mainForm.gameScene.anims.generateFrameNames('sf2ryu', { prefix: 'frame_', end: 15, zeroPad: 2 }),
@@ -942,7 +1040,7 @@ export class DrawingFormHelper {
             repeat: -1
         });
 
-        var ryu = this.mainForm.gameScene.add.sprite(400, 350,'sf2ryu').play('hadoken').setScale(3);
+        var ryu = this.mainForm.gameScene.add.sprite(400, 350, 'sf2ryu').play('hadoken').setScale(3);
 
         setTimeout(() => {
             ryu.destroy();

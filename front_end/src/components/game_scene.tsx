@@ -25,6 +25,7 @@ import sha from '../assets/music/sha.mp3';
 import tie from '../assets/music/tie.mp3';
 import win from '../assets/music/win.mp3';
 import zhu_junlve from '../assets/music/zhu_junlve.mp3';
+import recoverhp from '../assets/music/recover.mp3';
 import walkerjson from '../assets/animations/walker.json';
 import walkerpng from '../assets/animations/walker.png';
 import sf2ryujson from '../assets/animations/sf2ryu.json';
@@ -105,6 +106,7 @@ export class GameScene extends Phaser.Scene {
     public clientMessages: Phaser.GameObjects.Text[]
     public roomUIControls: { images: Phaser.GameObjects.Image[], texts: ser.GameObjects.Text[] }
     public soundbiyue1: Phaser.Sound.BaseSound;
+    public soundRecoverhp: Phaser.Sound.BaseSound;
     public sounddraw: Phaser.Sound.BaseSound;
     public sounddrawx: Phaser.Sound.BaseSound;
     public soundPlayersShowCard: Phaser.Sound.BaseSound[];
@@ -138,6 +140,7 @@ export class GameScene extends Phaser.Scene {
         this.clientMessages = [];
         this.roomUIControls = { images: [], texts: [] };
         this.soundVolume = cookies.get("soundVolume");
+        if (this.soundVolume === undefined) this.soundVolume = 0.5
 
         if (!IPPort.exec(this.hostName)) {
             this.processAuth();
@@ -186,6 +189,7 @@ export class GameScene extends Phaser.Scene {
         this.load.audio("tie", tie);
         this.load.audio("win", win);
         this.load.audio("zhu_junlve", zhu_junlve);
+        this.load.audio("recoverhp", recoverhp);
         this.load.html('settingsForm', '../assets/text/settings_form.html');
 
         this.load.atlas('walker', walkerpng, walkerjson);
@@ -342,6 +346,7 @@ export class GameScene extends Phaser.Scene {
     public loadAudioFiles() {
         this.mainForm.enableSound = this.soundVolume > 0
         this.soundbiyue1 = this.sound.add("biyue1", { volume: this.soundVolume });
+        this.soundRecoverhp = this.sound.add("recoverhp", { volume: this.soundVolume });
         this.sounddraw = this.sound.add("draw", { volume: this.soundVolume });
         this.sounddrawx = this.sound.add("drawx", { volume: this.soundVolume });
         this.soundPlayersShowCard = [
