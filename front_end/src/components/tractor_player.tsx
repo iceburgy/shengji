@@ -183,6 +183,7 @@ export class TractorPlayer {
             }
         }
         var meJoined = !CommonMethods.IncludesByPlayerID(this.CurrentGameState.Players, this.MyOwnId) && CommonMethods.IncludesByPlayerID(gameState.Players, this.MyOwnId)
+        var anyBecomesReady = CommonMethods.SomeoneBecomesReady(this.CurrentGameState.Players, gameState.Players)
 
         this.CurrentGameState.CloneFrom(gameState);
 
@@ -192,6 +193,11 @@ export class TractorPlayer {
             if (p.PlayerId == this.PlayerId) {
                 this.mainForm.NewPlayerReadyToStart(p.IsReadyToStart)
                 this.mainForm.PlayerToggleIsRobot(p.IsRobot)
+                if (anyBecomesReady &&
+                    (this.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.BeforeDistributingCards || this.CurrentHandState.CurrentHandStep >= SuitEnums.HandStep.SpecialEnding)) {
+                    if (CommonMethods.AllReady(this.CurrentGameState.Players)) this.mainForm.gameScene.soundtie.play()
+                    else this.mainForm.gameScene.soundRecoverhp.play()
+                }
                 break;
             }
         }

@@ -28,7 +28,7 @@ export class Coordinates {
     static handCardPositionCenter = { x: screenWidth * 0.5 - Coordinates.cardWidth / 2 - Coordinates.handCardOffset * 2, y: screenHeight - 200 }
     static toolbarSize = 50
     static toolbarPosition = { x: screenWidth - 360, y: Coordinates.handCardPositionCenter.y - 100 - 20 }
-    static btnPigPosition = { x: screenWidth * 0.6, y: Coordinates.handCardPositionCenter.y - 100 }
+    static btnPigPosition = { x: screenWidth * 0.7, y: Coordinates.handCardPositionCenter.y - 100 }
 
     static btnLowerSize = 100
     static btnReadyPosition = { x: 10, y: screenHeight - 60 }

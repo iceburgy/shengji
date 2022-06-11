@@ -449,7 +449,7 @@ export class MainForm {
     public DistributingLast8Cards() {
         this.tractorPlayer.destroyAllClientMessages()
         //先去掉反牌按钮，再放发底牌动画
-        this.drawingFormHelper.reDrawToolbar();
+        this.drawingFormHelper.destroyToolbar();
         //重画手牌，从而把被提升的自己亮的牌放回去
         this.drawingFormHelper.ResortMyHandCards();
 
@@ -781,9 +781,7 @@ export class MainForm {
 
     private setStartLabels() {
         var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)
-        let newReady = false;
         for (let i = 0; i < 4; i++) {
-            let oldStatus = this.lblStarters[i].text;
             this.lblStarters[i].setVisible(true)
 
             var curPlayer = this.tractorPlayer.CurrentGameState.Players[curIndex];
@@ -802,21 +800,8 @@ export class MainForm {
             else {
                 this.lblStarters[i].setText(`${curIndex + 1}`)
             }
-            let newStatus = this.lblStarters[i].text;
-            let readyStatus = `${curIndex + 1}`;
-            if (curPlayer && this.playerBecomeReady(oldStatus, newStatus, readyStatus)) {
-                newReady = true;
-            }
             curIndex = (curIndex + 1) % 4
         }
-        if (newReady && this.enableSound) {
-            if (CommonMethods.AllReady(this.tractorPlayer.CurrentGameState.Players)) this.gameScene.soundtie.play()
-            else this.gameScene.soundRecoverhp.play()
-        }
-    }
-
-    private playerBecomeReady(oldStatus: string, newStatus: string, readyStatus: string): boolean {
-        return oldStatus != readyStatus && newStatus == readyStatus;
     }
 
     private btnReady_Click(mf: MainForm) {

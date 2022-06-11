@@ -592,15 +592,15 @@ export class DrawingFormHelper {
         lastTrumpStates.forEach(lastHandState => {
             let key1 = lastHandState.TrumpMaker;
             if (!Object.keys(trumpDict).includes(key1)) {
-                trumpDict[key1] = []
+                trumpDict[key1] = {}
             }
             let val1 = trumpDict[key1];
 
             let key2: number = lastHandState.Trump;
             if (!Object.keys(val1).includes(key2.toString())) {
-                val1[key2] = lastHandState;
+                val1[key2.toString()] = lastHandState;
             }
-            let val2: TrumpState = val1[key2];
+            let val2: TrumpState = val1[key2.toString()];
             val2.TrumpExposingPoker = Math.max(val2.TrumpExposingPoker, lastHandState.TrumpExposingPoker);
         })
 
@@ -672,10 +672,14 @@ export class DrawingFormHelper {
 
     // drawing showed cards
     public DrawShowedCardsByPosition(cards: number[], pos: number) {
+        let coords = this.getShowedCardsCoordinatesByPosition(cards.length, pos)
+        this.DrawShowedCards(cards, coords.x, coords.y, this.mainForm.gameScene.showedCardImages, 1)
+    }
+
+    private getShowedCardsCoordinatesByPosition(count: number, pos: number): any {
         let posInd = pos - 1
         let x = Coordinates.showedCardsPositions[posInd].x
         let y = Coordinates.showedCardsPositions[posInd].y
-        let count = cards.length
         switch (posInd) {
             case 0:
                 x = x - (count - 1) * Coordinates.handCardOffset / 2
@@ -691,7 +695,7 @@ export class DrawingFormHelper {
             default:
                 break;
         }
-        this.DrawShowedCards(cards, x, y, this.mainForm.gameScene.showedCardImages, 1)
+        return { x: x, y: y }
     }
 
     // drawing showed cards from last trick
@@ -702,11 +706,14 @@ export class DrawingFormHelper {
 
     // drawing showed cards from last trick
     public DrawTrumpMadeCardsByPositionFromLastTrick(cards: number[], pos: number) {
-        let coords = this.getShowedCardsCoordinatesByPositionFromLastTrick(pos, cards.length)
+        let coords: any = {}
         if (pos === 2 || pos === 4) {
+            coords = this.getShowedCardsCoordinatesByPositionFromLastTrick(pos, cards.length)
             if (pos == 2) coords.x = Coordinates.screenWid - 10 - Coordinates.hiddenWidth - Coordinates.cardWidth - Coordinates.handCardOffset * (cards.length - 1)
             else coords.x = 10
             coords.y = coords.y - Coordinates.cardHeigh
+        } else {
+            coords = this.getShowedCardsCoordinatesByPosition(cards.length, pos)
         }
         this.DrawShowedCards(cards, coords.x, coords.y, this.mainForm.gameScene.showedCardImages, 1)
     }

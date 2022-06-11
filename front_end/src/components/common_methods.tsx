@@ -237,6 +237,13 @@ export class CommonMethods {
         return true;
     }
 
+    public static SomeoneBecomesReady(oldOnes: PlayerEntity[], newOnes: PlayerEntity[]): boolean {
+        for (let i = 0; i < 4; i++) {
+            if ((oldOnes[i] == null || !oldOnes[i].IsReadyToStart) && (newOnes[i] != null && newOnes[i].IsReadyToStart)) return true;
+        }
+        return false;
+    }
+
     /// <summary>
     ///     比较两张牌孰大孰小
     /// </summary>
