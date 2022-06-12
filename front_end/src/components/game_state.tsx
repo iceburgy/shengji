@@ -21,6 +21,6 @@ export class GameState {
         }
         this.PlayerToIP = CommonMethods.deepCopy<any>(from.PlayerToIP)
         this.startNextHandStarter = new PlayerEntity()
-        this.startNextHandStarter.CloneFrom(from.startNextHandStarter)
+        if (from.startNextHandStarter != undefined) this.startNextHandStarter.CloneFrom(from.startNextHandStarter)
     }
 }

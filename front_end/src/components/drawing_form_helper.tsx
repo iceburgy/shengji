@@ -552,8 +552,10 @@ export class DrawingFormHelper {
 
             if (isSuiteAvailable && !this.mainForm.tractorPlayer.isObserver) {
                 let trumpExpIndex = this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker + 1
-                if (i == 4 && this.mainForm.tractorPlayer.CurrentPoker.RedJoker() == 2) trumpExpIndex = SuitEnums.TrumpExposingPoker.PairRedJoker
-                else if (this.mainForm.tractorPlayer.CurrentPoker.BlackJoker() == 2) trumpExpIndex = SuitEnums.TrumpExposingPoker.PairBlackJoker
+                if (i == 4) {
+                    if (this.mainForm.tractorPlayer.CurrentPoker.RedJoker() == 2) trumpExpIndex = SuitEnums.TrumpExposingPoker.PairRedJoker
+                    else trumpExpIndex = SuitEnums.TrumpExposingPoker.PairBlackJoker
+                }
                 imagebar.on('pointerdown', () => {
                     this.mainForm.tractorPlayer.ExposeTrump(trumpExpIndex, i + 1);
                 })
