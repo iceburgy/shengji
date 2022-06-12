@@ -1,0 +1,39 @@
+<style>
+    .settingsroot {
+        overflow: auto;
+        padding-left: 2em;
+        padding-right: 2em;
+        background: #eceeee;
+        border: 1px solid #42464b;
+        border-radius: 6px;
+        height: 257px;
+        margin: 20px auto 0;
+        width: 350px;
+    }
+
+    .slidecontainer {
+        width: 100%;
+    }
+
+    h2 {
+        text-align: center
+    }
+</style>
+<div id="input-form" class="settingsroot">
+    <h2>游戏设置</h2>
+    <p><input type="button" name="btnSubmit" value="关闭"></p>
+    <p id="pResumeGame"><input type="button" name="btnResumeGame" value="继续上盘牌局" /></p>
+    <p>游戏音效： <input type="range" id="rangeAudioVolume" min="0" max="100" value="50"></p>
+    <!-- <p></p><input type="text" name="username" placeholder="username" /></p> -->
+    <p>
+        游戏操作：<br />
+    <ul>
+        <li>快捷键【Z】：就绪</li>
+        <li>快捷键【R】：托管</li>
+        <li>快捷键【S】：出牌</li>
+        <li>拖拽鼠标：先择多张牌</li>
+        <li>鼠标右键点击牌：向左选择多张合理的牌</li>
+        <li>鼠标右键点击屏幕空白处：回看上轮出牌</li>
+    </ul>
+    </p>
+</div>
