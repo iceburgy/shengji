@@ -30,6 +30,7 @@ import walkerjson from '../assets/animations/walker.json';
 import walkerpng from '../assets/animations/walker.png';
 import sf2ryujson from '../assets/animations/sf2ryu.json';
 import sf2ryupng from '../assets/animations/sf2ryu.png';
+import settingsForm from '../assets/text/settings_form.txt';
 
 import { nanoid } from 'nanoid'
 import { Match } from './match';
@@ -190,7 +191,7 @@ export class GameScene extends Phaser.Scene {
         this.load.audio("win", win);
         this.load.audio("zhu_junlve", zhu_junlve);
         this.load.audio("recoverhp", recoverhp);
-        this.load.html('settingsForm', '../assets/text/settings_form.html');
+        this.load.html('settingsForm', settingsForm);
 
         this.load.atlas('walker', walkerpng, walkerjson);
         this.load.atlas('sf2ryu', sf2ryupng, sf2ryujson);
