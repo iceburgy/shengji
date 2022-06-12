@@ -54,6 +54,7 @@ export class CurrentHandState {
     public CloneFrom(from: CurrentHandState) {
         this.Id = from.Id
         this.PlayerHoldingCards = CommonMethods.deepCopy<any>(from.PlayerHoldingCards)
+        this.LastTrumpStates = []
         from.LastTrumpStates.forEach(fromtemp => {
             let temp = new TrumpState()
             temp.CloneFrom(fromtemp)
