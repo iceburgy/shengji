@@ -26,9 +26,7 @@ const PlayerShowCards_REQUEST = "PlayerShowCards"
 const ValidateDumpingCards_REQUEST = "ValidateDumpingCards"
 const CardsReady_REQUEST = "CardsReady"
 const ResumeGameFromFile_REQUEST = "ResumeGameFromFile"
-
-const screenWidth = document.documentElement.clientWidth;
-const screenHeight = document.documentElement.clientHeight;
+const RandomSeat_REQUEST = "RandomSeat"
 
 export class MainForm {
     public gameScene: GameScene
@@ -254,9 +252,9 @@ export class MainForm {
             .setVisible(false)
 
         this.gameScene.input.on('pointerdown', (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
-            // only if it is a right click and not clicking on any objects, 即右键点空白区
-            if (pointer.rightButtonDown() && (!currentlyOver || currentlyOver.length == 0)) {
-                this.handleGeneralRightClick(this)
+            // only if it is not clicking on any objects
+            if (!currentlyOver || currentlyOver.length == 0) {
+                this.handleGeneralClick(this, pointer)
             }
         });
     }
@@ -305,7 +303,7 @@ export class MainForm {
     }
 
     public NewPlayerJoined(meJoined: boolean) {
-        if (this.gameScene.hallPlayerHeader && this.gameScene.hallPlayerHeader.visible) {
+        if (this.gameScene.isInGameHall()) {
             this.gameScene.destroyGameHall()
             this.init();
         }
@@ -843,10 +841,6 @@ export class MainForm {
         mf.settingsForm.addListener('click');
         mf.settingsForm.setPerspective(800);
 
-        let pResumeGame = mf.settingsForm.getChildByID("pResumeGame")
-        if (mf.tractorPlayer.CurrentRoomSetting.RoomOwner !== mf.tractorPlayer.MyOwnId) {
-            pResumeGame.remove()
-        }
         let volumeControl = mf.settingsForm.getChildByID("rangeAudioVolume")
         volumeControl.value = Math.floor(mf.gameScene.soundVolume * 100)
         volumeControl.onchange = () => {
@@ -856,24 +850,33 @@ export class MainForm {
             mf.gameScene.soundbiyue1.play()
         }
 
-        mf.settingsForm.on('click', (event: any) => {
-            if (event.target.name === 'btnResumeGame') {
+        if (this.gameScene.isInGameHall() || mf.tractorPlayer.CurrentRoomSetting.RoomOwner !== mf.tractorPlayer.MyOwnId) {
+            let pResumeGame = mf.settingsForm.getChildByID("pResumeGame")
+            let pRandomSeat = mf.settingsForm.getChildByID("pRandomSeat")
+            pResumeGame.remove()
+            pRandomSeat.remove()
+        } else {
+            let btnResumeGame = mf.settingsForm.getChildByID("btnResumeGame")
+            btnResumeGame.onclick = () => {
                 if (CommonMethods.AllOnline(mf.tractorPlayer.CurrentGameState.Players) && !mf.tractorPlayer.isObserver && mf.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
                     alert("游戏中途不允许继续牌局,请完成此盘游戏后重试")
-                    mf.settingsForm.destroy()
-                    mf.settingsForm = undefined
-                    return
+                } else {
+                    mf.gameScene.sendMessageToServer(ResumeGameFromFile_REQUEST, mf.tractorPlayer.MyOwnId, "");
                 }
-                mf.gameScene.sendMessageToServer(ResumeGameFromFile_REQUEST, mf.tractorPlayer.MyOwnId, "");
-                mf.settingsForm.destroy()
-                mf.settingsForm = undefined
-            } else if (event.target.name === 'btnSubmit') {
-                mf.gameScene.loadAudioFiles()
-                mf.gameScene.saveAudioVolume()
                 mf.settingsForm.destroy()
                 mf.settingsForm = undefined
             }
-        })
+            let btnRandomSeat = mf.settingsForm.getChildByID("btnRandomSeat")
+            btnRandomSeat.onclick = () => {
+                if (CommonMethods.AllOnline(mf.tractorPlayer.CurrentGameState.Players) && !mf.tractorPlayer.isObserver && mf.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
+                    alert("游戏中途不允许随机组队,请完成此盘游戏后重试")
+                } else {
+                    mf.gameScene.sendMessageToServer(RandomSeat_REQUEST, mf.tractorPlayer.MyOwnId, "");
+                }
+                mf.settingsForm.destroy()
+                mf.settingsForm = undefined
+            }
+        }
     }
 
     private btnPig_Click(mf: MainForm) {
@@ -1038,25 +1041,36 @@ export class MainForm {
     }
 
     // 右键点空白区
-    private handleGeneralRightClick(mf: MainForm) {
-        if (mf.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing ||
-            mf.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
-            mf.tractorPlayer.ShowLastTrickCards = !mf.tractorPlayer.ShowLastTrickCards;
-            if (mf.tractorPlayer.ShowLastTrickCards) {
-                mf.ShowLastTrickAndTumpMade(mf);
+    private handleGeneralClick(mf: MainForm, pointer: Phaser.Input.Pointer) {
+        if (pointer.rightButtonDown()) {
+            // 右键点空白区
+            if (mf.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing ||
+                mf.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
+                mf.tractorPlayer.ShowLastTrickCards = !mf.tractorPlayer.ShowLastTrickCards;
+                if (mf.tractorPlayer.ShowLastTrickCards) {
+                    mf.ShowLastTrickAndTumpMade(mf);
+                }
+                else {
+                    mf.PlayerCurrentTrickShowedCards();
+                }
             }
-            else {
-                mf.PlayerCurrentTrickShowedCards();
+            //一局结束时右键查看最后一轮各家所出的牌，缩小至一半，放在左下角
+            else if (mf.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Ending) {
+                mf.tractorPlayer.ShowLastTrickCards = !mf.tractorPlayer.ShowLastTrickCards;
+                if (mf.tractorPlayer.ShowLastTrickCards) {
+                    mf.ShowLastTrickAndTumpMade(mf);
+                }
+                else {
+                    this.drawingFormHelper.DrawFinishedSendedCards()
+                }
             }
-        }
-        //一局结束时右键查看最后一轮各家所出的牌，缩小至一半，放在左下角
-        else if (mf.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Ending) {
-            mf.tractorPlayer.ShowLastTrickCards = !mf.tractorPlayer.ShowLastTrickCards;
-            if (mf.tractorPlayer.ShowLastTrickCards) {
-                mf.ShowLastTrickAndTumpMade(mf);
-            }
-            else {
-                this.drawingFormHelper.DrawFinishedSendedCards()
+        } else {
+            // 左键键点空白区
+            if (mf.settingsForm) {
+                mf.gameScene.loadAudioFiles()
+                mf.gameScene.saveAudioVolume()
+                mf.settingsForm.destroy()
+                mf.settingsForm = undefined
             }
         }
     }

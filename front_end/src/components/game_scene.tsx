@@ -495,4 +495,8 @@ export class GameScene extends Phaser.Scene {
             "messageType": messageType, "playerID": playerID, "content": content
         }))
     }
+
+    public isInGameHall() {
+        return this.hallPlayerHeader && this.hallPlayerHeader.visible
+    }
 }
