@@ -805,7 +805,7 @@ export class MainForm {
     }
 
     private btnReady_Click(mf: MainForm) {
-        if (mf.tractorPlayer.isObserver) return;
+        if (mf.tractorPlayer.isObserver || !mf.btnReady.input.enabled) return;
         //为防止以外连续点两下就绪按钮，造成重复发牌，点完一下就立即disable就绪按钮
         mf.btnReady.disableInteractive()
         mf.btnReady.setColor('gray')
