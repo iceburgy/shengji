@@ -208,10 +208,10 @@ export class MainForm {
                     .setStyle({ backgroundColor: 'gray' })
                     .setInteractive({ useHandCursor: true })
                     .on('pointerover', () => {
-                        this.btnPig.setStyle({ backgroundColor: 'lightblue' })
+                        this.lblNickNames[i].setStyle({ backgroundColor: 'lightblue' })
                     })
                     .on('pointerout', () => {
-                        this.btnPig.setStyle({ backgroundColor: 'gray' })
+                        this.lblNickNames[i].setStyle({ backgroundColor: 'gray' })
                     })
                     .on('pointerup', () => this.lblNickName_Click(this))
             }
