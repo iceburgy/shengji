@@ -398,16 +398,19 @@ export class GameScene extends Phaser.Scene {
                 .setDisplaySize(160, 160)
                 .setInteractive({ useHandCursor: true })
                 .on('pointerup', () => {
+                    if (this.mainForm.settingsForm) return
                     this.sendMessageToServer(PLAYER_ENTER_ROOM_REQUEST, this.playerName, JSON.stringify({
                         roomID: i,
                         posID: -1,
                     }))
                 })
                 .on('pointerover', () => {
+                    if (this.mainForm.settingsForm) return
                     this.pokerTableChairImg[i].tableImg.y -= 5
                     this.pokerTableChairNames[i].tableName.y -= 5
                 })
                 .on('pointerout', () => {
+                    if (this.mainForm.settingsForm) return
                     this.pokerTableChairImg[i].tableImg.y += 5
                     this.pokerTableChairNames[i].tableName.y += 5
                 })
@@ -441,16 +444,19 @@ export class GameScene extends Phaser.Scene {
                         .setOrigin(0, 0).setDisplaySize(80, 80)
                         .setInteractive({ useHandCursor: true })
                         .on('pointerup', () => {
+                            if (this.mainForm.settingsForm) return
                             this.sendMessageToServer(PLAYER_ENTER_ROOM_REQUEST, this.playerName, JSON.stringify({
                                 roomID: i,
                                 posID: j,
                             }))
                         })
                         .on('pointerover', () => {
+                            if (this.mainForm.settingsForm) return
                             this.pokerTableChairImg[i].chairImgs[j].y -= 5
                             this.pokerTableChairNames[i].chairNames[j].myOwnName.y -= 5
                         })
                         .on('pointerout', () => {
+                            if (this.mainForm.settingsForm) return
                             this.pokerTableChairImg[i].chairImgs[j].y += 5
                             this.pokerTableChairNames[i].chairNames[j].myOwnName.y += 5
                         })
