@@ -14,6 +14,17 @@ export class Coordinates {
     static hallPlayerHeaderPosition = { x: 50, y: 160 }
     static hallPlayerTopPosition = { x: 50, y: 240 }
 
+    static pokerTablePositionStart = { x: 320, y: 160 }
+    static pokerTableOffsets = { x: 400, y: 320 }
+    static pokerTableLabelOffsets = { x: 40, y: 20 }
+
+    static pokerChairOffsets = [
+        { x: 40, y: -80 },
+        { x: -80, y: 40 },
+        { x: 40, y: 120 },
+        { x: 160, y: 40 },
+    ]
+
     // room controls
     static clientMessagePosition = { x: screenWidth * 0.5 - 200, y: screenHeight * 0.5 }
     static lineOffsetY = 40

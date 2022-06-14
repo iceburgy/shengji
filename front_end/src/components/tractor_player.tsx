@@ -13,6 +13,7 @@ import { SuitEnums } from './suit_enums';
 import { TractorRules } from './tractor_rules';
 import { ShowingCardsValidationResult } from './showing_cards_validation_result';
 import { Coordinates } from './coordinates';
+import { RoomState } from './room_state';
 
 const PlayerMakeTrump_REQUEST = "PlayerMakeTrump"
 
@@ -443,5 +444,9 @@ export class TractorPlayer {
 
     public NotifyStartTimer(timerLength: number) {
         this.mainForm.NotifyStartTimerEventHandler(timerLength)
+    }
+
+    public NotifyGameHall(roomStateList: RoomState[], playerList: string[]) {
+        this.mainForm.NotifyGameHallEventHandler(roomStateList, playerList)
     }
 }

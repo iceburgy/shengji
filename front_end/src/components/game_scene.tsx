@@ -52,7 +52,6 @@ import Cookies from 'universal-cookie';
 const cookies = new Cookies();
 const SET_PLAYER_NAME_REQUEST = "set_player_name"
 const PLAYER_ENTER_HALL_REQUEST = "PlayerEnterHall"
-const PLAYER_ENTER_ROOM_REQUEST = "PlayerEnterRoom"
 const JOIN_ROOM_REQUEST = "join_room"
 const PREPARE_REQUEST = "prepare"
 
@@ -89,8 +88,8 @@ export class GameScene extends Phaser.Scene {
     public players: Player[]
     public prepareBtn: Phaser.GameObjects.Image
     public prepareOkImg: Phaser.GameObjects.Image[]
-    public pokerTableChairImg: { tableImg: Phaser.GameObjects.Image, chairImgs: Phaser.GameObjects.Image[] }[]
-    public pokerTableChairNames: { tableName: Phaser.GameObjects.Text, chairNames: { myOwnName: Phaser.GameObjects.Text, observerNames: Phaser.GameObjects.Text[] }[] }[]
+    public pokerTableChairImg: { tableImg: any, chairImgs: Phaser.GameObjects.Image[] }[]
+    public pokerTableChairNames: { tableName: any, chairNames: { myOwnName: any, observerNames: Phaser.GameObjects.Text[] }[] }[]
     public match: Match
     public mainForm: MainForm
     public cardImages: Phaser.GameObjects.GameObject[]
@@ -303,10 +302,9 @@ export class GameScene extends Phaser.Scene {
     }
 
     private handleNotifyGameHall(objList: []) {
-        this.mainForm.tractorPlayer.destroyAllClientMessages();
-        this.mainForm.destroyGameRoom();
-        this.destroyGameHall();
-        this.drawGameHall(objList);
+        var roomStateList: RoomState[] = objList[0];
+        var playerList: string[] = objList[1];
+        this.mainForm.tractorPlayer.NotifyGameHall(roomStateList, playerList)
     }
 
     private handleNotifyMessage(objList: []) {
@@ -365,135 +363,6 @@ export class GameScene extends Phaser.Scene {
 
     public saveAudioVolume() {
         cookies.set('soundVolume', this.soundVolume, { path: '/' });
-    }
-
-    public drawGameHall(objList: []) {
-        var roomStateList: RoomState[] = objList[0];
-        var playerList: string[] = objList[1];
-
-        this.hallPlayerHeader = this.add.text(Coordinates.hallPlayerHeaderPosition.x, Coordinates.hallPlayerHeaderPosition.y, "在线").setColor('white').setFontSize(30).setShadow(2, 2, "#333333", 2, true, true)
-        for (let i = 0; i < playerList.length; i++) {
-            this.hallPlayerNames[i] = this.add.text(Coordinates.hallPlayerTopPosition.x, Coordinates.hallPlayerTopPosition.y + i * 40, playerList[i]).setColor('white').setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
-        }
-
-        var pokerTablePositionStart = { x: 320, y: 160 }
-        var pokerTableOffsets = { x: 400, y: 320 }
-        var tableSize = 160
-        var chairSize = 80
-        var pokerTableLabelOffsets = { x: 40, y: 20 }
-
-        var pokerChairOffsets = [
-            { x: 40, y: -80 },
-            { x: -80, y: 40 },
-            { x: 40, y: 120 },
-            { x: 160, y: 40 },
-        ]
-        for (let i = 0; i < roomStateList.length; i++) {
-            var thisTableX = pokerTablePositionStart.x + pokerTableOffsets.x * (i % 2)
-            var thisTableY = pokerTablePositionStart.y + pokerTableOffsets.y * Math.floor(i / 2)
-            this.pokerTableChairImg[i] = {}
-            this.pokerTableChairNames[i] = {}
-            this.pokerTableChairImg[i].tableImg = this.add.image(thisTableX, thisTableY, 'pokerTable')
-                .setOrigin(0, 0)
-                .setDisplaySize(160, 160)
-                .setInteractive({ useHandCursor: true })
-                .on('pointerup', () => {
-                    if (this.mainForm.settingsForm) return
-                    this.sendMessageToServer(PLAYER_ENTER_ROOM_REQUEST, this.playerName, JSON.stringify({
-                        roomID: i,
-                        posID: -1,
-                    }))
-                })
-                .on('pointerover', () => {
-                    if (this.mainForm.settingsForm) return
-                    this.pokerTableChairImg[i].tableImg.y -= 5
-                    this.pokerTableChairNames[i].tableName.y -= 5
-                })
-                .on('pointerout', () => {
-                    if (this.mainForm.settingsForm) return
-                    this.pokerTableChairImg[i].tableImg.y += 5
-                    this.pokerTableChairNames[i].tableName.y += 5
-                })
-            this.pokerTableChairNames[i].tableName = this.add.text(thisTableX + pokerTableLabelOffsets.x, thisTableY + pokerTableLabelOffsets.y, roomStateList[i].roomSetting.RoomName)
-                .setColor('white')
-                .setFontSize(20)
-                .setShadow(2, 2, "#333333", 2, true, true)
-
-            this.pokerTableChairImg[i].chairImgs = []
-            this.pokerTableChairNames[i].chairNames = []
-            for (let j = 0; j < 4; j++) {
-                var thisChairX = thisTableX + pokerChairOffsets[j].x;
-                var thisChairY = thisTableY + pokerChairOffsets[j].y;
-                this.pokerTableChairNames[i].chairNames[j] = {}
-                if (roomStateList[i].CurrentGameState.Players[j] != null) {
-                    var obCount = roomStateList[i].CurrentGameState.Players[j].Observers.length
-                    var obOffsetY = 20
-                    var myOwnOffsetY = 0
-                    if (j == 0) {
-                        myOwnOffsetY = obOffsetY
-                    }
-                    this.pokerTableChairNames[i].chairNames[j].myOwnName = this.add.text(thisChairX + 10, thisChairY + 20 - obCount * myOwnOffsetY, roomStateList[i].CurrentGameState.Players[j].PlayerId).setColor('white').setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
-                    if (obCount > 0) {
-                        this.pokerTableChairNames[i].chairNames[j].observerNames = []
-                        for (let k = 0; k < roomStateList[i].CurrentGameState.Players[j].Observers.length; k++) {
-                            this.pokerTableChairNames[i].chairNames[j].observerNames[k] = this.add.text(thisChairX + 10, thisChairY + 20 - obCount * myOwnOffsetY + (k + 1) * obOffsetY, `【${roomStateList[i].CurrentGameState.Players[j].Observers[k]}】`).setColor('white').setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
-                        }
-                    }
-                } else {
-                    this.pokerTableChairImg[i].chairImgs[j] = this.add.image(thisChairX, thisChairY, 'pokerChair')
-                        .setOrigin(0, 0).setDisplaySize(80, 80)
-                        .setInteractive({ useHandCursor: true })
-                        .on('pointerup', () => {
-                            if (this.mainForm.settingsForm) return
-                            this.sendMessageToServer(PLAYER_ENTER_ROOM_REQUEST, this.playerName, JSON.stringify({
-                                roomID: i,
-                                posID: j,
-                            }))
-                        })
-                        .on('pointerover', () => {
-                            if (this.mainForm.settingsForm) return
-                            this.pokerTableChairImg[i].chairImgs[j].y -= 5
-                            this.pokerTableChairNames[i].chairNames[j].myOwnName.y -= 5
-                        })
-                        .on('pointerout', () => {
-                            if (this.mainForm.settingsForm) return
-                            this.pokerTableChairImg[i].chairImgs[j].y += 5
-                            this.pokerTableChairNames[i].chairNames[j].myOwnName.y += 5
-                        })
-                    this.pokerTableChairNames[i].chairNames[j].myOwnName = this.add.text(thisChairX + 35, thisChairY + 20, j + 1).setColor('yellow').setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
-                }
-            }
-        }
-    }
-
-    public destroyGameHall() {
-        if (this.hallPlayerHeader != null) {
-            this.hallPlayerHeader.destroy();
-        }
-        this.hallPlayerNames.forEach(nameLabel => {
-            nameLabel.destroy();
-        });
-        this.pokerTableChairNames.forEach(tableChair => {
-            tableChair.tableName.destroy();
-            if (tableChair.chairNames != null) {
-                tableChair.chairNames.forEach(chair => {
-                    chair.myOwnName.destroy();
-                    if (chair.observerNames != null) {
-                        chair.observerNames.forEach(ob => {
-                            ob.destroy();
-                        });
-                    }
-                });
-            }
-        });
-        this.pokerTableChairImg.forEach(tableChair => {
-            tableChair.tableImg.destroy();
-            if (tableChair.chairImgs != null) {
-                tableChair.chairImgs.forEach(chair => {
-                    chair.destroy();
-                });
-            }
-        });
     }
 
     sendMessageToServer(messageType: string, playerID: string, content: string) {

@@ -16,6 +16,7 @@ import { TractorRules } from './tractor_rules';
 import { ShowingCardsValidationResult } from './showing_cards_validation_result';
 import { Algorithm } from './algorithm';
 import { PokerHelper } from './poker_helper';
+import { RoomState } from './room_state';
 
 const ReadyToStart_REQUEST = "ReadyToStart"
 const ToggleIsRobot_REQUEST = "ToggleIsRobot"
@@ -27,6 +28,7 @@ const ValidateDumpingCards_REQUEST = "ValidateDumpingCards"
 const CardsReady_REQUEST = "CardsReady"
 const ResumeGameFromFile_REQUEST = "ResumeGameFromFile"
 const RandomSeat_REQUEST = "RandomSeat"
+const PLAYER_ENTER_ROOM_REQUEST = "PlayerEnterRoom"
 
 export class MainForm {
     public gameScene: GameScene
@@ -304,7 +306,7 @@ export class MainForm {
 
     public NewPlayerJoined(meJoined: boolean) {
         if (this.gameScene.isInGameHall()) {
-            this.gameScene.destroyGameHall()
+            this.destroyGameHall()
             this.init();
         }
 
@@ -1113,5 +1115,135 @@ export class MainForm {
         let winnerID = TractorRules.GetWinner(trickState);
         let tempIsWinByTrump = mf.IsWinningWithTrump(trickState, winnerID);
         mf.drawingFormHelper.DrawOverridingFlagFromLastTrick(cardsCount, mf.PlayerPosition[winnerID], tempIsWinByTrump - 1);
+    }
+
+    public NotifyGameHallEventHandler(roomStateList: RoomState[], playerList: string[]) {
+        this.tractorPlayer.destroyAllClientMessages();
+        this.destroyGameRoom();
+        this.destroyGameHall();
+        this.drawGameHall(roomStateList, playerList);
+    }
+
+    public destroyGameHall() {
+        if (this.gameScene.hallPlayerHeader != null) {
+            this.gameScene.hallPlayerHeader.destroy();
+        }
+        this.gameScene.hallPlayerNames.forEach(nameLabel => {
+            nameLabel.destroy();
+        });
+        this.gameScene.pokerTableChairNames.forEach(tableChair => {
+            tableChair.tableName.destroy();
+            if (tableChair.chairNames != null) {
+                tableChair.chairNames.forEach(chair => {
+                    chair.myOwnName.destroy();
+                    if (chair.observerNames != null) {
+                        chair.observerNames.forEach(ob => {
+                            ob.destroy();
+                        });
+                    }
+                });
+            }
+        });
+        this.gameScene.pokerTableChairImg.forEach(tableChair => {
+            tableChair.tableImg.destroy();
+            if (tableChair.chairImgs != null) {
+                tableChair.chairImgs.forEach(chair => {
+                    chair.destroy();
+                });
+            }
+        });
+    }
+
+    public drawGameHall(roomStateList: RoomState[], playerList: string[]) {
+        this.gameScene.hallPlayerHeader = this.gameScene.add.text(Coordinates.hallPlayerHeaderPosition.x, Coordinates.hallPlayerHeaderPosition.y, "在线").setColor('white').setFontSize(30).setShadow(2, 2, "#333333", 2, true, true)
+        for (let i = 0; i < playerList.length; i++) {
+            this.gameScene.hallPlayerNames[i] = this.gameScene.add.text(Coordinates.hallPlayerTopPosition.x, Coordinates.hallPlayerTopPosition.y + i * 40, playerList[i]).setColor('white').setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
+        }
+
+        for (let i = 0; i < roomStateList.length; i++) {
+            var thisTableX = Coordinates.pokerTablePositionStart.x + Coordinates.pokerTableOffsets.x * (i % 2)
+            var thisTableY = Coordinates.pokerTablePositionStart.y + Coordinates.pokerTableOffsets.y * Math.floor(i / 2)
+            this.gameScene.pokerTableChairImg[i] = {
+                tableImg: undefined,
+                chairImgs: [],
+            }
+            this.gameScene.pokerTableChairNames[i] = {
+                tableName: undefined,
+                chairNames: []
+            }
+            this.gameScene.pokerTableChairImg[i].tableImg = this.gameScene.add.image(thisTableX, thisTableY, 'pokerTable')
+                .setOrigin(0, 0)
+                .setDisplaySize(160, 160)
+                .setInteractive({ useHandCursor: true })
+                .on('pointerup', () => {
+                    if (this.settingsForm) return
+                    this.gameScene.sendMessageToServer(PLAYER_ENTER_ROOM_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify({
+                        roomID: i,
+                        posID: -1,
+                    }))
+                })
+                .on('pointerover', () => {
+                    if (this.settingsForm) return
+                    this.gameScene.pokerTableChairImg[i].tableImg.y -= 5
+                    this.gameScene.pokerTableChairNames[i].tableName.y -= 5
+                })
+                .on('pointerout', () => {
+                    if (this.settingsForm) return
+                    this.gameScene.pokerTableChairImg[i].tableImg.y += 5
+                    this.gameScene.pokerTableChairNames[i].tableName.y += 5
+                })
+            this.gameScene.pokerTableChairNames[i].tableName = this.gameScene.add.text(thisTableX + Coordinates.pokerTableLabelOffsets.x, thisTableY + Coordinates.pokerTableLabelOffsets.y, roomStateList[i].roomSetting.RoomName)
+                .setColor('white')
+                .setFontSize(20)
+                .setShadow(2, 2, "#333333", 2, true, true)
+
+            this.gameScene.pokerTableChairImg[i].chairImgs = []
+            this.gameScene.pokerTableChairNames[i].chairNames = []
+            for (let j = 0; j < 4; j++) {
+                var thisChairX = thisTableX + Coordinates.pokerChairOffsets[j].x;
+                var thisChairY = thisTableY + Coordinates.pokerChairOffsets[j].y;
+                this.gameScene.pokerTableChairNames[i].chairNames[j] = {
+                    myOwnName: undefined,
+                    observerNames: [],
+                }
+                if (roomStateList[i].CurrentGameState.Players[j] != null) {
+                    var obCount = roomStateList[i].CurrentGameState.Players[j].Observers.length
+                    var obOffsetY = 20
+                    var myOwnOffsetY = 0
+                    if (j == 0) {
+                        myOwnOffsetY = obOffsetY
+                    }
+                    this.gameScene.pokerTableChairNames[i].chairNames[j].myOwnName = this.gameScene.add.text(thisChairX + 10, thisChairY + 20 - obCount * myOwnOffsetY, roomStateList[i].CurrentGameState.Players[j].PlayerId).setColor('white').setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
+                    if (obCount > 0) {
+                        this.gameScene.pokerTableChairNames[i].chairNames[j].observerNames = []
+                        for (let k = 0; k < roomStateList[i].CurrentGameState.Players[j].Observers.length; k++) {
+                            this.gameScene.pokerTableChairNames[i].chairNames[j].observerNames[k] = this.gameScene.add.text(thisChairX + 10, thisChairY + 20 - obCount * myOwnOffsetY + (k + 1) * obOffsetY, `【${roomStateList[i].CurrentGameState.Players[j].Observers[k]}】`).setColor('white').setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
+                        }
+                    }
+                } else {
+                    this.gameScene.pokerTableChairImg[i].chairImgs[j] = this.gameScene.add.image(thisChairX, thisChairY, 'pokerChair')
+                        .setOrigin(0, 0).setDisplaySize(80, 80)
+                        .setInteractive({ useHandCursor: true })
+                        .on('pointerup', () => {
+                            if (this.settingsForm) return
+                            this.gameScene.sendMessageToServer(PLAYER_ENTER_ROOM_REQUEST, this.gameScene.playerName, JSON.stringify({
+                                roomID: i,
+                                posID: j,
+                            }))
+                        })
+                        .on('pointerover', () => {
+                            if (this.settingsForm) return
+                            this.gameScene.pokerTableChairImg[i].chairImgs[j].y -= 5
+                            this.gameScene.pokerTableChairNames[i].chairNames[j].myOwnName.y -= 5
+                        })
+                        .on('pointerout', () => {
+                            if (this.settingsForm) return
+                            this.gameScene.pokerTableChairImg[i].chairImgs[j].y += 5
+                            this.gameScene.pokerTableChairNames[i].chairNames[j].myOwnName.y += 5
+                        })
+                    this.gameScene.pokerTableChairNames[i].chairNames[j].myOwnName = this.gameScene.add.text(thisChairX + 35, thisChairY + 20, `${j + 1}`).setColor('yellow').setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
+                }
+            }
+        }
     }
 }
