@@ -301,17 +301,18 @@ export class Algorithm {
         badCardsBySuit.push(masterCards);
 
         //从差到好选出8张牌
-        badCardsBySuit.forEach((badCards: number[]) => {
-            badCards.forEach((bc: number) => {
-                selectedCards.push(bc);
+        for (let i = 0; i < badCardsBySuit.length; i++) {
+            let badCards: number[] = badCardsBySuit[i]
+            for (let j = 0; j < badCards.length; j++) {
+                selectedCards.push(badCards[j]);
                 if (selectedCards.length == 8) return;
-            })
-        })
+            }
+        }
 
-        goodCards.forEach((goodCard: number) => {
-            selectedCards.push(goodCard);
+        for (let i = 0; i < goodCards.length; i++) {
+            selectedCards.push(goodCards[i]);
             if (selectedCards.length == 8) return;
-        })
+        }
     }
 
     public static TryExposingTrump(availableTrump: number[], currentPoker: CurrentPoker, fullDebug: boolean): number {
