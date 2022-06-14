@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/shengjiweb/static/css/main.5ad0da08.css",
-    "main.js": "/shengjiweb/static/js/main.279b8978.js",
+    "main.js": "/shengjiweb/static/js/main.c3b5cf48.js",
     "static/js/787.22edae46.chunk.js": "/shengjiweb/static/js/787.22edae46.chunk.js",
     "static/media/walker.png": "/shengjiweb/static/media/walker.95319db88a8266deb5fa.png",
     "static/media/bg2.jpg": "/shengjiweb/static/media/bg2.c6e84f6c4a8a996367fc.jpg",
@@ -34,11 +34,11 @@
     "static/media/settings_form.txt": "/shengjiweb/static/media/settings_form.a76f09d382cccc7df86e.txt",
     "index.html": "/shengjiweb/index.html",
     "main.5ad0da08.css.map": "/shengjiweb/static/css/main.5ad0da08.css.map",
-    "main.279b8978.js.map": "/shengjiweb/static/js/main.279b8978.js.map",
+    "main.c3b5cf48.js.map": "/shengjiweb/static/js/main.c3b5cf48.js.map",
     "787.22edae46.chunk.js.map": "/shengjiweb/static/js/787.22edae46.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5ad0da08.css",
-    "static/js/main.279b8978.js"
+    "static/js/main.c3b5cf48.js"
   ]
 }
