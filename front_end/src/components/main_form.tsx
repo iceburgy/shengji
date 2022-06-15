@@ -839,7 +839,7 @@ export class MainForm {
 
     private lblNickName_Click(mf: MainForm) {
         if (mf.settingsForm) return
-        mf.settingsForm = mf.gameScene.add.dom(Coordinates.screenWid * 0.5 - 150, Coordinates.screenHei * 0.5 - 130).createFromCache('settingsForm');
+        mf.settingsForm = mf.gameScene.add.dom(Coordinates.screenWid * 0.5, Coordinates.screenHei * 0.5).createFromCache('settingsForm');
         mf.settingsForm.addListener('click');
         mf.settingsForm.setPerspective(800);
 
