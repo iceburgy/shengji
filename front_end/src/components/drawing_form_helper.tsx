@@ -382,7 +382,7 @@ export class DrawingFormHelper {
                     let toAddCardImageOnRightImage = (this.mainForm.gameScene.cardImages[i - j + 1] as Phaser.GameObjects.Sprite)
                     let toAddCardNumberOnRight = toAddCardImageOnRightImage.getData("serverCardNumber")
                     //如果候选牌是同一花色
-                    if (PokerHelper.GetSuit(toAddCardNumber) == PokerHelper.GetSuit(clickedCardNumber) ||
+                    if (!PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && !isClickedTrump && PokerHelper.GetSuit(toAddCardNumber) == PokerHelper.GetSuit(clickedCardNumber) ||
                         PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && isClickedTrump) {
                         let isSingleCard = toAddCardNumber != toAddCardNumberOnRight;
                         if (isSingleCard) {
@@ -462,8 +462,8 @@ export class DrawingFormHelper {
                     let toAddCardNumber = toAddImage.getData("serverCardNumber")
                     let toAddCardImageOnRightImage = (this.mainForm.gameScene.cardImages[i - j + 1] as Phaser.GameObjects.Sprite)
                     let toAddCardNumberOnRight = toAddCardImageOnRightImage.getData("serverCardNumber")
-                    //如果候选牌是同一花色
-                    if (PokerHelper.GetSuit(toAddCardNumber) == PokerHelper.GetSuit(clickedCardNumber) ||
+                    //如果候选牌是同一花色: 1. neither is trump, same suit; 2. both are trump
+                    if (!PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && !isClickedTrump && PokerHelper.GetSuit(toAddCardNumber) == PokerHelper.GetSuit(clickedCardNumber) ||
                         PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && isClickedTrump) {
                         if (isLeader) {
                             //第一个出，候选牌为对子，拖拉机
