@@ -1059,6 +1059,9 @@ export class DrawingFormHelper {
     public DrawDanmu(playerID: string, msgString: string) {
         if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true') {
             this.mainForm.tractorPlayer.NotifyMessage([msgString]);
+            setTimeout(() => {
+                this.mainForm.tractorPlayer.destroyAllClientMessages();
+            }, CommonMethods.danmuDuration);
             return
         }
         let x = Coordinates.screenWid;
@@ -1096,11 +1099,10 @@ export class DrawingFormHelper {
         this.mainForm.gameScene.tweens.add({
             targets: lblDanmu,
             x: 0 - lblDanmu.width,
-            duration: 6000,
+            duration: CommonMethods.danmuDuration,
             onComplete: () => {
                 this.mainForm.gameScene.danmuMessages[danmuIndex] = undefined
                 lblDanmu.destroy();
-                if (!this.mainForm.gameScene.noDanmu) this.mainForm.tractorPlayer.destroyAllClientMessages();
             }
         });
     }
