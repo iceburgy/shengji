@@ -44,14 +44,14 @@ export class Coordinates {
     static btnLowerSize = 100
     static btnReadyPosition = { x: 10, y: screenHeight - 60 }
     static btnRobotPosition = { x: Coordinates.btnReadyPosition.x + Coordinates.btnLowerSize, y: screenHeight - 60 }
-    static btnExitRoomPosition = { x: screenWidth - 110, y: Coordinates.btnReadyPosition.y }
+    static btnExitRoomPosition = { x: screenWidth - 90, y: Coordinates.btnReadyPosition.y }
     static btnSendEmojiPosition = { x: Coordinates.btnExitRoomPosition.x - Coordinates.btnLowerSize, y: Coordinates.btnReadyPosition.y }
 
     // players
     static playerTextPositions = [
-        { x: screenWidth * 0.4, y: screenHeight - 60 },
+        { x: screenWidth * 0.5, y: screenHeight - 60 },
         { x: screenWidth - 320, y: screenHeight * 0.5 },
-        { x: screenWidth * 0.4, y: 10 },
+        { x: screenWidth * 0.5, y: 10 },
         { x: 5, y: screenHeight * 0.5 },
     ]
 
@@ -98,5 +98,9 @@ export class Coordinates {
     // distributing last 8
     static distributingLast8MaxEdge = 30
     static distributingLast8Position = { x: screenWidth * 0.5 - (Coordinates.cardWidth / 2) - Coordinates.handCardOffset * 3.5, y: screenHeight * 0.5 - Coordinates.cardHeigh / 2 }
+
+    // danmu
+    static danmuPositionY = 50
+    static danmuOffset = 40
 
 }

@@ -8,6 +8,16 @@ export class CommonMethods {
     public static resumeGameSignal = "牌局加载中,请稍后...";
 
     public static wsErrorType_Insecure = "an insecure websocket connection may not be initiated from a page loaded over https";
+    public static winEmojiLength = 4
+    public static winEmojiTypeLength = 6
+    public static emojiMsgs: string[] = [
+        "这波操作，666！",
+        "亲，请注意细节",
+        "猴开心：）",
+        "嚎啕大哭：（",
+        "能不能快点啊，兵贵神速！",
+        "烟花",
+    ]
 
     constructor() {
     }
@@ -422,5 +432,9 @@ export class CommonMethods {
         }
 
         return -1;
+    }
+
+    public static GetRandomInt(max: number) {
+        return Math.floor(Math.random() * max);
     }
 }

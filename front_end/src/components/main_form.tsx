@@ -22,6 +22,7 @@ const ReadyToStart_REQUEST = "ReadyToStart"
 const ToggleIsRobot_REQUEST = "ToggleIsRobot"
 const ObserveNext_REQUEST = "ObserveNext"
 const ExitRoom_REQUEST = "ExitRoom"
+const SendEmoji_REQUEST = "SendEmoji"
 const StoreDiscardedCards_REQUEST = "StoreDiscardedCards"
 const PlayerShowCards_REQUEST = "PlayerShowCards"
 const ValidateDumpingCards_REQUEST = "ValidateDumpingCards"
@@ -37,6 +38,7 @@ export class MainForm {
     public btnRobot: Phaser.GameObjects.Text
     public btnObserveNext: Phaser.GameObjects.Text
     public btnExitRoom: Phaser.GameObjects.Text
+    public btnSendEmoji: Phaser.GameObjects.Text
     public btnPig: Phaser.GameObjects.Text
 
     public lblNickNames: Phaser.GameObjects.Text[]
@@ -54,9 +56,13 @@ export class MainForm {
     public timerIntervalID: any[]
     public timerCountDown: number
     public timerImage: Phaser.GameObjects.Text
-    public settingsForm: any
+    public modalForm: any
     public firstWinNormal = 1;
     public firstWinBySha = 3;
+    public keyReturn: Phaser.Input.Keyboard.Key
+    public keyZ: Phaser.Input.Keyboard.Key
+    public keyS: Phaser.Input.Keyboard.Key
+    public keyR: Phaser.Input.Keyboard.Key
     constructor(gs: GameScene) {
         this.gameScene = gs
         this.tractorPlayer = new TractorPlayer(this)
@@ -80,7 +86,7 @@ export class MainForm {
             .setStyle({ backgroundColor: 'gray' })
             .setVisible(false)
             .setInteractive({ useHandCursor: true })
-            .on('pointerup', () => this.btnReady_Click(this))
+            .on('pointerup', () => this.btnReady_Click())
             .on('pointerover', () => {
                 this.btnReady.setStyle({ backgroundColor: 'lightblue' })
             })
@@ -89,9 +95,10 @@ export class MainForm {
             })
         this.gameScene.roomUIControls.texts.push(this.btnReady)
         // 快捷键
-        var zKey = this.gameScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
-        zKey.on('up', () => {
-            this.btnReady_Click(this)
+        this.keyZ = this.gameScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
+        this.keyZ.on('up', (k: Phaser.Input.Keyboard.Key, e: KeyboardEvent) => {
+            if (this.modalForm) return;
+            this.btnReady_Click()
         })
 
         // 托管按钮
@@ -103,7 +110,7 @@ export class MainForm {
             .setStyle({ backgroundColor: 'gray' })
             .setVisible(false)
             .setInteractive({ useHandCursor: true })
-            .on('pointerup', () => this.btnRobot_Click(this))
+            .on('pointerup', () => this.btnRobot_Click())
             .on('pointerover', () => {
                 this.btnRobot.setStyle({ backgroundColor: 'lightblue' })
             })
@@ -112,9 +119,10 @@ export class MainForm {
             })
         this.gameScene.roomUIControls.texts.push(this.btnRobot)
         // 快捷键
-        var rKey = this.gameScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-        rKey.on('up', () => {
-            this.btnRobot_Click(this)
+        this.keyR = this.gameScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+        this.keyR.on('up', () => {
+            if (this.modalForm) return;
+            this.btnRobot_Click()
         })
 
         // 旁观下家
@@ -126,7 +134,7 @@ export class MainForm {
             .setStyle({ backgroundColor: 'gray' })
             .setVisible(false)
             .setInteractive({ useHandCursor: true })
-            .on('pointerup', () => this.btnObserveNext_Click(this))
+            .on('pointerup', () => this.btnObserveNext_Click())
             .on('pointerover', () => {
                 this.btnObserveNext.setStyle({ backgroundColor: 'lightblue' })
             })
@@ -134,24 +142,6 @@ export class MainForm {
                 this.btnObserveNext.setStyle({ backgroundColor: 'gray' })
             })
         this.gameScene.roomUIControls.texts.push(this.btnObserveNext)
-
-        // todo: 表情包按钮
-        // this.btnSendEmoji = this.gameScene.add.text(Coordinates.btnSendEmojiPosition.x, Coordinates.btnSendEmojiPosition.y, '退出')
-        //     .setColor('white')
-        //     .setFontSize(30)
-        //     .setPadding(10)
-        //     .setShadow(2, 2, "#333333", 2, true, true)
-        //     .setStyle({ backgroundColor: 'gray' })
-        //     .setVisible(false)
-        //     .setInteractive({ useHandCursor: true })
-        //     .on('pointerup', () => this.btnSendEmoji_Click(this))
-        //     .on('pointerover', () => {
-        //         this.btnSendEmoji.setStyle({ backgroundColor: 'lightblue' })
-        //     })
-        //     .on('pointerout', () => {
-        //         this.btnSendEmoji.setStyle({ backgroundColor: 'gray' })
-        //     })
-        // this.gameScene.roomUIControls.texts.push(this.btnSendEmoji)
 
         // 退出按钮
         this.btnExitRoom = this.gameScene.add.text(Coordinates.btnExitRoomPosition.x, Coordinates.btnExitRoomPosition.y, '退出')
@@ -162,7 +152,7 @@ export class MainForm {
             .setStyle({ backgroundColor: 'gray' })
             .setVisible(false)
             .setInteractive({ useHandCursor: true })
-            .on('pointerup', () => this.btnExitRoom_Click(this))
+            .on('pointerup', () => this.btnExitRoom_Click())
             .on('pointerover', () => {
                 this.btnExitRoom.setStyle({ backgroundColor: 'lightblue' })
             })
@@ -170,6 +160,24 @@ export class MainForm {
                 this.btnExitRoom.setStyle({ backgroundColor: 'gray' })
             })
         this.gameScene.roomUIControls.texts.push(this.btnExitRoom)
+
+        // 表情包按钮
+        this.btnSendEmoji = this.gameScene.add.text(Coordinates.btnSendEmojiPosition.x, Coordinates.btnSendEmojiPosition.y, '弹幕')
+            .setColor('white')
+            .setFontSize(30)
+            .setPadding(10)
+            .setShadow(2, 2, "#333333", 2, true, true)
+            .setStyle({ backgroundColor: 'gray' })
+            .setVisible(false)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerup', () => this.btnSendEmoji_Click())
+            .on('pointerover', () => {
+                this.btnSendEmoji.setStyle({ backgroundColor: 'lightblue' })
+            })
+            .on('pointerout', () => {
+                this.btnSendEmoji.setStyle({ backgroundColor: 'gray' })
+            })
+        this.gameScene.roomUIControls.texts.push(this.btnSendEmoji)
 
         // 确定按钮
         this.btnPig = this.gameScene.add.text(Coordinates.btnPigPosition.x, Coordinates.btnPigPosition.y, '确定')
@@ -180,7 +188,7 @@ export class MainForm {
             .setStyle({ backgroundColor: 'gray' })
             .setVisible(false)
             .setInteractive({ useHandCursor: true })
-            .on('pointerup', () => this.btnPig_Click(this))
+            .on('pointerup', () => this.btnPig_Click())
             .on('pointerover', () => {
                 this.btnPig.setStyle({ backgroundColor: 'lightblue' })
             })
@@ -189,9 +197,10 @@ export class MainForm {
             })
         this.gameScene.roomUIControls.texts.push(this.btnPig)
         // 快捷键
-        var sKey = this.gameScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-        sKey.on('up', () => {
-            this.btnPig_Click(this)
+        this.keyS = this.gameScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.keyS.on('up', () => {
+            if (this.modalForm) return;
+            this.btnPig_Click()
         })
 
         // 昵称
@@ -215,7 +224,7 @@ export class MainForm {
                     .on('pointerout', () => {
                         this.lblNickNames[i].setStyle({ backgroundColor: 'gray' })
                     })
-                    .on('pointerup', () => this.lblNickName_Click(this))
+                    .on('pointerup', () => this.lblNickName_Click())
             }
             if (i == 1) {
                 lblNickName.setStyle({ fixedWidth: 300 })
@@ -256,8 +265,13 @@ export class MainForm {
         this.gameScene.input.on('pointerdown', (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
             // only if it is not clicking on any objects
             if (!currentlyOver || currentlyOver.length == 0) {
-                this.handleGeneralClick(this, pointer)
+                this.handleGeneralClick(pointer)
             }
+        });
+
+        this.keyReturn = this.gameScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+        this.keyReturn.on('up', () => {
+            this.emojiSubmitEventhandler(this);
         });
     }
 
@@ -314,17 +328,11 @@ export class MainForm {
         if (!this.tractorPlayer.isObserver) {
             this.btnReady.setVisible(true)
             this.btnRobot.setVisible(true)
-
-
-            // this.btnSendEmoji.Show();
-            // this.cbbEmoji.Show();
-            // this.ToolStripMenuItemInRoom.Visible = true;
+            this.btnSendEmoji.setVisible(true);
         }
         else {
             this.btnObserveNext.setVisible(true)
-            // this.ToolStripMenuItemObserve.Visible = true;
         }
-        // this.btnRoomSetting.Show();
 
         var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)
         for (let i = 0; i < 4; i++) {
@@ -469,7 +477,7 @@ export class MainForm {
 
         //摸牌结束，如果处于托管状态，则取消托管
         if (this.btnRobot.text == "取消" && !this.tractorPlayer.CurrentRoomSetting.IsFullDebug) {
-            this.btnRobot_Click(this)
+            this.btnRobot_Click()
         }
 
         //摸牌结束，如果允许投降，则显示投降按钮
@@ -526,7 +534,7 @@ export class MainForm {
                 this.SelectedCards = []
                 Algorithm.ShouldSelectedLast8Cards(this.SelectedCards, this.tractorPlayer.CurrentPoker);
                 if (this.SelectedCards.length == 8) {
-                    this.ToDiscard8Cards(this);
+                    this.ToDiscard8Cards();
                 }
                 else {
                     alert(`failed to auto select last 8 cards: ${this.SelectedCards}, please manually select`)
@@ -698,7 +706,7 @@ export class MainForm {
             let showingCardsValidationResult: ShowingCardsValidationResult =
                 TractorRules.IsValid(this.tractorPlayer.CurrentTrickState, this.SelectedCards, this.tractorPlayer.CurrentPoker);
             if (showingCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid) {
-                this.ToShowCards(this);
+                this.ToShowCards();
             }
             else {
 
@@ -748,7 +756,7 @@ export class MainForm {
             let showingCardsValidationResult: ShowingCardsValidationResult =
                 TractorRules.IsValid(this.tractorPlayer.CurrentTrickState, this.SelectedCards, this.tractorPlayer.CurrentPoker);
             if (showingCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid) {
-                this.ToShowCards(this);
+                this.ToShowCards();
             }
             else {
                 alert(`failed to auto select cards: ${this.SelectedCards}, please manually select`)
@@ -804,26 +812,26 @@ export class MainForm {
         }
     }
 
-    private btnReady_Click(mf: MainForm) {
-        if (mf.tractorPlayer.isObserver || !mf.btnReady.input.enabled) return;
+    private btnReady_Click() {
+        if (this.tractorPlayer.isObserver || !this.btnReady.input.enabled) return;
         //为防止以外连续点两下就绪按钮，造成重复发牌，点完一下就立即disable就绪按钮
-        mf.btnReady.disableInteractive()
-        mf.btnReady.setColor('gray')
+        this.btnReady.disableInteractive()
+        this.btnReady.setColor('gray')
 
-        mf.gameScene.sendMessageToServer(ReadyToStart_REQUEST, this.tractorPlayer.PlayerId, "")
+        this.gameScene.sendMessageToServer(ReadyToStart_REQUEST, this.tractorPlayer.PlayerId, "")
     }
 
-    private btnRobot_Click(mf: MainForm) {
-        mf.gameScene.sendMessageToServer(ToggleIsRobot_REQUEST, this.tractorPlayer.PlayerId, "")
+    private btnRobot_Click() {
+        this.gameScene.sendMessageToServer(ToggleIsRobot_REQUEST, this.tractorPlayer.PlayerId, "")
     }
 
-    private btnObserveNext_Click(mf: MainForm) {
+    private btnObserveNext_Click() {
         if (this.tractorPlayer.isObserver) {
-            mf.gameScene.sendMessageToServer(ObserveNext_REQUEST, this.tractorPlayer.MyOwnId, this.PositionPlayer[2])
+            this.gameScene.sendMessageToServer(ObserveNext_REQUEST, this.tractorPlayer.MyOwnId, this.PositionPlayer[2])
         }
     }
 
-    private btnExitRoom_Click(mf: MainForm) {
+    private btnExitRoom_Click() {
         // todo && !this.tractorPlayer.isReplay
         if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
             var c = window.confirm("游戏进行中退出将会重启游戏，是否确定退出？");
@@ -834,59 +842,139 @@ export class MainForm {
                 return
             }
         }
-        mf.gameScene.sendMessageToServer(ExitRoom_REQUEST, this.tractorPlayer.MyOwnId, "")
+        this.gameScene.sendMessageToServer(ExitRoom_REQUEST, this.tractorPlayer.MyOwnId, "")
     }
 
-    private lblNickName_Click(mf: MainForm) {
-        if (mf.settingsForm) return
-        mf.settingsForm = mf.gameScene.add.dom(Coordinates.screenWid * 0.5, Coordinates.screenHei * 0.5).createFromCache('settingsForm');
-        mf.settingsForm.addListener('click');
-        mf.settingsForm.setPerspective(800);
+    private btnSendEmoji_Click() {
+        if (this.modalForm) return
+        // disable shortcut keys temporarily to allow typing
+        this.gameScene.input.keyboard.removeCapture('Z,S,R');
 
-        let volumeControl = mf.settingsForm.getChildByID("rangeAudioVolume")
-        volumeControl.value = Math.floor(mf.gameScene.soundVolume * 100)
+        this.modalForm = this.gameScene.add.dom(Coordinates.screenWid * 0.5, Coordinates.screenHei * 0.5).createFromCache('emojiForm');
+        this.modalForm.addListener('click');
+        this.modalForm.setPerspective(800);
+        let btnSubmit = this.modalForm.getChildByID("btnSubmit")
+        let selectPresetMsgs = this.modalForm.getChildByID("selectPresetMsgs")
+        let textAreaMsg = this.modalForm.getChildByID("textAreaMsg")
+        textAreaMsg.style.width = `${selectPresetMsgs.offsetWidth}px`;
+        btnSubmit.onclick = () => { this.emojiSubmitEventhandler(this) };
+        selectPresetMsgs.onchange = () => {
+            let selectedIndex = selectPresetMsgs.selectedIndex;
+            let selectedValue = selectPresetMsgs.value;
+            let args: (string | number)[] = [selectedIndex, CommonMethods.GetRandomInt(CommonMethods.winEmojiLength), selectedValue];
+            this.gameScene.sendMessageToServer(SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
+            this.resetDanmuState();
+        }
+        let btnDanmuHistory = this.modalForm.getChildByID("btnDanmuHistory")
+        btnDanmuHistory.onclick = () => {
+            let sendEmojiContainer = this.modalForm.getChildByID("sendEmojiContainer")
+            sendEmojiContainer.remove()
+            let divShowDanmuHistory = this.modalForm.getChildByID("divShowDanmuHistory")
+            var h2 = document.createElement("h2");
+            h2.innerText = "聊天记录"
+            divShowDanmuHistory.appendChild(h2);
+            if (this.gameScene.danmuHistory.length == 0) {
+                var pEmpty = document.createElement("p");
+                pEmpty.innerText = "空"
+                divShowDanmuHistory.appendChild(pEmpty);
+            } else {
+                var ul = document.createElement("ul");
+                divShowDanmuHistory.appendChild(ul);
+                this.gameScene.danmuHistory.forEach((msg: string) => {
+                    var li = document.createElement("li");
+                    li.innerText = msg
+                    ul.appendChild(li);
+                })
+            }
+            divShowDanmuHistory.style.display = "block";
+        }
+    }
+
+    private emojiSubmitEventhandler(mf: MainForm) {
+        if (!mf.modalForm) return;
+        let selectPresetMsgs = mf.modalForm.getChildByID("selectPresetMsgs")
+        if (!selectPresetMsgs) return;
+        let textAreaMsg = mf.modalForm.getChildByID("textAreaMsg")
+        let emojiType = -1;
+        let emojiIndex = -1;
+        let msgString = textAreaMsg.value;
+        if (msgString) {
+            msgString = msgString.trim()
+        }
+        if (!msgString) {
+            msgString = selectPresetMsgs.value;
+            emojiType = selectPresetMsgs.selectedIndex;
+            emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
+        }
+        let args: (string | number)[] = [emojiType, emojiIndex, msgString];
+        mf.gameScene.sendMessageToServer(SendEmoji_REQUEST, mf.tractorPlayer.MyOwnId, JSON.stringify(args))
+        mf.resetDanmuState();
+    }
+
+    private resetDanmuState() {
+        this.btnSendEmoji.disableInteractive()
+        this.btnSendEmoji.setColor('gray')
+        this.DesotroyModalForm();
+        setTimeout(() => {
+            this.btnSendEmoji.setInteractive({ useHandCursor: true })
+            this.btnSendEmoji.setColor('white')
+        }, 5000);
+    }
+
+    private lblNickName_Click() {
+        if (this.modalForm) return
+        this.modalForm = this.gameScene.add.dom(Coordinates.screenWid * 0.5, Coordinates.screenHei * 0.5).createFromCache('settingsForm');
+        this.modalForm.addListener('click');
+        this.modalForm.setPerspective(800);
+
+        let volumeControl = this.modalForm.getChildByID("rangeAudioVolume")
+        volumeControl.value = Math.floor(this.gameScene.soundVolume * 100)
         volumeControl.onchange = () => {
             let volValue: number = volumeControl.value
-            mf.gameScene.soundVolume = volValue / 100.0
-            mf.gameScene.loadAudioFiles()
-            mf.gameScene.soundbiyue1.play()
+            this.gameScene.soundVolume = volValue / 100.0
+            this.gameScene.loadAudioFiles()
+            this.gameScene.soundbiyue1.play()
         }
 
-        if (this.gameScene.isInGameHall() || mf.tractorPlayer.CurrentRoomSetting.RoomOwner !== mf.tractorPlayer.MyOwnId) {
-            let pResumeGame = mf.settingsForm.getChildByID("pResumeGame")
-            let pRandomSeat = mf.settingsForm.getChildByID("pRandomSeat")
+        let noDanmu = this.modalForm.getChildByID("cbxNoDanmu")
+        noDanmu.checked = this.gameScene.noDanmu.toLowerCase() === "true"
+        noDanmu.onchange = () => {
+            this.gameScene.noDanmu = noDanmu.checked.toString()
+        }
+
+        if (this.gameScene.isInGameHall() || this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
+            let pResumeGame = this.modalForm.getChildByID("pResumeGame")
+            let pRandomSeat = this.modalForm.getChildByID("pRandomSeat")
             pResumeGame.remove()
             pRandomSeat.remove()
         } else {
-            let btnResumeGame = mf.settingsForm.getChildByID("btnResumeGame")
+            let btnResumeGame = this.modalForm.getChildByID("btnResumeGame")
             btnResumeGame.onclick = () => {
-                if (CommonMethods.AllOnline(mf.tractorPlayer.CurrentGameState.Players) && !mf.tractorPlayer.isObserver && mf.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
+                if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
                     alert("游戏中途不允许继续牌局,请完成此盘游戏后重试")
                 } else {
-                    mf.gameScene.sendMessageToServer(ResumeGameFromFile_REQUEST, mf.tractorPlayer.MyOwnId, "");
+                    this.gameScene.sendMessageToServer(ResumeGameFromFile_REQUEST, this.tractorPlayer.MyOwnId, "");
                 }
-                mf.settingsForm.destroy()
-                mf.settingsForm = undefined
+                this.DesotroyModalForm();
             }
-            let btnRandomSeat = mf.settingsForm.getChildByID("btnRandomSeat")
+            let btnRandomSeat = this.modalForm.getChildByID("btnRandomSeat")
             btnRandomSeat.onclick = () => {
-                if (CommonMethods.AllOnline(mf.tractorPlayer.CurrentGameState.Players) && !mf.tractorPlayer.isObserver && mf.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
+                if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
                     alert("游戏中途不允许随机组队,请完成此盘游戏后重试")
                 } else {
-                    mf.gameScene.sendMessageToServer(RandomSeat_REQUEST, mf.tractorPlayer.MyOwnId, "");
+                    this.gameScene.sendMessageToServer(RandomSeat_REQUEST, this.tractorPlayer.MyOwnId, "");
                 }
-                mf.settingsForm.destroy()
-                mf.settingsForm = undefined
+                this.DesotroyModalForm();
             }
         }
     }
 
-    private btnPig_Click(mf: MainForm) {
+    private btnPig_Click() {
 
-        this.ToDiscard8Cards(mf);
-        this.ToShowCards(mf);
+        this.ToDiscard8Cards();
+        this.ToShowCards();
     }
-    private ToDiscard8Cards(mf: MainForm) {
+    private ToDiscard8Cards() {
         //判断是否处在扣牌阶段
         if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards &&
             this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) //如果等我扣牌
@@ -898,12 +986,12 @@ export class MainForm {
                 this.SelectedCards.forEach(card => {
                     this.tractorPlayer.CurrentPoker.RemoveCard(card);
                 })
-                mf.gameScene.sendMessageToServer(StoreDiscardedCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards))
+                this.gameScene.sendMessageToServer(StoreDiscardedCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards))
                 this.drawingFormHelper.ResortMyHandCards();
             }
         }
     }
-    private ToShowCards(mf: MainForm) {
+    private ToShowCards() {
         if ((this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing || this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8CardsFinished) &&
             this.tractorPlayer.CurrentTrickState.NextPlayer() == this.tractorPlayer.PlayerId) {
             var selectedCardsValidationResult = TractorRules.IsValid(this.tractorPlayer.CurrentTrickState, this.SelectedCards, this.tractorPlayer.CurrentPoker);
@@ -916,22 +1004,22 @@ export class MainForm {
                     this.tractorPlayer.CurrentPoker.RemoveCard(card);
                 })
 
-                this.ShowCards(mf);
+                this.ShowCards();
                 this.drawingFormHelper.ResortMyHandCards();
                 this.SelectedCards = []
             }
             else if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.TryToDump) {
                 //擦去小猪
                 this.btnPig.setVisible(false);
-                mf.gameScene.sendMessageToServer(ValidateDumpingCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards))
+                this.gameScene.sendMessageToServer(ValidateDumpingCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards))
             }
         }
     }
 
-    public ShowCards(mf: MainForm) {
+    public ShowCards() {
         if (this.tractorPlayer.CurrentTrickState.NextPlayer() == this.tractorPlayer.PlayerId) {
             this.tractorPlayer.CurrentTrickState.ShowedCards[this.tractorPlayer.PlayerId] = CommonMethods.deepCopy<number[]>(this.SelectedCards);
-            mf.gameScene.sendMessageToServer(PlayerShowCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentTrickState));
+            this.gameScene.sendMessageToServer(PlayerShowCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentTrickState));
         }
     }
 
@@ -956,7 +1044,7 @@ export class MainForm {
                 this.tractorPlayer.CurrentPoker.RemoveCard(card);
             })
 
-            this.ShowCards(this);
+            this.ShowCards();
             this.drawingFormHelper.ResortMyHandCards();
             this.SelectedCards = []
         }
@@ -976,7 +1064,7 @@ export class MainForm {
                     this.tractorPlayer.CurrentPoker.RemoveCard(card);
                 })
                 this.SelectedCards = CommonMethods.deepCopy<number[]>(result.MustShowCardsForDumpingFail)
-                this.ShowCards(this);
+                this.ShowCards();
                 this.drawingFormHelper.ResortMyHandCards();
                 this.SelectedCards = []
             }, 5000);
@@ -1042,25 +1130,25 @@ export class MainForm {
         }
     }
 
-    // 右键点空白区
-    private handleGeneralClick(mf: MainForm, pointer: Phaser.Input.Pointer) {
+    // 点空白区
+    private handleGeneralClick(pointer: Phaser.Input.Pointer) {
         if (pointer.rightButtonDown()) {
             // 右键点空白区
-            if (mf.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing ||
-                mf.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
-                mf.tractorPlayer.ShowLastTrickCards = !mf.tractorPlayer.ShowLastTrickCards;
-                if (mf.tractorPlayer.ShowLastTrickCards) {
-                    mf.ShowLastTrickAndTumpMade(mf);
+            if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing ||
+                this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
+                this.tractorPlayer.ShowLastTrickCards = !this.tractorPlayer.ShowLastTrickCards;
+                if (this.tractorPlayer.ShowLastTrickCards) {
+                    this.ShowLastTrickAndTumpMade();
                 }
                 else {
-                    mf.PlayerCurrentTrickShowedCards();
+                    this.PlayerCurrentTrickShowedCards();
                 }
             }
             //一局结束时右键查看最后一轮各家所出的牌，缩小至一半，放在左下角
-            else if (mf.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Ending) {
-                mf.tractorPlayer.ShowLastTrickCards = !mf.tractorPlayer.ShowLastTrickCards;
-                if (mf.tractorPlayer.ShowLastTrickCards) {
-                    mf.ShowLastTrickAndTumpMade(mf);
+            else if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Ending) {
+                this.tractorPlayer.ShowLastTrickCards = !this.tractorPlayer.ShowLastTrickCards;
+                if (this.tractorPlayer.ShowLastTrickCards) {
+                    this.ShowLastTrickAndTumpMade();
                 }
                 else {
                     this.drawingFormHelper.DrawFinishedSendedCards()
@@ -1068,53 +1156,58 @@ export class MainForm {
             }
         } else {
             // 左键键点空白区
-            if (mf.settingsForm) {
-                mf.gameScene.loadAudioFiles()
-                mf.gameScene.saveAudioVolume()
-                mf.settingsForm.destroy()
-                mf.settingsForm = undefined
+            if (this.modalForm) {
+                this.gameScene.loadAudioFiles()
+                this.gameScene.saveSettings()
+                this.DesotroyModalForm();
             }
         }
     }
 
-    private ShowLastTrickAndTumpMade(mf: MainForm) {
-        //擦掉上一把
-        mf.drawingFormHelper.destroyAllShowedCards()
-        mf.tractorPlayer.destroyAllClientMessages()
+    private DesotroyModalForm() {
+        if (!this.modalForm) return;
+        this.modalForm.destroy();
+        this.modalForm = undefined;
+    }
 
-        mf.tractorPlayer.NotifyMessage(["回看上轮出牌"]);
+    private ShowLastTrickAndTumpMade() {
+        //擦掉上一把
+        this.drawingFormHelper.destroyAllShowedCards()
+        this.tractorPlayer.destroyAllClientMessages()
+
+        this.tractorPlayer.NotifyMessage(["回看上轮出牌"]);
 
         //绘制上一轮各家所出的牌，缩小至一半，放在左下角，或者重画当前轮各家所出的牌
-        mf.PlayerLastTrickShowedCards(mf);
+        this.PlayerLastTrickShowedCards();
 
         //查看谁亮过什么牌
-        mf.drawingFormHelper.TrumpMadeCardsShowFromLastTrick();
+        this.drawingFormHelper.TrumpMadeCardsShowFromLastTrick();
     }
 
     //绘制上一轮各家所出的牌，缩小一半
-    private PlayerLastTrickShowedCards(mf: MainForm) {
-        let lastLeader = mf.tractorPlayer.CurrentTrickState.serverLocalCache.lastLeader;
-        if (!lastLeader || !mf.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards ||
-            Object.keys(mf.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards).length == 0) return;
+    private PlayerLastTrickShowedCards() {
+        let lastLeader = this.tractorPlayer.CurrentTrickState.serverLocalCache.lastLeader;
+        if (!lastLeader || !this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards ||
+            Object.keys(this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards).length == 0) return;
 
         let trickState: CurrentTrickState = new CurrentTrickState();
         trickState.Learder = lastLeader;
-        trickState.Trump = mf.tractorPlayer.CurrentTrickState.Trump;
-        trickState.Rank = mf.tractorPlayer.CurrentTrickState.Rank;
+        trickState.Trump = this.tractorPlayer.CurrentTrickState.Trump;
+        trickState.Rank = this.tractorPlayer.CurrentTrickState.Rank;
         let cardsCount = 0
-        for (const [key, value] of Object.entries(mf.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards)) {
+        for (const [key, value] of Object.entries(this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards)) {
             trickState.ShowedCards[key] = CommonMethods.deepCopy<number[]>(value as number[])
         }
 
         for (const [key, value] of Object.entries(trickState.ShowedCards)) {
-            let position = mf.PlayerPosition[key];
+            let position = this.PlayerPosition[key];
             let cards: number[] = value as number[]
             cardsCount = cards.length
-            mf.drawingFormHelper.DrawShowedCardsByPositionFromLastTrick(cards, position)
+            this.drawingFormHelper.DrawShowedCardsByPositionFromLastTrick(cards, position)
         }
         let winnerID = TractorRules.GetWinner(trickState);
-        let tempIsWinByTrump = mf.IsWinningWithTrump(trickState, winnerID);
-        mf.drawingFormHelper.DrawOverridingFlagFromLastTrick(cardsCount, mf.PlayerPosition[winnerID], tempIsWinByTrump - 1);
+        let tempIsWinByTrump = this.IsWinningWithTrump(trickState, winnerID);
+        this.drawingFormHelper.DrawOverridingFlagFromLastTrick(cardsCount, this.PlayerPosition[winnerID], tempIsWinByTrump - 1);
     }
 
     public NotifyGameHallEventHandler(roomStateList: RoomState[], playerList: string[]) {
@@ -1176,19 +1269,19 @@ export class MainForm {
                 .setDisplaySize(160, 160)
                 .setInteractive({ useHandCursor: true })
                 .on('pointerup', () => {
-                    if (this.settingsForm) return
+                    if (this.modalForm) return
                     this.gameScene.sendMessageToServer(PLAYER_ENTER_ROOM_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify({
                         roomID: i,
                         posID: -1,
                     }))
                 })
                 .on('pointerover', () => {
-                    if (this.settingsForm) return
+                    if (this.modalForm) return
                     this.gameScene.pokerTableChairImg[i].tableImg.y -= 5
                     this.gameScene.pokerTableChairNames[i].tableName.y -= 5
                 })
                 .on('pointerout', () => {
-                    if (this.settingsForm) return
+                    if (this.modalForm) return
                     this.gameScene.pokerTableChairImg[i].tableImg.y += 5
                     this.gameScene.pokerTableChairNames[i].tableName.y += 5
                 })
@@ -1225,19 +1318,19 @@ export class MainForm {
                         .setOrigin(0, 0).setDisplaySize(80, 80)
                         .setInteractive({ useHandCursor: true })
                         .on('pointerup', () => {
-                            if (this.settingsForm) return
+                            if (this.modalForm) return
                             this.gameScene.sendMessageToServer(PLAYER_ENTER_ROOM_REQUEST, this.gameScene.playerName, JSON.stringify({
                                 roomID: i,
                                 posID: j,
                             }))
                         })
                         .on('pointerover', () => {
-                            if (this.settingsForm) return
+                            if (this.modalForm) return
                             this.gameScene.pokerTableChairImg[i].chairImgs[j].y -= 5
                             this.gameScene.pokerTableChairNames[i].chairNames[j].myOwnName.y -= 5
                         })
                         .on('pointerout', () => {
-                            if (this.settingsForm) return
+                            if (this.modalForm) return
                             this.gameScene.pokerTableChairImg[i].chairImgs[j].y += 5
                             this.gameScene.pokerTableChairNames[i].chairNames[j].myOwnName.y += 5
                         })
@@ -1245,5 +1338,14 @@ export class MainForm {
                 }
             }
         }
+    }
+
+    public NotifyEmojiEventHandler(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string) {
+        if (!msgString && 0 <= emojiType && emojiType < CommonMethods.winEmojiTypeLength) {
+            msgString = CommonMethods.emojiMsgs[emojiType];
+        }
+        let finalMsg = `【${playerID}】说：${msgString}`;
+        this.gameScene.danmuHistory.push(finalMsg);
+        this.drawingFormHelper.DrawDanmu(playerID, finalMsg);
     }
 }

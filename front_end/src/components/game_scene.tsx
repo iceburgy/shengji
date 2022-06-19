@@ -31,6 +31,7 @@ import walkerpng from '../assets/animations/walker.png';
 import sf2ryujson from '../assets/animations/sf2ryu.json';
 import sf2ryupng from '../assets/animations/sf2ryu.png';
 import settingsForm from '../assets/text/settings_form.txt';
+import emojiForm from '../assets/text/emoji_form.htm';
 
 import { nanoid } from 'nanoid'
 import { Match } from './match';
@@ -69,6 +70,7 @@ const NotifyCardsReady_RESPONSE = "NotifyCardsReady"
 const NotifyDumpingValidationResult_RESPONSE = "NotifyDumpingValidationResult" // failure
 const NotifyTryToDumpResult_RESPONSE = "NotifyTryToDumpResult" // both
 const NotifyStartTimer_RESPONSE = "NotifyStartTimer" // both
+const NotifyEmoji_RESPONSE = "NotifyEmoji"
 
 const screenWidth = document.documentElement.clientWidth;
 const screenHeight = document.documentElement.clientHeight;
@@ -104,6 +106,7 @@ export class GameScene extends Phaser.Scene {
     public hallPlayerHeader: Phaser.GameObjects.Text
     public hallPlayerNames: Phaser.GameObjects.Text[]
     public clientMessages: Phaser.GameObjects.Text[]
+    public danmuMessages: any[]
     public roomUIControls: { images: Phaser.GameObjects.Image[], texts: ser.GameObjects.Text[] }
     public soundbiyue1: Phaser.Sound.BaseSound;
     public soundRecoverhp: Phaser.Sound.BaseSound;
@@ -114,6 +117,8 @@ export class GameScene extends Phaser.Scene {
     public soundtie: Phaser.Sound.BaseSound;
     public soundwin: Phaser.Sound.BaseSound;
     public soundVolume: number
+    public noDanmu: string
+    public danmuHistory: string[]
 
     constructor(hostName, playerName: string) {
         super("GameScene")
@@ -138,13 +143,17 @@ export class GameScene extends Phaser.Scene {
         this.overridingLabelImages = [];
         this.hallPlayerNames = [];
         this.clientMessages = [];
+        this.danmuMessages = [];
         this.roomUIControls = { images: [], texts: [] };
         this.soundVolume = cookies.get("soundVolume");
         if (this.soundVolume === undefined) this.soundVolume = 0.5
+        this.noDanmu = cookies.get("noDanmu");
+        if (this.noDanmu === undefined) this.noDanmu = 'false'
 
         if (!IPPort.exec(this.hostName)) {
             this.processAuth();
         }
+        this.danmuHistory = [];
     }
 
     preload() {
@@ -191,6 +200,7 @@ export class GameScene extends Phaser.Scene {
         this.load.audio("zhu_junlve", zhu_junlve);
         this.load.audio("recoverhp", recoverhp);
         this.load.html('settingsForm', settingsForm);
+        this.load.html('emojiForm', emojiForm);
 
         this.load.atlas('walker', walkerpng, walkerjson);
         this.load.atlas('sf2ryu', sf2ryupng, sf2ryujson);
@@ -269,11 +279,17 @@ export class GameScene extends Phaser.Scene {
             this.handleNotifyTryToDumpResult(objList);
         } else if (messageType === NotifyStartTimer_RESPONSE) {
             this.handleNotifyStartTimer(objList);
+        } else if (messageType === NotifyEmoji_RESPONSE) {
+            this.handleNotifyEmoji(objList);
         }
         // } catch (e) {
         //     // alert("error")
         //     document.body.innerHTML = `<div>!!! onmessage Error: ${e}</div>`
         // }
+    }
+
+    private handleNotifyEmoji(objList: []) {
+        this.mainForm.tractorPlayer.NotifyEmoji(...objList)
     }
 
     private handleNotifyStartTimer(objList: []) {
@@ -361,8 +377,9 @@ export class GameScene extends Phaser.Scene {
         this.soundwin = this.sound.add("win", { volume: this.soundVolume });
     }
 
-    public saveAudioVolume() {
+    public saveSettings() {
         cookies.set('soundVolume', this.soundVolume, { path: '/' });
+        cookies.set('noDanmu', this.noDanmu, { path: '/' });
     }
 
     sendMessageToServer(messageType: string, playerID: string, content: string) {

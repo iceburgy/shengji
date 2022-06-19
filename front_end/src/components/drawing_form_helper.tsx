@@ -1034,11 +1034,11 @@ export class DrawingFormHelper {
             y: 484,
             delay: 500,
             duration: 5000,
-            ease: "Cubic.easeInOut"
+            ease: "Cubic.easeInOut",
+            onComplete: () => {
+                sprite.destroy();
+            }
         });
-        setTimeout(() => {
-            sprite.destroy();
-        }, 6000);
     }
 
     public DrawSf2ryu() {
@@ -1054,5 +1054,62 @@ export class DrawingFormHelper {
         setTimeout(() => {
             ryu.destroy();
         }, 6000);
+    }
+
+    public DrawDanmu(playerID: string, msgString: string) {
+        if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true') {
+            this.mainForm.tractorPlayer.NotifyMessage([msgString]);
+            return
+        }
+        let x = Coordinates.screenWid;
+        let y = Coordinates.danmuPositionY;
+        let danmuIndex = 0;
+        let danmus: Phaser.GameObjects.Text[] = (this.mainForm.gameScene.danmuMessages as Phaser.GameObjects.Text[]);
+        let foundEmptyDanmu = false;
+        let foundDanmu = false;
+        if (danmus.length > 0) {
+            for (let i = 0; i < danmus.length; i++) {
+                if (danmus[i] === undefined) {
+                    if (!foundEmptyDanmu) {
+                        foundEmptyDanmu = true;
+                        danmuIndex = i;
+                    }
+                } else {
+                    foundDanmu = true;
+                    if (!foundEmptyDanmu) danmuIndex = i + 1;
+                }
+            }
+        }
+        if (!foundDanmu) {
+            this.destroyAllDanmuMessages();
+        }
+
+        y += Coordinates.danmuOffset * danmuIndex;
+        var lblDanmu = this.mainForm.gameScene.add.text(x, y, msgString)
+            .setColor('white')
+            .setFontSize(30)
+            .setPadding(10)
+            .setShadow(2, 2, "#333333", 2, true, true)
+            .setVisible(true)
+        this.mainForm.gameScene.danmuMessages[danmuIndex] = lblDanmu;
+
+        this.mainForm.gameScene.tweens.add({
+            targets: lblDanmu,
+            x: 0 - lblDanmu.width,
+            duration: 6000,
+            onComplete: () => {
+                this.mainForm.gameScene.danmuMessages[danmuIndex] = undefined
+                lblDanmu.destroy();
+                if (!this.mainForm.gameScene.noDanmu) this.mainForm.tractorPlayer.destroyAllClientMessages();
+            }
+        });
+    }
+
+    public destroyAllDanmuMessages() {
+        if (this.mainForm.gameScene.danmuMessages == null || this.mainForm.gameScene.danmuMessages.length == 0) return
+        this.mainForm.gameScene.danmuMessages.forEach((msg: Phaser.GameObjects.Text) => {
+            if (msg) msg.destroy();
+        });
+        this.mainForm.gameScene.danmuMessages = []
     }
 }

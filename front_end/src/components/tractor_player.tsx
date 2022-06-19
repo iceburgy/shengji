@@ -56,6 +56,7 @@ export class TractorPlayer {
         this.mainForm.gameScene.clientMessages.forEach(msg => {
             msg.destroy();
         });
+        this.mainForm.gameScene.clientMessages = []
     }
 
     public NotifyMessage(msgs: string[]) {
@@ -448,5 +449,9 @@ export class TractorPlayer {
 
     public NotifyGameHall(roomStateList: RoomState[], playerList: string[]) {
         this.mainForm.NotifyGameHallEventHandler(roomStateList, playerList)
+    }
+
+    public NotifyEmoji(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string) {
+        this.mainForm.NotifyEmojiEventHandler(playerID, emojiType, emojiIndex, isCenter, msgString)
     }
 }
