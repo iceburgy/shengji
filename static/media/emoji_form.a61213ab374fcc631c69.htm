@@ -1,0 +1,49 @@
+<style>
+    .formroot {
+        overflow: auto;
+        padding-left: 2em;
+        padding-right: 2em;
+        background: #eceeee;
+        border: 1px solid #42464b;
+        border-radius: 6px;
+        margin: 20px auto 0;
+        max-height: 400px;
+    }
+
+    .slidecontainer {
+        width: 100%;
+    }
+
+    h2 {
+        text-align: center
+    }
+
+    #divShowDanmuHistory {
+        display: none;
+    }
+</style>
+<div id="input-form" class="formroot">
+    <div id="sendEmojiContainer">
+        <h2>发送弹幕</h2>
+        <p id="pPresetMsgs">
+            <select id="selectPresetMsgs">
+                <option value="这波操作，666！">这波操作，666！</option>
+                <option value="亲，请注意细节">亲，请注意细节</option>
+                <option value="猴开心：）">猴开心：）</option>
+                <option value="嚎啕大哭：（">嚎啕大哭：（</option>
+                <option value="能不能快点啊，兵贵神速！">能不能快点啊，兵贵神速！</option>
+                <option value="烟花">烟花</option>
+                <option value="人心散了，队伍不好带啊……">人心散了，队伍不好带啊……</option>
+                <option value="额，不好意思，刚才卡了">额，不好意思，刚才卡了</option>
+                <option value="有劳房主点击“继续上盘牌局”">有劳房主点击“继续上盘牌局”</option>
+            </select>
+        </p>
+
+        <p id="pTextArea">
+            <textarea id="textAreaMsg" rows="4" cols="20" maxlength="30"></textarea>
+        </p>
+        <p id="pSubmit"><input type="button" id="btnSubmit" value="发送" /></p>
+        <p id="pDanmuHistory"><input type="button" id="btnDanmuHistory" value="查看聊天记录" /></p>
+    </div>
+    <div id="divShowDanmuHistory"></div>
+</div>
