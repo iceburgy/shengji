@@ -59,10 +59,6 @@ export class MainForm {
     public modalForm: any
     public firstWinNormal = 1;
     public firstWinBySha = 3;
-    public keyReturn: Phaser.Input.Keyboard.Key
-    public keyZ: Phaser.Input.Keyboard.Key
-    public keyS: Phaser.Input.Keyboard.Key
-    public keyR: Phaser.Input.Keyboard.Key
     constructor(gs: GameScene) {
         this.gameScene = gs
         this.tractorPlayer = new TractorPlayer(this)
@@ -94,12 +90,6 @@ export class MainForm {
                 this.btnReady.setStyle({ backgroundColor: 'gray' })
             })
         this.gameScene.roomUIControls.texts.push(this.btnReady)
-        // 快捷键
-        this.keyZ = this.gameScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
-        this.keyZ.on('up', (k: Phaser.Input.Keyboard.Key, e: KeyboardEvent) => {
-            if (this.modalForm) return;
-            this.btnReady_Click()
-        })
 
         // 托管按钮
         this.btnRobot = this.gameScene.add.text(Coordinates.btnRobotPosition.x, Coordinates.btnRobotPosition.y, '托管')
@@ -118,12 +108,6 @@ export class MainForm {
                 this.btnRobot.setStyle({ backgroundColor: 'gray' })
             })
         this.gameScene.roomUIControls.texts.push(this.btnRobot)
-        // 快捷键
-        this.keyR = this.gameScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-        this.keyR.on('up', () => {
-            if (this.modalForm) return;
-            this.btnRobot_Click()
-        })
 
         // 旁观下家
         this.btnObserveNext = this.gameScene.add.text(Coordinates.btnReadyPosition.x, Coordinates.btnReadyPosition.y, '旁观下家')
@@ -196,12 +180,6 @@ export class MainForm {
                 this.btnPig.setStyle({ backgroundColor: 'gray' })
             })
         this.gameScene.roomUIControls.texts.push(this.btnPig)
-        // 快捷键
-        this.keyS = this.gameScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-        this.keyS.on('up', () => {
-            if (this.modalForm) return;
-            this.btnPig_Click()
-        })
 
         // 昵称
         this.lblNickNames = []
@@ -269,10 +247,8 @@ export class MainForm {
             }
         });
 
-        this.keyReturn = this.gameScene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-        this.keyReturn.on('up', () => {
-            this.emojiSubmitEventhandler(this);
-        });
+        // 快捷键
+        this.gameScene.input.keyboard.on('keyup', this.shortcutKeyEventhandler, this)
     }
 
     public NewPlayerReadyToStart(readyToStart: boolean) {
@@ -848,16 +824,14 @@ export class MainForm {
     private btnSendEmoji_Click() {
         if (this.modalForm) return
         // disable shortcut keys temporarily to allow typing
-        this.gameScene.input.keyboard.removeCapture('Z,S,R');
+        // this.gameScene.input.keyboard.removeCapture('1,2,3,Z,S,R');
 
         this.modalForm = this.gameScene.add.dom(Coordinates.screenWid * 0.5, Coordinates.screenHei * 0.5).createFromCache('emojiForm');
         this.modalForm.addListener('click');
         this.modalForm.setPerspective(800);
-        let btnSubmit = this.modalForm.getChildByID("btnSubmit")
         let selectPresetMsgs = this.modalForm.getChildByID("selectPresetMsgs")
         let textAreaMsg = this.modalForm.getChildByID("textAreaMsg")
         textAreaMsg.style.width = `${selectPresetMsgs.offsetWidth}px`;
-        btnSubmit.onclick = () => { this.emojiSubmitEventhandler(this) };
         selectPresetMsgs.onchange = () => {
             let selectedIndex = selectPresetMsgs.selectedIndex;
             let selectedValue = selectPresetMsgs.value;
@@ -890,11 +864,11 @@ export class MainForm {
         }
     }
 
-    private emojiSubmitEventhandler(mf: MainForm) {
-        if (!mf.modalForm) return;
-        let selectPresetMsgs = mf.modalForm.getChildByID("selectPresetMsgs")
+    private emojiSubmitEventhandler() {
+        if (!this.modalForm) return;
+        let selectPresetMsgs = this.modalForm.getChildByID("selectPresetMsgs")
         if (!selectPresetMsgs) return;
-        let textAreaMsg = mf.modalForm.getChildByID("textAreaMsg")
+        let textAreaMsg = this.modalForm.getChildByID("textAreaMsg")
         let emojiType = -1;
         let emojiIndex = -1;
         let msgString = textAreaMsg.value;
@@ -907,8 +881,42 @@ export class MainForm {
             emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
         }
         let args: (string | number)[] = [emojiType, emojiIndex, msgString];
-        mf.gameScene.sendMessageToServer(SendEmoji_REQUEST, mf.tractorPlayer.MyOwnId, JSON.stringify(args))
-        mf.resetDanmuState();
+        this.gameScene.sendMessageToServer(SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
+        this.resetDanmuState();
+    }
+
+    private shortcutKeyEventhandler(event: KeyboardEvent) {
+        if (!event || !event.key) return;
+        let ekey: string = event.key.toLowerCase();
+        switch (ekey) {
+            case 'z':
+                if (this.modalForm) return;
+                this.btnReady_Click();
+                return;
+            case 's':
+                if (this.modalForm) return;
+                this.btnPig_Click();
+                return;
+            case 'r':
+                if (this.modalForm) return;
+                this.btnRobot_Click();
+                return;
+            case 'enter':
+                this.emojiSubmitEventhandler();
+                return;
+            default:
+                break;
+        }
+
+        if ('1' <= ekey && ekey <= CommonMethods.emojiMsgs.length.toString() && !this.modalForm) {
+            if (!this.btnSendEmoji.input.enabled) return;
+            let emojiType = parseInt(ekey) - 1;
+            let emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
+            let msgString = CommonMethods.emojiMsgs[emojiType]
+            let args: (string | number)[] = [emojiType, emojiIndex, msgString];
+            this.gameScene.sendMessageToServer(SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
+            this.resetDanmuState();
+        }
     }
 
     private resetDanmuState() {
@@ -970,7 +978,6 @@ export class MainForm {
     }
 
     private btnPig_Click() {
-
         this.ToDiscard8Cards();
         this.ToShowCards();
     }
