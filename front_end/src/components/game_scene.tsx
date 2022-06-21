@@ -32,6 +32,30 @@ import sf2ryujson from '../assets/animations/sf2ryu.json';
 import sf2ryupng from '../assets/animations/sf2ryu.png';
 import settingsForm from '../assets/text/settings_form.txt';
 import emojiForm from '../assets/text/emoji_form.htm';
+import emGoodjob from "../assets/sprites/goodjob.png"
+import emGoodjob2 from "../assets/sprites/goodjob2.png"
+import emGoodjob3 from "../assets/sprites/goodjob3.png"
+import emGoodjob4 from "../assets/sprites/goodjob4.png"
+import emBadjob from "../assets/sprites/badjob.png"
+import emBadjob2 from "../assets/sprites/badjob2.png"
+import emBadjob3 from "../assets/sprites/badjob3.png"
+import emBadjob4 from "../assets/sprites/badjob4.png"
+import emHappy from "../assets/sprites/happy.png"
+import emHappy2 from "../assets/sprites/happy2.png"
+import emHappy3 from "../assets/sprites/happy3.png"
+import emHappy4 from "../assets/sprites/happy4.png"
+import emSad from "../assets/sprites/sad.png"
+import emSad2 from "../assets/sprites/sad2.png"
+import emSad3 from "../assets/sprites/sad3.png"
+import emSad4 from "../assets/sprites/sad4.png"
+import emHurryup from "../assets/sprites/hurryup.png"
+import emHurryup2 from "../assets/sprites/hurryup2.png"
+import emHurryup3 from "../assets/sprites/hurryup3.png"
+import emHurryup4 from "../assets/sprites/hurryup4.png"
+import emFireworks from "../assets/sprites/fireworks.png"
+import emFireworks2 from "../assets/sprites/fireworks2.png"
+import emFireworks3 from "../assets/sprites/fireworks3.png"
+import emFireworks4 from "../assets/sprites/fireworks4.png"
 
 import { nanoid } from 'nanoid'
 import { Match } from './match';
@@ -49,6 +73,7 @@ import { Coordinates } from "./coordinates";
 import { CommonMethods } from "./common_methods";
 import { ShowingCardsValidationResult } from "./showing_cards_validation_result";
 import Cookies from 'universal-cookie';
+import { EmojiUtil } from "./emoji_util";
 
 const cookies = new Cookies();
 const SET_PLAYER_NAME_REQUEST = "set_player_name"
@@ -204,6 +229,30 @@ export class GameScene extends Phaser.Scene {
 
         this.load.atlas('walker', walkerpng, walkerjson);
         this.load.atlas('sf2ryu', sf2ryupng, sf2ryujson);
+        this.load.spritesheet('emGoodjob', emGoodjob, { frameWidth: EmojiUtil.emojiFrameSize[0][0].x, frameHeight: EmojiUtil.emojiFrameSize[0][0].y });
+        this.load.spritesheet('emGoodjob2', emGoodjob2, { frameWidth: EmojiUtil.emojiFrameSize[0][1].x, frameHeight: EmojiUtil.emojiFrameSize[0][1].y });
+        this.load.spritesheet('emGoodjob3', emGoodjob3, { frameWidth: EmojiUtil.emojiFrameSize[0][2].x, frameHeight: EmojiUtil.emojiFrameSize[0][2].y });
+        this.load.spritesheet('emGoodjob4', emGoodjob4, { frameWidth: EmojiUtil.emojiFrameSize[0][3].x, frameHeight: EmojiUtil.emojiFrameSize[0][3].y });
+        this.load.spritesheet('emBadjob', emBadjob, { frameWidth: EmojiUtil.emojiFrameSize[1][0].x, frameHeight: EmojiUtil.emojiFrameSize[1][0].y });
+        this.load.spritesheet('emBadjob2', emBadjob2, { frameWidth: EmojiUtil.emojiFrameSize[1][1].x, frameHeight: EmojiUtil.emojiFrameSize[1][1].y });
+        this.load.spritesheet('emBadjob3', emBadjob3, { frameWidth: EmojiUtil.emojiFrameSize[1][2].x, frameHeight: EmojiUtil.emojiFrameSize[1][2].y });
+        this.load.spritesheet('emBadjob4', emBadjob4, { frameWidth: EmojiUtil.emojiFrameSize[1][3].x, frameHeight: EmojiUtil.emojiFrameSize[1][3].y });
+        this.load.spritesheet('emHappy', emHappy, { frameWidth: EmojiUtil.emojiFrameSize[2][0].x, frameHeight: EmojiUtil.emojiFrameSize[2][0].y });
+        this.load.spritesheet('emHappy2', emHappy2, { frameWidth: EmojiUtil.emojiFrameSize[2][1].x, frameHeight: EmojiUtil.emojiFrameSize[2][1].y });
+        this.load.spritesheet('emHappy3', emHappy3, { frameWidth: EmojiUtil.emojiFrameSize[2][2].x, frameHeight: EmojiUtil.emojiFrameSize[2][2].y });
+        this.load.spritesheet('emHappy4', emHappy4, { frameWidth: EmojiUtil.emojiFrameSize[2][3].x, frameHeight: EmojiUtil.emojiFrameSize[2][3].y });
+        this.load.spritesheet('emSad', emSad, { frameWidth: EmojiUtil.emojiFrameSize[3][0].x, frameHeight: EmojiUtil.emojiFrameSize[3][0].y });
+        this.load.spritesheet('emSad2', emSad2, { frameWidth: EmojiUtil.emojiFrameSize[3][1].x, frameHeight: EmojiUtil.emojiFrameSize[3][1].y });
+        this.load.spritesheet('emSad3', emSad3, { frameWidth: EmojiUtil.emojiFrameSize[3][2].x, frameHeight: EmojiUtil.emojiFrameSize[3][2].y });
+        this.load.spritesheet('emSad4', emSad4, { frameWidth: EmojiUtil.emojiFrameSize[3][3].x, frameHeight: EmojiUtil.emojiFrameSize[3][3].y });
+        this.load.spritesheet('emHurryup', emHurryup, { frameWidth: EmojiUtil.emojiFrameSize[4][0].x, frameHeight: EmojiUtil.emojiFrameSize[4][0].y });
+        this.load.spritesheet('emHurryup2', emHurryup2, { frameWidth: EmojiUtil.emojiFrameSize[4][1].x, frameHeight: EmojiUtil.emojiFrameSize[4][1].y });
+        this.load.spritesheet('emHurryup3', emHurryup3, { frameWidth: EmojiUtil.emojiFrameSize[4][2].x, frameHeight: EmojiUtil.emojiFrameSize[4][2].y });
+        this.load.spritesheet('emHurryup4', emHurryup4, { frameWidth: EmojiUtil.emojiFrameSize[4][3].x, frameHeight: EmojiUtil.emojiFrameSize[4][3].y });
+        this.load.spritesheet('emFireworks', emFireworks, { frameWidth: EmojiUtil.emojiFrameSize[5][0].x, frameHeight: EmojiUtil.emojiFrameSize[5][0].y });
+        this.load.spritesheet('emFireworks2', emFireworks2, { frameWidth: EmojiUtil.emojiFrameSize[5][1].x, frameHeight: EmojiUtil.emojiFrameSize[5][1].y });
+        this.load.spritesheet('emFireworks3', emFireworks3, { frameWidth: EmojiUtil.emojiFrameSize[5][2].x, frameHeight: EmojiUtil.emojiFrameSize[5][2].y });
+        this.load.spritesheet('emFireworks4', emFireworks4, { frameWidth: EmojiUtil.emojiFrameSize[5][3].x, frameHeight: EmojiUtil.emojiFrameSize[5][3].y });
     }
 
     create() {
@@ -239,6 +288,7 @@ export class GameScene extends Phaser.Scene {
         this.loadAudioFiles()
         this.input.mouse.disableContextMenu();
         CommonMethods.BuildCardNumMap()
+        EmojiUtil.CreateAllAnimations(this);
         // } catch (e) {
         //     // alert("error")
         //     document.body.innerHTML = `<div>!!! onopen Error: ${e}</div>`

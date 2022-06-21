@@ -25,6 +25,10 @@ export class Coordinates {
         { x: 160, y: 40 },
     ]
 
+    // danmu
+    static danmuPositionY = 50
+    static danmuOffset = 40
+
     // room controls
     static clientMessagePosition = { x: screenWidth * 0.5 - 200, y: screenHeight * 0.5 }
     static lineOffsetY = 40
@@ -60,6 +64,14 @@ export class Coordinates {
         { x: Coordinates.playerTextPositions[1].x, y: Coordinates.playerTextPositions[1].y - 50 },
         { x: Coordinates.playerTextPositions[2].x - 205, y: Coordinates.playerTextPositions[2].y },
         { x: Coordinates.playerTextPositions[3].x, y: Coordinates.playerTextPositions[3].y - 50 },
+    ]
+
+    static emojiSize = 80;
+    static playerEmojiPositions = [
+        { x: Coordinates.playerTextPositions[0].x - 240, y: Coordinates.playerStarterPositions[0].y - 30 },
+        { x: screenWidth - Coordinates.hiddenWidth - Coordinates.emojiSize, y: Coordinates.playerTextPositions[1].y + 50 },
+        { x: Coordinates.playerTextPositions[2].x, y: Coordinates.danmuPositionY + 10 },
+        { x: Coordinates.playerTextPositions[3].x, y: Coordinates.playerTextPositions[1].y + 50 },
     ]
 
     // cards
@@ -98,9 +110,5 @@ export class Coordinates {
     // distributing last 8
     static distributingLast8MaxEdge = 30
     static distributingLast8Position = { x: screenWidth * 0.5 - (Coordinates.cardWidth / 2) - Coordinates.handCardOffset * 3.5, y: screenHeight * 0.5 - Coordinates.cardHeigh / 2 }
-
-    // danmu
-    static danmuPositionY = 50
-    static danmuOffset = 40
 
 }

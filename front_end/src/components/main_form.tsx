@@ -1348,8 +1348,9 @@ export class MainForm {
     }
 
     public NotifyEmojiEventHandler(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string) {
-        if (!msgString && 0 <= emojiType && emojiType < CommonMethods.winEmojiTypeLength) {
+        if (0 <= emojiType && emojiType < CommonMethods.winEmojiTypeLength) {
             msgString = CommonMethods.emojiMsgs[emojiType];
+            this.drawingFormHelper.DrawEmojiByPosition(this.PlayerPosition[playerID], emojiType, emojiIndex, isCenter);
         }
         let finalMsg = `【${playerID}】说：${msgString}`;
         this.gameScene.danmuHistory.push(finalMsg);

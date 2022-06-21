@@ -9,6 +9,7 @@ import { ShowingCardsValidationResult } from './showing_cards_validation_result'
 import { start } from 'repl';
 import { PokerHelper } from './poker_helper';
 import { TrumpState } from './trump_state';
+import { EmojiUtil } from './emoji_util';
 
 const CardsReady_REQUEST = "CardsReady"
 
@@ -1054,6 +1055,25 @@ export class DrawingFormHelper {
         setTimeout(() => {
             ryu.destroy();
         }, 6000);
+    }
+
+    public DrawEmojiByPosition(position: number, emojiType: number, emojiIndex: number, isCenter: boolean) {
+        let emojiKey = EmojiUtil.emojiTypesAndInstances[emojiType][emojiIndex]
+        let posIndex = position - 1;
+        let x = Coordinates.playerEmojiPositions[posIndex].x;
+        let y = Coordinates.playerEmojiPositions[posIndex].y;
+        let displaySize = Coordinates.emojiSize
+        if (isCenter) {
+            x = Coordinates.screenWid / 2;
+            y = Coordinates.screenHei / 2;
+            displaySize *= 5;
+        }
+        let spriteAnimation = this.mainForm.gameScene.add.sprite(x, y, emojiKey)
+            .setDisplaySize(displaySize, displaySize * EmojiUtil.emojiXToYRatio[emojiType][emojiIndex]);
+        if (!isCenter) {
+            spriteAnimation.setOrigin(0);
+        }
+        spriteAnimation.play(emojiKey);
     }
 
     public DrawDanmu(playerID: string, msgString: string) {
