@@ -265,8 +265,10 @@ export class GameScene extends Phaser.Scene {
         this.load.spritesheet('emFireworks4', emFireworks4, { frameWidth: EmojiUtil.emojiFrameSize[5][3].x, frameHeight: EmojiUtil.emojiFrameSize[5][3].y });
 
         // loading spine
-        this.load.script('spinejs', process.env.PUBLIC_URL + '/assets/js/spine.js');
-        this.load.script('animationjs', process.env.PUBLIC_URL + '/assets/js/animation.js');
+        window.publicPath = process.env.PUBLIC_URL;
+        if (!window.publicPath) window.publicPath = "."
+        this.load.script('spinejs', window.publicPath + '/assets/js/spine.js');
+        this.load.script('animationjs', window.publicPath + '/assets/js/animation.js');
     }
 
     public drawSgsAni(effectName: string, effectNature: string, wid: number, hei: number) {
