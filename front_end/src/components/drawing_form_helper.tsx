@@ -1002,7 +1002,6 @@ export class DrawingFormHelper {
         this.mainForm.gameScene.showedCardImages.push(image);
 
         if (winType >= 2) {
-            this.mainForm.gameScene.decadeUICanvas.style.zIndex = "100";
             this.mainForm.gameScene.decadeUICanvas.style.left = `${x}px`;
             this.mainForm.gameScene.decadeUICanvas.style.top = `${Coordinates.showedCardsPositions[posInd].y - Coordinates.sgsAnimOffsetY}px`;
             this.mainForm.gameScene.drawSgsAni(
