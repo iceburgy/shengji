@@ -6,8 +6,7 @@ canvas.height = canvas.clientHeight;
 var config = { alpha: true };
 var gl = canvas.getContext('gl', config) || canvas.getContext('experimental-webgl', config);
 
-// var decadeUIPath = "./"
-var decadeUIPath = "./shengjiweb/"
+var decadeUIPath = window.publicPath + "/"
 
 var spine2D;
 if (gl) {
