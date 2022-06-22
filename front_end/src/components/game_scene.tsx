@@ -128,6 +128,7 @@ export class GameScene extends Phaser.Scene {
     public showedCardImages: Phaser.GameObjects.GameObject[]
     public OverridingFlagImage: Phaser.GameObjects.Image
     public overridingLabelImages: string[]
+    public overridingLabelAnims: string[]
     public hallPlayerHeader: Phaser.GameObjects.Text
     public hallPlayerNames: Phaser.GameObjects.Text[]
     public clientMessages: Phaser.GameObjects.Text[]
@@ -144,6 +145,7 @@ export class GameScene extends Phaser.Scene {
     public soundVolume: number
     public noDanmu: string
     public danmuHistory: string[]
+    public decadeUICanvas: HTMLElement
 
     constructor(hostName, playerName: string) {
         super("GameScene")
@@ -166,6 +168,7 @@ export class GameScene extends Phaser.Scene {
         this.last8CardsImages = [];
         this.showedCardImages = [];
         this.overridingLabelImages = [];
+        this.overridingLabelAnims = [];
         this.hallPlayerNames = [];
         this.clientMessages = [];
         this.danmuMessages = [];
@@ -198,6 +201,13 @@ export class GameScene extends Phaser.Scene {
             "pusha",
             "huosha",
             "leisha",
+        ]
+        this.overridingLabelAnims = [
+            ["", ""],
+            ["", ""],
+            ["effect_qinglongyanyuedao", ""],
+            ["effect_shoujidonghua", "play4"],
+            ["effect_shoujidonghua", "play6"]
         ]
         this.load.spritesheet('poker', pokerImage, {
             frameWidth: Coordinates.cardWidth,
@@ -253,6 +263,15 @@ export class GameScene extends Phaser.Scene {
         this.load.spritesheet('emFireworks2', emFireworks2, { frameWidth: EmojiUtil.emojiFrameSize[5][1].x, frameHeight: EmojiUtil.emojiFrameSize[5][1].y });
         this.load.spritesheet('emFireworks3', emFireworks3, { frameWidth: EmojiUtil.emojiFrameSize[5][2].x, frameHeight: EmojiUtil.emojiFrameSize[5][2].y });
         this.load.spritesheet('emFireworks4', emFireworks4, { frameWidth: EmojiUtil.emojiFrameSize[5][3].x, frameHeight: EmojiUtil.emojiFrameSize[5][3].y });
+
+        // loading spine
+        this.load.script('spinejs', process.env.PUBLIC_URL + '/assets/js/spine.js');
+        this.load.script('animationjs', process.env.PUBLIC_URL + '/assets/js/animation.js');
+    }
+
+    public drawSgsAni(effectName: string, effectNature: string, wid: number, hei: number) {
+        if (!window.spine) return console.error('spine 未定义.');
+        skillAnimate(effectName, effectNature, wid, hei)
     }
 
     create() {
@@ -293,6 +312,14 @@ export class GameScene extends Phaser.Scene {
         //     // alert("error")
         //     document.body.innerHTML = `<div>!!! onopen Error: ${e}</div>`
         // }
+
+        // configure sgs spine decadeUICanvas
+        this.decadeUICanvas = document.getElementById("decadeUI-canvas");
+        this.decadeUICanvas.style.width = `${Coordinates.sgsAnimWidth}px`
+        this.decadeUICanvas.style.height = `${Coordinates.sgsAnimHeight}px`
+        this.decadeUICanvas.style.position = "absolute";
+        this.decadeUICanvas.style.left = "0px";
+        this.decadeUICanvas.style.top = "0px";
     }
 
     onmessage(message) {

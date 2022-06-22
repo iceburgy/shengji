@@ -73,6 +73,9 @@ export class Coordinates {
         { x: Coordinates.playerTextPositions[2].x, y: Coordinates.danmuPositionY + 10 },
         { x: Coordinates.playerTextPositions[3].x, y: Coordinates.playerTextPositions[1].y + 50 },
     ]
+    static sgsAnimWidth = 80;
+    static sgsAnimHeight = 120;
+    static sgsAnimOffsetY = 10;
 
     // cards
     static showedCardsPositions = [

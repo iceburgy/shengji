@@ -142,9 +142,9 @@ export class EmojiUtil {
         });
         gs.anims.create({
             key: "emGoodjob4",
-            frameRate: 16,
+            frameRate: 10,
             frames: gs.anims.generateFrameNumbers("emGoodjob4", { start: 0, end: 15 }),
-            repeat: 2,
+            repeat: 1,
             hideOnComplete: true
         });
 

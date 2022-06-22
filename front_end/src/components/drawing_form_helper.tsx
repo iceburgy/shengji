@@ -1000,6 +1000,14 @@ export class DrawingFormHelper {
             .setDisplaySize(Coordinates.overridingFlagWidth, Coordinates.overridingFlagHeight)
         this.mainForm.gameScene.OverridingFlagImage = image
         this.mainForm.gameScene.showedCardImages.push(image);
+
+        if (winType >= 2) {
+            this.mainForm.gameScene.decadeUICanvas.style.zIndex = "100";
+            this.mainForm.gameScene.decadeUICanvas.style.left = `${x}px`;
+            this.mainForm.gameScene.decadeUICanvas.style.top = `${Coordinates.showedCardsPositions[posInd].y - Coordinates.sgsAnimOffsetY}px`;
+            this.mainForm.gameScene.drawSgsAni(
+                this.mainForm.gameScene.overridingLabelAnims[winType][0], this.mainForm.gameScene.overridingLabelAnims[winType][1], Coordinates.sgsAnimWidth, Coordinates.sgsAnimHeight);
+        }
     }
 
     public DrawOverridingFlagFromLastTrick(cardsCount: number, position: number, winType: number) {

@@ -10,7 +10,7 @@ export class CommonMethods {
     public static wsErrorType_Insecure = "an insecure websocket connection may not be initiated from a page loaded over https";
     public static winEmojiLength = 4
     public static winEmojiTypeLength = 6
-    public static danmuDuration = 6000
+    public static danmuDuration = 8000
     public static emojiMsgs: string[] = [
         "这波操作，666！",
         "亲，请注意细节",
