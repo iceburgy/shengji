@@ -112,9 +112,9 @@ export class TractorPlayer {
     public NotifyRoomSetting(gameScene: GameScene, roomSetting: RoomSetting, showMessage: boolean) {
         this.CurrentRoomSetting = roomSetting
         if (!gameScene.roomOwnerText) {
-            gameScene.roomUIControls.texts.push(gameScene.add.text(Coordinates.roomNameTextPosition.x, Coordinates.roomNameTextPosition.y, `房间：${roomSetting.RoomName}`).setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true))
+            gameScene.sidebarImages.push(gameScene.add.text(Coordinates.roomNameTextPosition.x, Coordinates.roomNameTextPosition.y, `房间：${roomSetting.RoomName}`).setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true))
             gameScene.roomOwnerText = gameScene.add.text(Coordinates.roomOwnerTextPosition.x, Coordinates.roomOwnerTextPosition.y, `房主：${roomSetting.RoomOwner}`).setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
-            gameScene.roomUIControls.texts.push(gameScene.roomOwnerText);
+            gameScene.sidebarImages.push(gameScene.roomOwnerText);
         } else {
             gameScene.roomOwnerText.setText(`房主：${roomSetting.RoomOwner}`);
         }
