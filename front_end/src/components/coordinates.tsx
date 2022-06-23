@@ -8,7 +8,13 @@ export class Coordinates {
     // 右边无法显示的区域
     static screenWid = screenWidth
     static screenHei = screenHeight
+    static centerX = screenWidth * 0.5
+    static centerY = screenHeight * 0.5
     static hiddenWidth = 20
+
+    // progress bar
+    static progressBarWidth = 300
+    static progressBarHeight = 30
 
     // hall controls
     static hallPlayerHeaderPosition = { x: 50, y: 160 }
@@ -30,7 +36,7 @@ export class Coordinates {
     static danmuOffset = 40
 
     // room controls
-    static clientMessagePosition = { x: screenWidth * 0.5 - 200, y: screenHeight * 0.5 }
+    static clientMessagePosition = { x: Coordinates.centerX - 200, y: Coordinates.centerY }
     static lineOffsetY = 40
 
     static cardWidth = 90
@@ -40,7 +46,7 @@ export class Coordinates {
     static overridingFlagHeight = 40
     static overridingFlagWidth = Coordinates.overridingFlagHeight * 3 / 2
     // account for maximum of five suites, with 4 gaps, shift to left by 2 gaps
-    static handCardPositionCenter = { x: screenWidth * 0.5 - Coordinates.cardWidth / 2 - Coordinates.handCardOffset * 2, y: screenHeight - 200 }
+    static handCardPositionCenter = { x: Coordinates.centerX - Coordinates.cardWidth / 2 - Coordinates.handCardOffset * 2, y: screenHeight - 200 }
     static toolbarSize = 50
     static toolbarPosition = { x: screenWidth - 360, y: Coordinates.handCardPositionCenter.y - 100 - 20 }
     static btnPigPosition = { x: screenWidth * 0.7, y: Coordinates.handCardPositionCenter.y - 100 }
@@ -53,10 +59,10 @@ export class Coordinates {
 
     // players
     static playerTextPositions = [
-        { x: screenWidth * 0.5, y: screenHeight - 60 },
-        { x: screenWidth - 320, y: screenHeight * 0.5 },
-        { x: screenWidth * 0.5, y: 10 },
-        { x: 5, y: screenHeight * 0.5 },
+        { x: Coordinates.centerX, y: screenHeight - 60 },
+        { x: screenWidth - 320, y: Coordinates.centerY },
+        { x: Coordinates.centerX, y: 10 },
+        { x: 5, y: Coordinates.centerY },
     ]
 
     static playerStarterPositions = [
@@ -79,9 +85,9 @@ export class Coordinates {
 
     // cards
     static showedCardsPositions = [
-        { x: screenWidth * 0.5 - Coordinates.cardWidth / 2, y: Coordinates.playerTextPositions[0].y - 300 },
+        { x: Coordinates.centerX - Coordinates.cardWidth / 2, y: Coordinates.playerTextPositions[0].y - 300 },
         { x: screenWidth - 300, y: Coordinates.playerTextPositions[1].y - 110 },
-        { x: screenWidth * 0.5 - Coordinates.cardWidth / 2, y: Coordinates.playerTextPositions[2].y + 100 },
+        { x: Coordinates.centerX - Coordinates.cardWidth / 2, y: Coordinates.playerTextPositions[2].y + 100 },
         { x: Coordinates.playerTextPositions[3].x + 200, y: Coordinates.playerTextPositions[3].y - 110 },
     ]
 
@@ -100,7 +106,7 @@ export class Coordinates {
     static last8CardsForStarterPosition = { x: screenWidth - 10 - Coordinates.hiddenWidth, y: 10 }
 
     // ending UI
-    static last8Position = { x: screenWidth * 0.5 - (Coordinates.cardWidth / 2) - Coordinates.handCardOffset * 3.5, y: 100 }
+    static last8Position = { x: Coordinates.centerX - (Coordinates.cardWidth / 2) - Coordinates.handCardOffset * 3.5, y: 100 }
     static scoreCardsPosition = { x: Coordinates.last8Position.x, y: Coordinates.last8Position.y + Coordinates.cardHeigh + 30 }
     static winPointsPosition = { x: Coordinates.last8Position.x, y: Coordinates.scoreCardsPosition.y + Coordinates.cardHeigh + 30 }
     static last8PointsPosition = { x: Coordinates.last8Position.x, y: Coordinates.winPointsPosition.y + 60 }
@@ -112,6 +118,6 @@ export class Coordinates {
 
     // distributing last 8
     static distributingLast8MaxEdge = 30
-    static distributingLast8Position = { x: screenWidth * 0.5 - (Coordinates.cardWidth / 2) - Coordinates.handCardOffset * 3.5, y: screenHeight * 0.5 - Coordinates.cardHeigh / 2 }
+    static distributingLast8Position = { x: Coordinates.centerX - (Coordinates.cardWidth / 2) - Coordinates.handCardOffset * 3.5, y: Coordinates.centerY - Coordinates.cardHeigh / 2 }
 
 }

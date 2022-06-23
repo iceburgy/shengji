@@ -186,6 +186,55 @@ export class GameScene extends Phaser.Scene {
     }
 
     preload() {
+        this.progressBar = this.add.graphics();
+        this.progressBox = this.add.graphics();
+        this.progressBox.fillStyle(0x999999, 0.7);
+        this.progressBox.fillRect(
+            Coordinates.centerX - Coordinates.progressBarWidth / 2, Coordinates.centerY - Coordinates.progressBarHeight / 2, Coordinates.progressBarWidth, Coordinates.progressBarHeight);
+
+        this.loadingText = this.make.text({
+            x: Coordinates.centerX,
+            y: Coordinates.centerY - 50,
+            text: 'Loading...',
+            style: {
+                font: '20px monospace',
+                fill: '#ffffff'
+            }
+        }).setOrigin(0.5, 0.5);
+
+        this.percentText = this.make.text({
+            x: Coordinates.centerX,
+            y: Coordinates.centerY,
+            text: '0%',
+            style: {
+                font: '18px monospace',
+                fill: '#ffffff'
+            }
+        }).setOrigin(0.5, 0.5);
+
+        this.assetText = this.make.text({
+            x: Coordinates.centerX,
+            y: Coordinates.centerY + 50,
+            text: '',
+            style: {
+                font: '18px monospace',
+                fill: '#ffffff'
+            }
+        }).setOrigin(0.5, 0.5);
+
+        this.load.on('progress', function (value) {
+            if (value == 0) return;
+            this.progressBar.clear();
+            this.progressBar.fillStyle(0xffffff, 1);
+            this.progressBar.fillRect(
+                Coordinates.centerX - Coordinates.progressBarWidth / 2, Coordinates.centerY - Coordinates.progressBarHeight / 2, Coordinates.progressBarWidth * value, Coordinates.progressBarHeight);
+            this.percentText.setText(parseInt(value * 100) + '%');
+        }, this);
+
+        this.load.on('fileprogress', function (file) {
+            this.assetText.setText('Loading asset: ' + file.key);
+        }, this);
+
         this.load.image("bg2", bgimage)
         this.load.image("beginGame", beginGame)
         this.load.image("prepareOk", prepareOk)
@@ -270,30 +319,37 @@ export class GameScene extends Phaser.Scene {
         window.publicPath = process.env.PUBLIC_URL;
         if (!window.publicPath) window.publicPath = "."
         this.load.script('spinejs', window.publicPath + '/assets/js/spine.js');
-        this.load.script('animationjs', window.publicPath + '/assets/js/animation.js');
-    }
-
-    public drawSgsAni(effectName: string, effectNature: string, wid: number, hei: number) {
-        if (!window.spine) return console.error('spine 未定义.');
-        skillAnimate(effectName, effectNature, wid, hei)
     }
 
     create() {
-        this.add.image(0, 0, 'bg2').setOrigin(0).setDisplaySize(screenWidth, screenHeight);
-        try {
-            this.websocket = new WebSocket(`ws://${this.hostName}`)
-            this.websocket.onerror = this.onerror.bind(this)
-            this.websocket.onopen = this.onopen.bind(this)
-            this.websocket.onmessage = this.onmessage.bind(this)
-        } catch (e) {
-            let errString = e.toString()
-            if (errString.toLowerCase().includes(CommonMethods.wsErrorType_Insecure)) {
-                document.body.innerHTML = `<div>检测到您的浏览器尚未设置，请参照<a href="#" onclick="javascript:{window.open('https://bit.ly/chromstep')}">此图解</a>先进行相应设置</div>`
-            } else {
-                document.body.innerHTML = `<div>!!! 尝试链接服务器失败，错误信息：${errString}</div>`
-                console.log(e);
+        // because loading animation.js is dependent on spine.js, hence defer loading animation.js here
+        // The typical flow for a Phaser Scene is that you load assets in the Scene's preload method 
+        // and then when the Scene's create method is called you are guaranteed that all of those assets are ready for use and have been loaded.
+        this.load.script('animationjs', window.publicPath + '/assets/js/animation.js');
+        this.load.start();
+        this.load.on('complete', () => {
+            this.progressBar.destroy();
+            this.progressBox.destroy();
+            this.loadingText.destroy();
+            this.percentText.destroy();
+            this.assetText.destroy();
+
+            this.add.image(0, 0, 'bg2').setOrigin(0).setDisplaySize(screenWidth, screenHeight);
+            try {
+                this.websocket = new WebSocket(`ws://${this.hostName}`)
+                this.websocket.onerror = this.onerror.bind(this)
+                this.websocket.onopen = this.onopen.bind(this)
+                this.websocket.onmessage = this.onmessage.bind(this)
+            } catch (e) {
+                let errString = e.toString()
+                if (errString.toLowerCase().includes(CommonMethods.wsErrorType_Insecure)) {
+                    document.body.innerHTML = `<div>检测到您的浏览器尚未设置，请参照<a href="#" onclick="javascript:{window.open('https://bit.ly/chromstep')}">此图解</a>先进行相应设置</div>`
+                } else {
+                    document.body.innerHTML = `<div>!!! 尝试链接服务器失败，错误信息：${errString}</div>`
+                    console.log(e);
+                }
             }
-        }
+        })
     }
     onerror(e) {
         document.body.innerHTML = `<div>!!! 尝试链接服务器失败，请确认输入信息无误：${this.hostNameOriginal}</div>`
@@ -318,12 +374,20 @@ export class GameScene extends Phaser.Scene {
         // }
 
         // configure sgs spine decadeUICanvas
-        this.decadeUICanvas = document.getElementById("decadeUI-canvas");
-        this.decadeUICanvas.style.width = `${Coordinates.sgsAnimWidth}px`
-        this.decadeUICanvas.style.height = `${Coordinates.sgsAnimHeight}px`
-        this.decadeUICanvas.style.position = "absolute";
-        this.decadeUICanvas.style.left = "0px";
-        this.decadeUICanvas.style.top = "0px";
+        if (spine2D === undefined) {
+            var c = window.confirm("动画资源加载失败，请刷新页面重新加载");
+            if (c == true) {
+                window.location.reload()
+                return
+            }
+        } else {
+            this.decadeUICanvas = document.getElementById("decadeUI-canvas");
+            this.decadeUICanvas.style.width = `${Coordinates.sgsAnimWidth}px`
+            this.decadeUICanvas.style.height = `${Coordinates.sgsAnimHeight}px`
+            this.decadeUICanvas.style.position = "absolute";
+            this.decadeUICanvas.style.left = "0px";
+            this.decadeUICanvas.style.top = "0px";
+        }
     }
 
     onmessage(message) {
@@ -471,5 +535,13 @@ export class GameScene extends Phaser.Scene {
 
     public isInGameHall() {
         return this.hallPlayerHeader && this.hallPlayerHeader.visible
+    }
+
+    public drawSgsAni(effectName: string, effectNature: string, wid: number, hei: number) {
+        if (!window.spine) {
+            console.error('spine 未定义.');
+            return;
+        }
+        skillAnimate(effectName, effectNature, wid, hei)
     }
 }
