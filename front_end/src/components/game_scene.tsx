@@ -231,8 +231,8 @@ export class GameScene extends Phaser.Scene {
             this.percentText.setText(parseInt(value * 100) + '%');
         }, this);
 
-        this.load.on('fileprogress', function (file) {
-            this.assetText.setText('Loading asset: ' + file.key);
+        this.load.on('filecomplete', function (key) {
+            this.assetText.setText('Loaded asset: ' + key);
         }, this);
 
         this.load.image("bg2", bgimage)
