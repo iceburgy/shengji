@@ -1083,6 +1083,32 @@ export class DrawingFormHelper {
         spriteAnimation.play(emojiKey);
     }
 
+    public DrawMovingTractorByPosition(cardsCount: number, position: number) {
+        let posInd = position - 1
+        let height = Coordinates.cardHeigh - 10;
+        let x = Coordinates.showedCardsPositions[posInd].x;
+        let y = Coordinates.showedCardsPositions[posInd].y + Coordinates.cardHeigh - height;
+        switch (posInd) {
+            case 0:
+                x = x - (cardsCount - 1) * Coordinates.handCardOffset / 2
+                break;
+            case 1:
+                x = x - (cardsCount - 1) * Coordinates.handCardOffset
+                break;
+            case 2:
+                x = x - (cardsCount - 1) * Coordinates.handCardOffset / 2
+                break;
+            case 3:
+                break;
+            default:
+                break;
+        }
+        let spriteAnimation = this.mainForm.gameScene.add.sprite(x, y, EmojiUtil.emMovingTractor)
+            .setDisplaySize(height * EmojiUtil.emMovingTractorYToXRatio, height);
+        spriteAnimation.setOrigin(0);
+        spriteAnimation.play(EmojiUtil.emMovingTractor);
+    }
+
     public DrawDanmu(playerID: string, msgString: string) {
         if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true') {
             this.mainForm.tractorPlayer.NotifyMessage([msgString]);

@@ -654,7 +654,19 @@ export class MainForm {
             this.drawingFormHelper.ResortMyHandCards();
         }
 
-        if (winResult > 0) this.drawingFormHelper.DrawOverridingFlag(showedCards.length, this.PlayerPosition[this.tractorPlayer.playerLocalCache.WinnderID], this.tractorPlayer.playerLocalCache.WinResult - 1);
+        if (winResult > 0) {
+            this.drawingFormHelper.DrawOverridingFlag(showedCards.length, this.PlayerPosition[this.tractorPlayer.playerLocalCache.WinnderID], this.tractorPlayer.playerLocalCache.WinResult - 1);
+
+            //拖拉机动画
+            let showedPoker = new CurrentPoker()
+            showedPoker.Trump = this.tractorPlayer.CurrentTrickState.Trump;
+            showedPoker.Rank = this.tractorPlayer.CurrentTrickState.Rank;
+            showedCards.forEach(card => {
+                showedPoker.AddCard(card);
+            })
+            let showedTractors: number[] = showedPoker.GetTractorBySuit(this.tractorPlayer.CurrentTrickState.LeadingSuit());
+            if (showedTractors.length > 0) this.drawingFormHelper.DrawMovingTractorByPosition(showedCards.length, position)
+        }
 
         this.RobotPlayFollowing();
     }

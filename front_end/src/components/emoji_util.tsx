@@ -1,5 +1,9 @@
 export class EmojiUtil {
     public static displayDuration = 3 // in seconds
+    public static emMovingTractor = "emMovingTractor";
+    public static emMovingTractorFrameSize = { x: 300, y: 270 }
+    public static emMovingTractorYToXRatio = EmojiUtil.emMovingTractorFrameSize.x / EmojiUtil.emMovingTractorFrameSize.y;
+
     public static emojiTypesAndInstances = [
         [
             'emGoodjob',
@@ -290,6 +294,14 @@ export class EmojiUtil {
             frameRate: 10,
             frames: gs.anims.generateFrameNumbers("emFireworks4", { start: 0, end: 5 }),
             repeat: 4,
+            hideOnComplete: true
+        });
+
+        gs.anims.create({
+            key: "emMovingTractor",
+            frameRate: 18,
+            frames: gs.anims.generateFrameNumbers("emMovingTractor", { start: 0, end: 17 }),
+            repeat: 2,
             hideOnComplete: true
         });
     }

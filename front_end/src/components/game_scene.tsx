@@ -56,6 +56,7 @@ import emFireworks from "../assets/sprites/fireworks.png"
 import emFireworks2 from "../assets/sprites/fireworks2.png"
 import emFireworks3 from "../assets/sprites/fireworks3.png"
 import emFireworks4 from "../assets/sprites/fireworks4.png"
+import emMovingTractor from "../assets/sprites/movingtractor.png"
 
 import { nanoid } from 'nanoid'
 import { Match } from './match';
@@ -206,8 +207,8 @@ export class GameScene extends Phaser.Scene {
             ["", ""],
             ["", ""],
             ["effect_qinglongyanyuedao", ""],
-            ["effect_shoujidonghua", "play4"],
-            ["effect_shoujidonghua", "play6"]
+            ["effect_shoujidonghua", "play3"],
+            ["effect_shoujidonghua", "play5"]
         ]
         this.load.spritesheet('poker', pokerImage, {
             frameWidth: Coordinates.cardWidth,
@@ -263,6 +264,7 @@ export class GameScene extends Phaser.Scene {
         this.load.spritesheet('emFireworks2', emFireworks2, { frameWidth: EmojiUtil.emojiFrameSize[5][1].x, frameHeight: EmojiUtil.emojiFrameSize[5][1].y });
         this.load.spritesheet('emFireworks3', emFireworks3, { frameWidth: EmojiUtil.emojiFrameSize[5][2].x, frameHeight: EmojiUtil.emojiFrameSize[5][2].y });
         this.load.spritesheet('emFireworks4', emFireworks4, { frameWidth: EmojiUtil.emojiFrameSize[5][3].x, frameHeight: EmojiUtil.emojiFrameSize[5][3].y });
+        this.load.spritesheet('emMovingTractor', emMovingTractor, { frameWidth: EmojiUtil.emMovingTractorFrameSize.x, frameHeight: EmojiUtil.emMovingTractorFrameSize.y });
 
         // loading spine
         window.publicPath = process.env.PUBLIC_URL;
