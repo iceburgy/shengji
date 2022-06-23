@@ -8,15 +8,22 @@ import Button from '@mui/material/Button';
 import Cookies from 'universal-cookie';
 import { Link } from "@mui/material";
 import { LoginNoticeScreen } from './login_notice';
+import { VersionInfo } from './version_info';
+import packageJson from '../../package.json';
 
 const cookies = new Cookies();
+const gotNewVersion = packageJson.version !== cookies.get('appVersion')
 
 export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, setIsSetName, showNotice }: any) => {
+    if (gotNewVersion) {
+        cookies.set('appVersion', packageJson.version, { path: '/' })
+    }
     return (
         <Card sx={{ height: '100vh' }}>
-            <CardContent sx={{ bgcolor: red[500], height: '5vh' }}>
+            <CardContent sx={{ bgcolor: red[500], height: '6vh' }}>
                 <Typography sx={{ fontSize: 20 }} color="text.secondary" gutterBottom>
-                    欢迎来到欢乐升级!
+                    欢迎来到欢乐升级！<br />
+                    当前版本：{packageJson.version}
                 </Typography>
             </CardContent>
             <CardContent
@@ -62,7 +69,8 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                         cookies.set('playerName', playerName, { path: '/' });
                     }}>进入大厅</Button>
                 </CardContent>
-                {showNotice==='none'?'':<LoginNoticeScreen/>}
+                {showNotice === 'none' ? '' : <LoginNoticeScreen />}
+                {gotNewVersion ? <VersionInfo /> : ''}
             </CardContent>
         </Card>
     )

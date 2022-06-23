@@ -1,6 +1,10 @@
 {
   "name": "front_end",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "versioninfo": [
+    "新增弹幕",
+    "新增动画特效"
+  ],
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.8.2",

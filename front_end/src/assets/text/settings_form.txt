@@ -20,6 +20,7 @@
 </style>
 <div id="input-form" class="settingsroot">
     <h2>游戏设置</h2>
+    <p id="pAppVersion"></p>
     <p id="pResumeGame"><input type="button" id="btnResumeGame" value="继续上盘牌局" /></p>
     <p id="pRandomSeat"><input type="button" id="btnRandomSeat" value="随机组队" /></p>
     <p>游戏音效：<input type="range" id="rangeAudioVolume" min="0" max="100" value="50"></p>

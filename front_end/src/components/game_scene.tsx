@@ -1,6 +1,7 @@
 // @ts-nocheck
 import Phaser from "phaser";
 import bgimage from "../assets/bg2.jpg"
+import packageJson from '../../package.json';
 import pokerImage from "../assets/poker.png"
 import suitsImage from "../assets/suits.png"
 import suitsbarImage from "../assets/suitsbar.png"
@@ -109,6 +110,7 @@ interface Player {
 }
 
 export class GameScene extends Phaser.Scene {
+    public appVersion: string
     public hostName
     public hostNameOriginal
     public playerName
@@ -150,6 +152,7 @@ export class GameScene extends Phaser.Scene {
 
     constructor(hostName, playerName: string) {
         super("GameScene")
+        this.appVersion = packageJson.version
         this.hostName = hostName
         this.hostNameOriginal = hostName
         this.playerName = playerName

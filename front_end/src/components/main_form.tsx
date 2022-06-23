@@ -957,6 +957,9 @@ export class MainForm {
         this.modalForm.addListener('click');
         this.modalForm.setPerspective(800);
 
+        let pAppVersion = this.modalForm.getChildByID("pAppVersion")
+        pAppVersion.innerText = `版本：${this.gameScene.appVersion}`
+
         let volumeControl = this.modalForm.getChildByID("rangeAudioVolume")
         volumeControl.value = Math.floor(this.gameScene.soundVolume * 100)
         volumeControl.onchange = () => {
