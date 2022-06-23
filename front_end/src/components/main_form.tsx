@@ -665,7 +665,7 @@ export class MainForm {
                 showedPoker.AddCard(card);
             })
             let showedTractors: number[] = showedPoker.GetTractorBySuit(this.tractorPlayer.CurrentTrickState.LeadingSuit());
-            if (showedTractors.length > 0) this.drawingFormHelper.DrawMovingTractorByPosition(showedCards.length, position)
+            if (showedTractors.length > 1) this.drawingFormHelper.DrawMovingTractorByPosition(showedCards.length, position)
         }
 
         this.RobotPlayFollowing();

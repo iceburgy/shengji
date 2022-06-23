@@ -483,7 +483,7 @@ export class CurrentPoker {
             }
         }
 
-        if (result.length < 1)
+        if (result.length <= 1)
             result = []
 
         return result;
