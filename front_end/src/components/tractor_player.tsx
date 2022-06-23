@@ -72,13 +72,13 @@ export class TractorPlayer {
                 if (this.mainForm.enableSound) this.mainForm.gameScene.soundwin.play()
 
                 // 播放烟花
-                // if (this.ThisPlayer.CurrentRoomSetting.RoomOwner == this.ThisPlayer.MyOwnId)
-                // {
-                //     Bitmap[] emojiList = this.drawingFormHelper.emojiDict[EmojiType.Fireworks];
-                //     int emojiListSize = emojiList.Length;
-                //     int emojiRandomIndex = CommonMethods.RandomNext(emojiListSize);
-                //     ThisPlayer.SendEmoji((int)EmojiType.Fireworks, emojiRandomIndex, true);
-                // }
+                if (this.CurrentRoomSetting.RoomOwner == this.MyOwnId) {
+                    let emojiType = 5;
+                    let emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
+                    let msgString = CommonMethods.emojiMsgs[emojiType]
+                    let args: (string | number | boolean)[] = [emojiType, emojiIndex, msgString, true];
+                    this.mainForm.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.MyOwnId, JSON.stringify(args))
+                }
             }
             else if (m == CommonMethods.reenterRoomSignal) {
                 if (!this.isObserver) {
@@ -111,8 +111,13 @@ export class TractorPlayer {
 
     public NotifyRoomSetting(gameScene: GameScene, roomSetting: RoomSetting, showMessage: boolean) {
         this.CurrentRoomSetting = roomSetting
-        gameScene.roomUIControls.texts.push(gameScene.add.text(Coordinates.roomNameTextPosition.x, Coordinates.roomNameTextPosition.y, `房间：${roomSetting.RoomName}`).setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true))
-        gameScene.roomUIControls.texts.push(gameScene.add.text(Coordinates.roomOwnerTextPosition.x, Coordinates.roomOwnerTextPosition.y, `房主：${roomSetting.RoomOwner}`).setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true))
+        if (!gameScene.roomOwnerText) {
+            gameScene.roomUIControls.texts.push(gameScene.add.text(Coordinates.roomNameTextPosition.x, Coordinates.roomNameTextPosition.y, `房间：${roomSetting.RoomName}`).setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true))
+            gameScene.roomOwnerText = gameScene.add.text(Coordinates.roomOwnerTextPosition.x, Coordinates.roomOwnerTextPosition.y, `房主：${roomSetting.RoomOwner}`).setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
+            gameScene.roomUIControls.texts.push(gameScene.roomOwnerText);
+        } else {
+            gameScene.roomOwnerText.setText(`房主：${roomSetting.RoomOwner}`);
+        }
 
         if (showMessage) {
             var msgs = []

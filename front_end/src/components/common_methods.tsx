@@ -3,6 +3,7 @@ import { Coordinates } from './coordinates';
 import { CurrentPoker } from './current_poker';
 import { PlayerEntity } from './player_entity';
 export class CommonMethods {
+    public static SendEmoji_REQUEST = "SendEmoji"
     public static cardNumToValue: string[] = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
     public static reenterRoomSignal = "断线重连中,请稍后...";
     public static resumeGameSignal = "牌局加载中,请稍后...";

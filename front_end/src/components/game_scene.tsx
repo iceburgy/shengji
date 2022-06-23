@@ -134,7 +134,8 @@ export class GameScene extends Phaser.Scene {
     public hallPlayerNames: Phaser.GameObjects.Text[]
     public clientMessages: Phaser.GameObjects.Text[]
     public danmuMessages: any[]
-    public roomUIControls: { images: Phaser.GameObjects.Image[], texts: ser.GameObjects.Text[] }
+    public roomUIControls: { images: Phaser.GameObjects.Image[], texts: Phaser.GameObjects.Text[] }
+    public roomOwnerText: Phaser.GameObjects.Text;
     public soundbiyue1: Phaser.Sound.BaseSound;
     public soundRecoverhp: Phaser.Sound.BaseSound;
     public sounddraw: Phaser.Sound.BaseSound;

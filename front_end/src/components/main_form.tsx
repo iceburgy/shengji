@@ -22,7 +22,6 @@ const ReadyToStart_REQUEST = "ReadyToStart"
 const ToggleIsRobot_REQUEST = "ToggleIsRobot"
 const ObserveNext_REQUEST = "ObserveNext"
 const ExitRoom_REQUEST = "ExitRoom"
-const SendEmoji_REQUEST = "SendEmoji"
 const StoreDiscardedCards_REQUEST = "StoreDiscardedCards"
 const PlayerShowCards_REQUEST = "PlayerShowCards"
 const ValidateDumpingCards_REQUEST = "ValidateDumpingCards"
@@ -848,7 +847,7 @@ export class MainForm {
             let selectedIndex = selectPresetMsgs.selectedIndex;
             let selectedValue = selectPresetMsgs.value;
             let args: (string | number)[] = [selectedIndex, CommonMethods.GetRandomInt(CommonMethods.winEmojiLength), selectedValue];
-            this.gameScene.sendMessageToServer(SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
+            this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
             this.resetDanmuState();
         }
         let btnDanmuHistory = this.modalForm.getChildByID("btnDanmuHistory")
@@ -893,7 +892,7 @@ export class MainForm {
             emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
         }
         let args: (string | number)[] = [emojiType, emojiIndex, msgString];
-        this.gameScene.sendMessageToServer(SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
+        this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
         this.resetDanmuState();
     }
 
@@ -926,7 +925,7 @@ export class MainForm {
             let emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
             let msgString = CommonMethods.emojiMsgs[emojiType]
             let args: (string | number)[] = [emojiType, emojiIndex, msgString];
-            this.gameScene.sendMessageToServer(SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
+            this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
             this.resetDanmuState();
         }
     }
@@ -1364,6 +1363,7 @@ export class MainForm {
             msgString = CommonMethods.emojiMsgs[emojiType];
             this.drawingFormHelper.DrawEmojiByPosition(this.PlayerPosition[playerID], emojiType, emojiIndex, isCenter);
         }
+        if (isCenter) return;
         let finalMsg = `【${playerID}】说：${msgString}`;
         this.gameScene.danmuHistory.push(finalMsg);
         this.drawingFormHelper.DrawDanmu(playerID, finalMsg);
