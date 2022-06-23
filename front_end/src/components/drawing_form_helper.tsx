@@ -648,7 +648,6 @@ export class DrawingFormHelper {
             image.destroy();
         })
         this.mainForm.gameScene.sidebarImages = []
-        this.mainForm.gameScene.roomOwnerText = undefined
     }
 
     public destroyAllCards() {

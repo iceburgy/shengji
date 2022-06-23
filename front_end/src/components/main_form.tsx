@@ -42,6 +42,8 @@ export class MainForm {
 
     public lblNickNames: Phaser.GameObjects.Text[]
     public lblStarters: Phaser.GameObjects.Text[]
+    public roomNameText: Phaser.GameObjects.Text;
+    public roomOwnerText: Phaser.GameObjects.Text;
 
     public PlayerPosition: any
     public PositionPlayer: any
@@ -71,6 +73,12 @@ export class MainForm {
         this.SelectedCards = []
         this.timerIntervalID = []
         this.timerCountDown = 0
+
+        // 房间信息
+        this.roomNameText = this.gameScene.add.text(Coordinates.roomNameTextPosition.x, Coordinates.roomNameTextPosition.y, "").setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
+        this.roomOwnerText = this.gameScene.add.text(Coordinates.roomOwnerTextPosition.x, Coordinates.roomOwnerTextPosition.y, "").setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
+        this.gameScene.roomUIControls.texts.push(this.roomNameText)
+        this.gameScene.roomUIControls.texts.push(this.roomOwnerText)
 
         // 就绪按钮
         this.btnReady = this.gameScene.add.text(Coordinates.btnReadyPosition.x, Coordinates.btnReadyPosition.y, '就绪')
@@ -298,6 +306,9 @@ export class MainForm {
             this.destroyGameHall()
             this.init();
         }
+
+        this.roomNameText.setVisible(true)
+        this.roomOwnerText.setVisible(true)
 
         this.btnExitRoom.setVisible(true)
         if (!this.tractorPlayer.isObserver) {

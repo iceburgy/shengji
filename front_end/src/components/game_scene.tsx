@@ -135,7 +135,6 @@ export class GameScene extends Phaser.Scene {
     public clientMessages: Phaser.GameObjects.Text[]
     public danmuMessages: any[]
     public roomUIControls: { images: Phaser.GameObjects.Image[], texts: Phaser.GameObjects.Text[] }
-    public roomOwnerText: any;
     public soundbiyue1: Phaser.Sound.BaseSound;
     public soundRecoverhp: Phaser.Sound.BaseSound;
     public sounddraw: Phaser.Sound.BaseSound;
@@ -413,7 +412,7 @@ export class GameScene extends Phaser.Scene {
     private handleNotifyRoomSetting(objList: []) {
         var roomSetting: RoomSetting = objList[0];
         var showMessage: boolean = objList[1];
-        this.mainForm.tractorPlayer.NotifyRoomSetting(this, roomSetting, showMessage)
+        this.mainForm.tractorPlayer.NotifyRoomSetting(roomSetting, showMessage)
     }
 
     private handleNotifyGameState(objList: []) {
