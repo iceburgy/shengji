@@ -849,8 +849,6 @@ export class MainForm {
         // this.gameScene.input.keyboard.removeCapture('1,2,3,Z,S,R');
 
         this.modalForm = this.gameScene.add.dom(Coordinates.screenWid * 0.5, Coordinates.screenHei * 0.5).createFromCache('emojiForm');
-        this.modalForm.addListener('click');
-        this.modalForm.setPerspective(800);
         let selectPresetMsgs = this.modalForm.getChildByID("selectPresetMsgs")
         let textAreaMsg = this.modalForm.getChildByID("textAreaMsg")
         textAreaMsg.style.width = `${selectPresetMsgs.offsetWidth}px`;
@@ -954,8 +952,6 @@ export class MainForm {
     private lblNickName_Click() {
         if (this.modalForm) return
         this.modalForm = this.gameScene.add.dom(Coordinates.screenWid * 0.5, Coordinates.screenHei * 0.5).createFromCache('settingsForm');
-        this.modalForm.addListener('click');
-        this.modalForm.setPerspective(800);
 
         let pAppVersion = this.modalForm.getChildByID("pAppVersion")
         pAppVersion.innerText = `版本：${this.gameScene.appVersion}`
@@ -979,6 +975,12 @@ export class MainForm {
         noDanmu.checked = this.gameScene.noDanmu.toLowerCase() === "true"
         noDanmu.onchange = () => {
             this.gameScene.noDanmu = noDanmu.checked.toString()
+        }
+
+        let cbxCutCards = this.modalForm.getChildByID("cbxCutCards")
+        cbxCutCards.checked = this.gameScene.noCutCards.toLowerCase() === "true"
+        cbxCutCards.onchange = () => {
+            this.gameScene.noCutCards = cbxCutCards.checked.toString()
         }
 
         if (this.gameScene.isInGameHall() || this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
@@ -1194,7 +1196,7 @@ export class MainForm {
             }
         } else {
             // 左键键点空白区
-            if (this.modalForm) {
+            if (this.modalForm && !this.modalForm.getChildByID("btnBapi1")) {
                 this.gameScene.loadAudioFiles()
                 this.gameScene.saveSettings()
                 this.DesotroyModalForm();
@@ -1412,5 +1414,65 @@ export class MainForm {
         let finalMsg = `【${playerID}】说：${msgString}`;
         this.gameScene.danmuHistory.push(finalMsg);
         this.drawingFormHelper.DrawDanmu(playerID, finalMsg);
+    }
+
+    public CutCardShoeCardsEventHandler() {
+        let cutInfo = ""
+        let cutPoint = -1;
+        if (this.modalForm || this.gameScene.noCutCards.toLowerCase() === "true") {
+            cutPoint = 0;
+            cutInfo = `取消,${cutPoint}`;
+            this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+            return;
+        }
+
+        this.modalForm = this.gameScene.add.dom(Coordinates.screenWid * 0.5, Coordinates.screenHei * 0.5).createFromCache('cutCardsForm');
+
+        let btnRandom = this.modalForm.getChildByID("btnRandom")
+        btnRandom.onclick = () => {
+            cutPoint = CommonMethods.GetRandomInt(107) + 1;
+            cutInfo = `${btnRandom.value},${cutPoint}`;
+            this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+        }
+
+        let btnCancel = this.modalForm.getChildByID("btnCancel")
+        btnCancel.onclick = () => {
+            cutPoint = 0;
+            cutInfo = `${btnCancel.value},${cutPoint}`;
+            this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+        }
+
+        let btnBapi1 = this.modalForm.getChildByID("btnBapi1")
+        btnBapi1.onclick = () => {
+            cutPoint = 1;
+            cutInfo = `${btnBapi1.value},${cutPoint}`;
+            this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+        }
+
+        let btnBapi3 = this.modalForm.getChildByID("btnBapi3")
+        btnBapi3.onclick = () => {
+            cutPoint = 3;
+            cutInfo = `${btnBapi3.value},${cutPoint}`;
+            this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+        }
+
+        let btnManual = this.modalForm.getChildByID("btnManual")
+        btnManual.onclick = () => {
+            let txtManual = this.modalForm.getChildByID("txtManual")
+            let cutPointStr = txtManual.value;
+            if (CommonMethods.IsNumber(cutPointStr)) {
+                cutPoint = parseInt(cutPointStr);
+            }
+            cutInfo = `${btnManual.value},${cutPoint}`;
+            this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+        }
+    }
+    public CutCardShoeCardsCompleteEventHandler(cutPoint: number, cutInfo: string) {
+        if (cutPoint < 0 || cutPoint > 108) {
+            alert("请输入0-108之间的数字");
+        } else {
+            this.gameScene.sendMessageToServer(CommonMethods.PlayerHasCutCards_REQUEST, this.tractorPlayer.MyOwnId, cutInfo);
+            this.DesotroyModalForm();
+        }
     }
 }

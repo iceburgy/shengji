@@ -454,4 +454,8 @@ export class TractorPlayer {
     public NotifyEmoji(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string) {
         this.mainForm.NotifyEmojiEventHandler(playerID, emojiType, emojiIndex, isCenter, msgString)
     }
+
+    public CutCardShoeCards() {
+        this.mainForm.CutCardShoeCardsEventHandler()
+    }
 }

@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "versioninfo": [
     "新增弹幕",
-    "新增动画特效"
+    "新增动画特效",
+    "补充切牌功能",
+    "补充语音链接设置功能"
   ],
   "private": true,
   "dependencies": {

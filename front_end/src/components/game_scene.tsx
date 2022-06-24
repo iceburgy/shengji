@@ -33,6 +33,7 @@ import sf2ryujson from '../assets/animations/sf2ryu.json';
 import sf2ryupng from '../assets/animations/sf2ryu.png';
 import settingsForm from '../assets/text/settings_form.txt';
 import emojiForm from '../assets/text/emoji_form.htm';
+import cutCardsForm from '../assets/text/cutcards_form.htm';
 import emGoodjob from "../assets/sprites/goodjob.png"
 import emGoodjob2 from "../assets/sprites/goodjob2.png"
 import emGoodjob3 from "../assets/sprites/goodjob3.png"
@@ -98,6 +99,7 @@ const NotifyDumpingValidationResult_RESPONSE = "NotifyDumpingValidationResult" /
 const NotifyTryToDumpResult_RESPONSE = "NotifyTryToDumpResult" // both
 const NotifyStartTimer_RESPONSE = "NotifyStartTimer" // both
 const NotifyEmoji_RESPONSE = "NotifyEmoji"
+const CutCardShoeCards_RESPONSE = "CutCardShoeCards"
 
 const screenWidth = document.documentElement.clientWidth;
 const screenHeight = document.documentElement.clientHeight;
@@ -149,6 +151,7 @@ export class GameScene extends Phaser.Scene {
     public soundwin: Phaser.Sound.BaseSound;
     public soundVolume: number
     public noDanmu: string
+    public noCutCards: string
     public danmuHistory: string[]
     public decadeUICanvas: HTMLElement
 
@@ -183,6 +186,8 @@ export class GameScene extends Phaser.Scene {
         if (this.soundVolume === undefined) this.soundVolume = 0.5
         this.noDanmu = cookies.get("noDanmu");
         if (this.noDanmu === undefined) this.noDanmu = 'false'
+        this.noCutCards = cookies.get("noCutCards");
+        if (this.noCutCards === undefined) this.noCutCards = 'false'
 
         if (!IPPort.exec(this.hostName)) {
             this.processAuth();
@@ -292,6 +297,7 @@ export class GameScene extends Phaser.Scene {
         this.load.audio("recoverhp", recoverhp);
         this.load.html('settingsForm', settingsForm);
         this.load.html('emojiForm', emojiForm);
+        this.load.html('cutCardsForm', cutCardsForm);
 
         this.load.atlas('walker', walkerpng, walkerjson);
         this.load.atlas('sf2ryu', sf2ryupng, sf2ryujson);
@@ -432,11 +438,17 @@ export class GameScene extends Phaser.Scene {
             this.handleNotifyStartTimer(objList);
         } else if (messageType === NotifyEmoji_RESPONSE) {
             this.handleNotifyEmoji(objList);
+        } else if (messageType === CutCardShoeCards_RESPONSE) {
+            this.handleCutCardShoeCards();
         }
         // } catch (e) {
         //     // alert("error")
         //     document.body.innerHTML = `<div>!!! onmessage Error: ${e}</div>`
         // }
+    }
+
+    private handleCutCardShoeCards() {
+        this.mainForm.tractorPlayer.CutCardShoeCards()
     }
 
     private handleNotifyEmoji(objList: []) {
@@ -531,8 +543,9 @@ export class GameScene extends Phaser.Scene {
     public saveSettings() {
         cookies.set('soundVolume', this.soundVolume, { path: '/' });
         cookies.set('noDanmu', this.noDanmu, { path: '/' });
+        cookies.set('noCutCards', this.noCutCards, { path: '/' });
 
-        if (!this.joinAudioUrl.match(/^https?:\/\//i)) {
+        if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
             this.joinAudioUrl = 'http://' + this.joinAudioUrl;
         }
         cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/' });

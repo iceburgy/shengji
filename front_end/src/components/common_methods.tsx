@@ -4,6 +4,7 @@ import { CurrentPoker } from './current_poker';
 import { PlayerEntity } from './player_entity';
 export class CommonMethods {
     public static SendEmoji_REQUEST = "SendEmoji"
+    public static PlayerHasCutCards_REQUEST = "PlayerHasCutCards"
     public static cardNumToValue: string[] = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
     public static reenterRoomSignal = "断线重连中,请稍后...";
     public static resumeGameSignal = "牌局加载中,请稍后...";
@@ -441,5 +442,10 @@ export class CommonMethods {
 
     public static GetRandomInt(max: number) {
         return Math.floor(Math.random() * max);
+    }
+
+    public static IsNumber(str: string) {
+        if (typeof str != "string") return false // we only process strings!  
+        return !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
     }
 }
