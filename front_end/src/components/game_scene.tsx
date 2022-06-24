@@ -134,6 +134,8 @@ export class GameScene extends Phaser.Scene {
     public overridingLabelAnims: string[]
     public hallPlayerHeader: Phaser.GameObjects.Text
     public hallPlayerNames: Phaser.GameObjects.Text[]
+    public btnJoinAudio: Phaser.GameObjects.Text
+    public joinAudioUrl: string
     public clientMessages: Phaser.GameObjects.Text[]
     public danmuMessages: any[]
     public roomUIControls: { images: Phaser.GameObjects.Image[], texts: Phaser.GameObjects.Text[] }
@@ -186,6 +188,7 @@ export class GameScene extends Phaser.Scene {
             this.processAuth();
         }
         this.danmuHistory = [];
+        this.joinAudioUrl = cookies.get("joinAudioUrl") ? cookies.get("joinAudioUrl") : "";
     }
 
     preload() {
@@ -528,6 +531,11 @@ export class GameScene extends Phaser.Scene {
     public saveSettings() {
         cookies.set('soundVolume', this.soundVolume, { path: '/' });
         cookies.set('noDanmu', this.noDanmu, { path: '/' });
+
+        if (!this.joinAudioUrl.match(/^https?:\/\//i)) {
+            this.joinAudioUrl = 'http://' + this.joinAudioUrl;
+        }
+        cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/' });
     }
 
     sendMessageToServer(messageType: string, playerID: string, content: string) {

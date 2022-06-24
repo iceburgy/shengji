@@ -969,6 +969,12 @@ export class MainForm {
             this.gameScene.soundbiyue1.play()
         }
 
+        let txtJoinAudioUrl = this.modalForm.getChildByID("txtJoinAudioUrl")
+        txtJoinAudioUrl.value = this.gameScene.joinAudioUrl
+        txtJoinAudioUrl.oninput = () => {
+            this.gameScene.joinAudioUrl = txtJoinAudioUrl.value
+        }
+
         let noDanmu = this.modalForm.getChildByID("cbxNoDanmu")
         noDanmu.checked = this.gameScene.noDanmu.toLowerCase() === "true"
         noDanmu.onchange = () => {
@@ -1250,6 +1256,9 @@ export class MainForm {
     }
 
     public destroyGameHall() {
+        if (this.gameScene.btnJoinAudio != null) {
+            this.gameScene.btnJoinAudio.destroy();
+        }
         if (this.gameScene.hallPlayerHeader != null) {
             this.gameScene.hallPlayerHeader.destroy();
         }
@@ -1280,6 +1289,28 @@ export class MainForm {
     }
 
     public drawGameHall(roomStateList: RoomState[], playerList: string[]) {
+        this.gameScene.btnJoinAudio = this.gameScene.add.text(Coordinates.hallPlayerHeaderPosition.x, 20, "加入语音")
+            .setColor('white')
+            .setFontSize(20)
+            .setPadding(10)
+            .setShadow(2, 2, "#333333", 2, true, true)
+            .setVisible(true)
+            .setStyle({ backgroundColor: 'gray' })
+            .setInteractive({ useHandCursor: true })
+            .on('pointerover', () => {
+                this.gameScene.btnJoinAudio.setStyle({ backgroundColor: 'lightblue' })
+            })
+            .on('pointerout', () => {
+                this.gameScene.btnJoinAudio.setStyle({ backgroundColor: 'gray' })
+            })
+            .on('pointerup', () => {
+                if (this.gameScene.joinAudioUrl) {
+                    window.open(this.gameScene.joinAudioUrl);
+                } else {
+                    alert("语音链接尚未设置，请点击屏幕正下方的自己名字进入设置界面，设置语音链接");
+                }
+            }, this)
+
         this.gameScene.hallPlayerHeader = this.gameScene.add.text(Coordinates.hallPlayerHeaderPosition.x, Coordinates.hallPlayerHeaderPosition.y, "在线").setColor('white').setFontSize(30).setShadow(2, 2, "#333333", 2, true, true)
         for (let i = 0; i < playerList.length; i++) {
             this.gameScene.hallPlayerNames[i] = this.gameScene.add.text(Coordinates.hallPlayerTopPosition.x, Coordinates.hallPlayerTopPosition.y + i * 40, playerList[i]).setColor('white').setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
