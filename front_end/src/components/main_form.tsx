@@ -28,6 +28,7 @@ const ValidateDumpingCards_REQUEST = "ValidateDumpingCards"
 const CardsReady_REQUEST = "CardsReady"
 const ResumeGameFromFile_REQUEST = "ResumeGameFromFile"
 const RandomSeat_REQUEST = "RandomSeat"
+const SwapSeat_REQUEST = "SwapSeat"
 const PLAYER_ENTER_ROOM_REQUEST = "PlayerEnterRoom"
 
 export class MainForm {
@@ -986,8 +987,10 @@ export class MainForm {
         if (this.gameScene.isInGameHall() || this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
             let pResumeGame = this.modalForm.getChildByID("pResumeGame")
             let pRandomSeat = this.modalForm.getChildByID("pRandomSeat")
+            let pSwapSeat = this.modalForm.getChildByID("pSwapSeat")
             pResumeGame.remove()
             pRandomSeat.remove()
+            pSwapSeat.remove()
         } else {
             let btnResumeGame = this.modalForm.getChildByID("btnResumeGame")
             btnResumeGame.onclick = () => {
@@ -998,12 +1001,24 @@ export class MainForm {
                 }
                 this.DesotroyModalForm();
             }
+
             let btnRandomSeat = this.modalForm.getChildByID("btnRandomSeat")
             btnRandomSeat.onclick = () => {
                 if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
                     alert("游戏中途不允许随机组队,请完成此盘游戏后重试")
                 } else {
                     this.gameScene.sendMessageToServer(RandomSeat_REQUEST, this.tractorPlayer.MyOwnId, "");
+                }
+                this.DesotroyModalForm();
+            }
+
+            let btnSwapSeat = this.modalForm.getChildByID("btnSwapSeat")
+            btnSwapSeat.onclick = () => {
+                if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
+                    alert("游戏中途不允许互换座位,请完成此盘游戏后重试")
+                } else {
+                    let selectSwapSeat = this.modalForm.getChildByID("selectSwapSeat")
+                    this.gameScene.sendMessageToServer(SwapSeat_REQUEST, this.tractorPlayer.MyOwnId, selectSwapSeat.value);
                 }
                 this.DesotroyModalForm();
             }

@@ -31,7 +31,7 @@ import walkerjson from '../assets/animations/walker.json';
 import walkerpng from '../assets/animations/walker.png';
 import sf2ryujson from '../assets/animations/sf2ryu.json';
 import sf2ryupng from '../assets/animations/sf2ryu.png';
-import settingsForm from '../assets/text/settings_form.txt';
+import settingsForm from '../assets/text/settings_form.htm';
 import emojiForm from '../assets/text/emoji_form.htm';
 import cutCardsForm from '../assets/text/cutcards_form.htm';
 import emGoodjob from "../assets/sprites/goodjob.png"
