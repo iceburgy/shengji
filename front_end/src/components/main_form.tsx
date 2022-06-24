@@ -1419,7 +1419,7 @@ export class MainForm {
     public CutCardShoeCardsEventHandler() {
         let cutInfo = ""
         let cutPoint = -1;
-        if (this.modalForm || this.gameScene.noCutCards.toLowerCase() === "true") {
+        if (this.IsDebug || this.modalForm || this.gameScene.noCutCards.toLowerCase() === "true") {
             cutPoint = 0;
             cutInfo = `取消,${cutPoint}`;
             this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
