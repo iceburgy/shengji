@@ -421,9 +421,8 @@ export class GameReplayScene extends Phaser.Scene {
 
         if (shouldDraw) {
             this.mainForm.drawingFormHelper.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1);
-            this.mainForm.drawingFormHelper.TrumpMadeCardsShowFromLastTrick();
-
             this.drawAllOtherHandCards();
+            this.mainForm.drawingFormHelper.TrumpMadeCardsShowFromLastTrick();
         }
     }
 
