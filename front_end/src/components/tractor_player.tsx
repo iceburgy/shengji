@@ -14,6 +14,8 @@ import { TractorRules } from './tractor_rules';
 import { ShowingCardsValidationResult } from './showing_cards_validation_result';
 import { Coordinates } from './coordinates';
 import { RoomState } from './room_state';
+import { ReplayEntity } from './replay_entity';
+import { IDBHelper } from './idb_helper';
 
 const PlayerMakeTrump_REQUEST = "PlayerMakeTrump"
 
@@ -33,6 +35,9 @@ export class TractorPlayer {
     public CurrentHandState: CurrentHandState
     public CurrentTrickState: CurrentTrickState;
     public playerLocalCache: PlayerLocalCache;
+    public replayEntity: ReplayEntity;
+    public replayedTricks: CurrentTrickState[];
+    public replayAngle: number;
 
     constructor(mf: MainForm) {
         this.mainForm = mf
@@ -49,6 +54,9 @@ export class TractorPlayer {
         this.CurrentHandState = new CurrentHandState(this.CurrentGameState)
         this.CurrentTrickState = new CurrentTrickState()
         this.playerLocalCache = new PlayerLocalCache()
+        this.replayEntity = new ReplayEntity()
+        this.replayedTricks = []
+        this.replayAngle = 0
     }
 
     public destroyAllClientMessages() {
@@ -96,7 +104,7 @@ export class TractorPlayer {
                 //新游戏开始前播放提示音，告诉玩家要抢庄
                 if (this.mainForm.enableSound) this.mainForm.gameScene.soundwin.play()
             }
-            else if (m.includes("罚分")) {
+            else if (m.includes("罚分") && !this.mainForm.gameScene.isReplayMode) {
                 //甩牌失败播放提示音
                 if (this.mainForm.enableSound) this.mainForm.gameScene.soundfankui2.play()
             }
@@ -457,5 +465,9 @@ export class TractorPlayer {
 
     public CutCardShoeCards() {
         this.mainForm.CutCardShoeCardsEventHandler()
+    }
+
+    public NotifyReplayState(replayState: ReplayEntity) {
+        IDBHelper.SaveReplayEntity(replayState)
     }
 }

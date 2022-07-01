@@ -77,6 +77,8 @@ import { CommonMethods } from "./common_methods";
 import { ShowingCardsValidationResult } from "./showing_cards_validation_result";
 import Cookies from 'universal-cookie';
 import { EmojiUtil } from "./emoji_util";
+import { ReplayEntity } from "./replay_entity";
+import { IDBHelper } from "./idb_helper";
 
 const cookies = new Cookies();
 const SET_PLAYER_NAME_REQUEST = "set_player_name"
@@ -100,6 +102,7 @@ const NotifyTryToDumpResult_RESPONSE = "NotifyTryToDumpResult" // both
 const NotifyStartTimer_RESPONSE = "NotifyStartTimer" // both
 const NotifyEmoji_RESPONSE = "NotifyEmoji"
 const CutCardShoeCards_RESPONSE = "CutCardShoeCards"
+const NotifyReplayState_RESPONSE = "NotifyReplayState"
 
 const screenWidth = document.documentElement.clientWidth;
 const screenHeight = document.documentElement.clientHeight;
@@ -112,6 +115,7 @@ interface Player {
 }
 
 export class GameScene extends Phaser.Scene {
+    public isReplayMode: boolean
     public appVersion: string
     public hostName
     public hostNameOriginal
@@ -157,6 +161,7 @@ export class GameScene extends Phaser.Scene {
 
     constructor(hostName, playerName: string) {
         super("GameScene")
+        this.isReplayMode = false;
         this.appVersion = packageJson.version
         this.hostName = hostName
         this.hostNameOriginal = hostName
@@ -194,6 +199,7 @@ export class GameScene extends Phaser.Scene {
         }
         this.danmuHistory = [];
         this.joinAudioUrl = cookies.get("joinAudioUrl") ? cookies.get("joinAudioUrl") : "";
+        IDBHelper.maxReplays = cookies.get("maxReplays") ? parseInt(cookies.get("maxReplays")) : IDBHelper.maxReplays;
     }
 
     preload() {
@@ -380,6 +386,8 @@ export class GameScene extends Phaser.Scene {
         this.input.mouse.disableContextMenu();
         CommonMethods.BuildCardNumMap()
         EmojiUtil.CreateAllAnimations(this);
+        IDBHelper.InitIDB();
+
         // } catch (e) {
         //     // alert("error")
         //     document.body.innerHTML = `<div>!!! onopen Error: ${e}</div>`
@@ -440,11 +448,18 @@ export class GameScene extends Phaser.Scene {
             this.handleNotifyEmoji(objList);
         } else if (messageType === CutCardShoeCards_RESPONSE) {
             this.handleCutCardShoeCards();
+        } else if (messageType === NotifyReplayState_RESPONSE) {
+            this.handleNotifyReplayState(objList);
         }
         // } catch (e) {
         //     // alert("error")
         //     document.body.innerHTML = `<div>!!! onmessage Error: ${e}</div>`
         // }
+    }
+
+    private handleNotifyReplayState(objList: []) {
+        var result: ReplayEntity = objList[0];
+        this.mainForm.tractorPlayer.NotifyReplayState(result)
     }
 
     private handleCutCardShoeCards() {
@@ -549,9 +564,10 @@ export class GameScene extends Phaser.Scene {
             this.joinAudioUrl = 'http://' + this.joinAudioUrl;
         }
         cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/' });
+        cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/' });
     }
 
-    sendMessageToServer(messageType: string, playerID: string, content: string) {
+    public sendMessageToServer(messageType: string, playerID: string, content: string) {
         this.websocket.send(JSON.stringify({
             "messageType": messageType, "playerID": playerID, "content": content
         }))

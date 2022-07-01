@@ -45,11 +45,6 @@ export class Coordinates {
     static suitSequenceSize = 15
     static overridingFlagHeight = 40
     static overridingFlagWidth = Coordinates.overridingFlagHeight * 3 / 2
-    // account for maximum of five suites, with 4 gaps, shift to left by 2 gaps
-    static handCardPositionCenter = { x: Coordinates.centerX - Coordinates.cardWidth / 2 - Coordinates.handCardOffset * 2, y: screenHeight - 200 }
-    static toolbarSize = 50
-    static toolbarPosition = { x: screenWidth - 360, y: Coordinates.handCardPositionCenter.y - 100 - 20 }
-    static btnPigPosition = { x: screenWidth * 0.7, y: Coordinates.handCardPositionCenter.y - 100 }
 
     static btnLowerSize = 100
     static btnReadyPosition = { x: 10, y: screenHeight - 60 }
@@ -91,6 +86,24 @@ export class Coordinates {
         { x: Coordinates.playerTextPositions[3].x + 200, y: Coordinates.playerTextPositions[3].y - 110 },
     ]
 
+    // last8cards
+    static last8CardsForStarterPosition = { x: screenWidth - 10 - Coordinates.hiddenWidth, y: 10 }
+
+    // replay
+    // account for maximum of five suites, with 4 gaps, shift to left by 2 gaps
+    static replayControlButtonWidth = 60
+    static replayControlButtonOffset = 10
+    static replayHandCardScale = 0.7
+    static handCardPositions = [
+        { x: Coordinates.centerX - Coordinates.cardWidth / 2 - Coordinates.handCardOffset * 2, y: screenHeight - 200 },
+        { x: Coordinates.last8CardsForStarterPosition.x - Coordinates.cardWidth * Coordinates.replayHandCardScale, y: Coordinates.showedCardsPositions[0].y + Coordinates.cardHeigh * (1 - Coordinates.replayHandCardScale) },
+        { x: Coordinates.last8CardsForStarterPosition.x - Coordinates.cardWidth * Coordinates.replayHandCardScale, y: Coordinates.showedCardsPositions[2].y + Coordinates.cardHeigh * (1 - Coordinates.replayHandCardScale) },
+        { x: 10, y: Coordinates.showedCardsPositions[0].y + Coordinates.cardHeigh * (1 - Coordinates.replayHandCardScale) },
+    ]
+    static toolbarSize = 50
+    static toolbarPosition = { x: screenWidth - 360, y: Coordinates.handCardPositions[0].y - 100 - 20 }
+    static btnPigPosition = { x: screenWidth * 0.7, y: Coordinates.handCardPositions[0].y - 100 }
+
     // sidebar for room info and game state
     static iconSize = 20
     static sidebarOffset = 30
@@ -102,8 +115,8 @@ export class Coordinates {
     static sidebarScoreText = { x: Coordinates.roomNameTextPosition.x, y: Coordinates.roomNameTextPosition.y + Coordinates.sidebarOffset * 5 }
     static sidebarScoreCards = { x: Coordinates.roomNameTextPosition.x, y: Coordinates.roomNameTextPosition.y + Coordinates.sidebarOffset * 6 }
 
-    // last8cards
-    static last8CardsForStarterPosition = { x: screenWidth - 10 - Coordinates.hiddenWidth, y: 10 }
+    // sidebar for replay
+    static replayBarPosition = { x: screenWidth * 0.65, y: 10 }
 
     // ending UI
     static last8Position = { x: Coordinates.centerX - (Coordinates.cardWidth / 2) - Coordinates.handCardOffset * 3.5, y: 100 }

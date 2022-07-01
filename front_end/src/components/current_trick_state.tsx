@@ -82,6 +82,17 @@ export class CurrentTrickState {
         return result;
     }
 
+    public ScoreCards(): number[] {
+        let scorecards: number[] = []
+        Object.values(this.ShowedCards).forEach(cardsList => {
+            (cardsList as number[]).forEach(card => {
+                if (card % 13 == 3 || card % 13 == 8 || card % 13 == 11)
+                    scorecards.push(card);
+            })
+        })
+        return scorecards;
+    }
+
     public NextPlayer(): string {
         let playerId: string = "";
         if (this.ShowedCards[this.Learder].length == 0)
@@ -174,5 +185,20 @@ export class CurrentTrickState {
             else return PokerHelper.GetSuit(this.LeadingCards()[0]);
         }
         return SuitEnums.Suit.None;
+    }
+
+    public Points(): number {
+        let points = 0;
+        for (const cardsList of Object.values(this.ShowedCards)) {
+            for (const card of (cardsList as number[])) {
+                if (card % 13 == 3)
+                    points += 5;
+                else if (card % 13 == 8)
+                    points += 10;
+                else if (card % 13 == 11)
+                    points += 10;
+            }
+        }
+        return points;
     }
 }

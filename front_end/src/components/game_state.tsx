@@ -1,6 +1,7 @@
 
 import { PlayerEntity } from './player_entity';
 import { CommonMethods } from './common_methods';
+import { SuitEnums } from './suit_enums';
 export class GameState {
     public Players: PlayerEntity[]
     public PlayerToIP: {}
@@ -22,5 +23,18 @@ export class GameState {
         this.PlayerToIP = CommonMethods.deepCopy<any>(from.PlayerToIP)
         this.startNextHandStarter = new PlayerEntity()
         if (from.startNextHandStarter != undefined) this.startNextHandStarter.CloneFrom(from.startNextHandStarter)
+    }
+
+    public ArePlayersInSameTeam(playerId1: string, playerId2: string): boolean {
+        let index1 = -1;
+        let index2 = -1;
+        for (let i = 0; i < this.Players.length; i++) {
+            let p: PlayerEntity = this.Players[i];
+            if (p) {
+                if (p.PlayerId == playerId1) index1 = i;
+                if (p.PlayerId == playerId2) index2 = i;
+            }
+        }
+        return index1 >= 0 && index2 >= 0 && index1 % 2 == index2 % 2;
     }
 }

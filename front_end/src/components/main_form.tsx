@@ -17,6 +17,9 @@ import { ShowingCardsValidationResult } from './showing_cards_validation_result'
 import { Algorithm } from './algorithm';
 import { PokerHelper } from './poker_helper';
 import { RoomState } from './room_state';
+import { IDBHelper } from './idb_helper';
+import { ReplayEntity } from './replay_entity';
+import { GameReplayScene } from './game_replay_scene';
 
 const ReadyToStart_REQUEST = "ReadyToStart"
 const ToggleIsRobot_REQUEST = "ToggleIsRobot"
@@ -32,7 +35,7 @@ const SwapSeat_REQUEST = "SwapSeat"
 const PLAYER_ENTER_ROOM_REQUEST = "PlayerEnterRoom"
 
 export class MainForm {
-    public gameScene: GameScene
+    public gameScene: GameScene | GameReplayScene
     public tractorPlayer: TractorPlayer
     public btnReady: Phaser.GameObjects.Text
     public btnRobot: Phaser.GameObjects.Text
@@ -142,7 +145,6 @@ export class MainForm {
             .setPadding(10)
             .setShadow(2, 2, "#333333", 2, true, true)
             .setStyle({ backgroundColor: 'gray' })
-            .setVisible(false)
             .setInteractive({ useHandCursor: true })
             .on('pointerup', () => this.btnExitRoom_Click())
             .on('pointerover', () => {
@@ -151,7 +153,6 @@ export class MainForm {
             .on('pointerout', () => {
                 this.btnExitRoom.setStyle({ backgroundColor: 'gray' })
             })
-        this.gameScene.roomUIControls.texts.push(this.btnExitRoom)
 
         // 表情包按钮
         this.btnSendEmoji = this.gameScene.add.text(Coordinates.btnSendEmojiPosition.x, Coordinates.btnSendEmojiPosition.y, '弹幕')
@@ -831,7 +832,10 @@ export class MainForm {
     }
 
     private btnExitRoom_Click() {
-        // todo && !this.tractorPlayer.isReplay
+        if (this.gameScene.isInGameHall() || this.gameScene.isReplayMode) {
+            window.location.reload()
+            return
+        }
         if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
             var c = window.confirm("游戏进行中退出将会重启游戏，是否确定退出？");
             if (c == true) {
@@ -909,34 +913,55 @@ export class MainForm {
     private shortcutKeyEventhandler(event: KeyboardEvent) {
         if (!event || !event.key) return;
         let ekey: string = event.key.toLowerCase();
-        switch (ekey) {
-            case 'z':
-                if (this.modalForm) return;
-                this.btnReady_Click();
-                return;
-            case 's':
-                if (this.modalForm) return;
-                this.btnPig_Click();
-                return;
-            case 'r':
-                if (this.modalForm) return;
-                this.btnRobot_Click();
-                return;
-            case 'enter':
-                this.emojiSubmitEventhandler();
-                return;
-            default:
-                break;
-        }
+        if (this.gameScene.isReplayMode) {
+            if (this.modalForm) return;
+            event.preventDefault();
+            switch (ekey) {
+                case 'arrowup':
+                    (this.gameScene as GameReplayScene).btnFirstTrick_Click();
+                    return;
+                case 'arrowleft':
+                    (this.gameScene as GameReplayScene).btnPreviousTrick_Click();
+                    return;
+                case 'arrowright':
+                    (this.gameScene as GameReplayScene).btnNextTrick_Click();
+                    return;
+                case 'arrowdown':
+                    (this.gameScene as GameReplayScene).btnLastTrick_Click();
+                    return;
+                default:
+                    break;
+            }
+        } else {
+            switch (ekey) {
+                case 'z':
+                    if (this.modalForm) return;
+                    this.btnReady_Click();
+                    return;
+                case 's':
+                    if (this.modalForm) return;
+                    this.btnPig_Click();
+                    return;
+                case 'r':
+                    if (this.modalForm) return;
+                    this.btnRobot_Click();
+                    return;
+                case 'enter':
+                    this.emojiSubmitEventhandler();
+                    return;
+                default:
+                    break;
+            }
 
-        if ('1' <= ekey && ekey <= CommonMethods.emojiMsgs.length.toString() && !this.modalForm) {
-            if (!this.btnSendEmoji.input.enabled) return;
-            let emojiType = parseInt(ekey) - 1;
-            let emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
-            let msgString = CommonMethods.emojiMsgs[emojiType]
-            let args: (string | number)[] = [emojiType, emojiIndex, msgString];
-            this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
-            this.resetDanmuState();
+            if ('1' <= ekey && ekey <= CommonMethods.emojiMsgs.length.toString() && !this.modalForm) {
+                if (!this.btnSendEmoji.input.enabled) return;
+                let emojiType = parseInt(ekey) - 1;
+                let emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
+                let msgString = CommonMethods.emojiMsgs[emojiType]
+                let args: (string | number)[] = [emojiType, emojiIndex, msgString];
+                this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
+                this.resetDanmuState();
+            }
         }
     }
 
@@ -970,6 +995,17 @@ export class MainForm {
         txtJoinAudioUrl.value = this.gameScene.joinAudioUrl
         txtJoinAudioUrl.oninput = () => {
             this.gameScene.joinAudioUrl = txtJoinAudioUrl.value
+        }
+
+        let txtMaxReplays = this.modalForm.getChildByID("txtMaxReplays")
+        txtMaxReplays.value = IDBHelper.maxReplays
+        txtMaxReplays.oninput = () => {
+            let maxString = txtMaxReplays.value;
+            let maxInt = 0;
+            if (CommonMethods.IsNumber(maxString)) {
+                maxInt = Math.max(maxInt, parseInt(maxString));
+            }
+            IDBHelper.maxReplays = maxInt
         }
 
         let noDanmu = this.modalForm.getChildByID("cbxNoDanmu")
@@ -1188,6 +1224,7 @@ export class MainForm {
     // 点空白区
     private handleGeneralClick(pointer: Phaser.Input.Pointer) {
         if (pointer.rightButtonDown()) {
+            if (this.tractorPlayer.mainForm.gameScene.isReplayMode) return;
             // 右键点空白区
             if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing ||
                 this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
@@ -1212,7 +1249,7 @@ export class MainForm {
         } else {
             // 左键键点空白区
             if (this.modalForm && !this.modalForm.getChildByID("btnBapi1")) {
-                this.gameScene.loadAudioFiles()
+                if (!this.gameScene.isReplayMode) this.gameScene.loadAudioFiles()
                 this.gameScene.saveSettings()
                 this.DesotroyModalForm();
             }

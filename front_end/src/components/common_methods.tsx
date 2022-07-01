@@ -2,6 +2,7 @@
 import { Coordinates } from './coordinates';
 import { CurrentPoker } from './current_poker';
 import { PlayerEntity } from './player_entity';
+import { SuitEnums } from './suit_enums';
 export class CommonMethods {
     public static SendEmoji_REQUEST = "SendEmoji"
     public static PlayerHasCutCards_REQUEST = "PlayerHasCutCards"
@@ -447,5 +448,20 @@ export class CommonMethods {
     public static IsNumber(str: string) {
         if (typeof str != "string") return false // we only process strings!  
         return !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+    }
+
+    public static RotateArray(arr: any[], pivot: number): any[] {
+        pivot = pivot % arr.length;
+        return arr.slice(pivot, arr.length).concat(arr.slice(0, pivot));
+    }
+
+    public static getNumOfSuits(currentPoker: CurrentPoker): number {
+        let num = 0;
+        if (currentPoker == null) return num;
+        for (let i = 1; i <= 4; i++) {
+            if (currentPoker.HasSomeCards(i)) num++;
+        }
+        if (currentPoker.Trump == SuitEnums.Suit.Joker && currentPoker.HasSomeCards(5)) num++;
+        return num;
     }
 }

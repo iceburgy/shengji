@@ -14,7 +14,7 @@ import packageJson from '../../package.json';
 const cookies = new Cookies();
 const gotNewVersion = packageJson.version !== cookies.get('appVersion')
 
-export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, setIsSetName, showNotice }: any) => {
+export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, setIsSetName, showNotice, setIsGameReplay }: any) => {
     if (gotNewVersion) {
         cookies.set('appVersion', packageJson.version, { path: '/' })
     }
@@ -68,6 +68,16 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                         cookies.set('hostName', hostName, { path: '/' });
                         cookies.set('playerName', playerName, { path: '/' });
                     }}>进入大厅</Button>
+                </CardContent>
+                <CardContent
+                    sx={{
+                        bgcolor: grey[500],
+                        textAlign: "center",
+                    }}
+                >
+                    <Button variant="contained" color="success" size="large" onClick={() => {
+                        setIsGameReplay(true);
+                    }}>录像回放</Button>
                 </CardContent>
                 {showNotice === 'none' ? '' : <LoginNoticeScreen />}
                 {gotNewVersion ? <VersionInfo /> : ''}

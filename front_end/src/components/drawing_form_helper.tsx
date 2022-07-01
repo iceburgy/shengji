@@ -17,6 +17,8 @@ export class DrawingFormHelper {
     public mainForm: MainForm
 
     private startX: number = 0
+    private startY: number = 0
+    private handcardScale: number = 1
     private suitSequence: number
     public isDragging: any
 
@@ -34,13 +36,15 @@ export class DrawingFormHelper {
     // drawing cards without any tilt
     public ResortMyHandCards() {
         this.mainForm.myCardIsReady = []
-        this.DrawMyHandCards()
+        this.destroyAllCards()
+        this.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1)
     }
 
     // drawing cards with selected cards tilted
     public DrawMyPlayingCards() {
         this.DrawScoreImageAndCards()
-        this.DrawMyHandCards()
+        this.destroyAllCards()
+        this.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1)
 
         this.validateSelectedCards()
     }
@@ -100,13 +104,23 @@ export class DrawingFormHelper {
             }
         }
     }
-    public DrawMyHandCards() {
-        this.mainForm.cardsOrderNumber = 0
-        let currentPoker: CurrentPoker = this.mainForm.tractorPlayer.CurrentPoker
-        let cardCount: number = currentPoker.Count()
 
-        this.destroyAllCards()
-        this.startX = Coordinates.handCardPositionCenter.x - Coordinates.handCardOffset / 2 * (cardCount - 1)
+    // playerPos: 1-4
+    public DrawHandCardsByPosition(playerPos: number, currentPoker: CurrentPoker, hcs: number) {
+        this.mainForm.cardsOrderNumber = 0
+        let cardCount: number = currentPoker.Count()
+        let posIndex = playerPos - 1;
+
+        this.handcardScale = hcs;
+        this.startX = Coordinates.handCardPositions[posIndex].x;
+        if (posIndex == 0) {
+            this.startX -= Coordinates.handCardOffset * this.handcardScale / 2 * (cardCount - 1);
+        } else if (posIndex == 1 || posIndex == 2) {
+            let numOfSuits = CommonMethods.getNumOfSuits(currentPoker);
+            this.startX -= (Coordinates.handCardOffset * this.handcardScale * (cardCount - 1) + (numOfSuits - 1) * Coordinates.handCardOffset * this.handcardScale);
+        }
+
+        this.startY = Coordinates.handCardPositions[posIndex].y
         var allHeartsNoRank: number[] = currentPoker.HeartsNoRank()
         var allSpadesNoRank: number[] = currentPoker.SpadesNoRank()
         var allDiamondsNoRank: number[] = currentPoker.DiamondsNoRank()
@@ -126,7 +140,7 @@ export class DrawingFormHelper {
             this.DrawCardsBySuit(allDiamondsNoRank, 26, true)
             this.DrawCardsBySuit(allClubsNoRank, 39, true)
             if (this.DrawCardsBySuit(allHeartsNoRank, 0, true)) {
-                this.startX -= Coordinates.handCardOffset
+                this.startX -= Coordinates.handCardOffset * this.handcardScale
                 didDrawMaster = true
             }
 
@@ -136,7 +150,7 @@ export class DrawingFormHelper {
             this.DrawCardsBySuit(allClubsNoRank, 39, true)
             this.DrawCardsBySuit(allHeartsNoRank, 0, true)
             if (this.DrawCardsBySuit(allSpadesNoRank, 13, true)) {
-                this.startX -= Coordinates.handCardOffset
+                this.startX -= Coordinates.handCardOffset * this.handcardScale
                 didDrawMaster = true
             }
 
@@ -146,7 +160,7 @@ export class DrawingFormHelper {
             this.DrawCardsBySuit(allHeartsNoRank, 0, true)
             this.DrawCardsBySuit(allSpadesNoRank, 13, true)
             if (this.DrawCardsBySuit(allDiamondsNoRank, 26, true)) {
-                this.startX -= Coordinates.handCardOffset
+                this.startX -= Coordinates.handCardOffset * this.handcardScale
                 didDrawMaster = true
             }
 
@@ -156,7 +170,7 @@ export class DrawingFormHelper {
             this.DrawCardsBySuit(allSpadesNoRank, 13, true)
             this.DrawCardsBySuit(allDiamondsNoRank, 26, true)
             if (this.DrawCardsBySuit(allClubsNoRank, 39, true)) {
-                this.startX -= Coordinates.handCardOffset
+                this.startX -= Coordinates.handCardOffset * this.handcardScale
                 didDrawMaster = true
             }
 
@@ -171,7 +185,7 @@ export class DrawingFormHelper {
         primeSolidMasters[52] = currentPoker.Cards[52]
         primeSolidMasters[53] = currentPoker.Cards[53]
         if (this.DrawCardsBySuit(subSolidMasters, 0, !didDrawMaster)) {
-            this.startX -= Coordinates.handCardOffset
+            this.startX -= Coordinates.handCardOffset * this.handcardScale
             didDrawMaster = true
         }
         this.DrawCardsBySuit(primeSolidMasters, 0, !didDrawMaster)
@@ -186,7 +200,8 @@ export class DrawingFormHelper {
         // mainForm.myCardsNumber = new ArrayList();
 
         this.destroyAllCards()
-        this.startX = Coordinates.handCardPositionCenter.x - 13 * (cardCount - 1)
+        this.startX = Coordinates.handCardPositions[0].x - 13 * (cardCount - 1)
+        this.startY = Coordinates.handCardPositions[0].y
 
         var allHeartsNoRank: number[] = currentPoker.HeartsNoRank()
         this.DrawCardsBySuit(allHeartsNoRank, 0, true)
@@ -216,12 +231,12 @@ export class DrawingFormHelper {
         for (let i = 0; i < cardsToDraw.length; i++) {
             var cardCount: number = cardsToDraw[i]
             for (let j = 0; j < cardCount; j++) {
-                this.drawCard(this.startX, Coordinates.handCardPositionCenter.y, i + offset)
-                this.startX += Coordinates.handCardOffset
+                this.drawCard(this.startX, this.startY, i + offset)
+                this.startX += Coordinates.handCardOffset * this.handcardScale
                 hasDrawn = true
             }
         }
-        if (hasDrawn) this.startX += Coordinates.handCardOffset
+        if (hasDrawn) this.startX += Coordinates.handCardOffset * this.handcardScale
         return hasDrawn
     }
 
@@ -242,12 +257,17 @@ export class DrawingFormHelper {
         let image = this.mainForm.gameScene.add.sprite(x, y, 'poker', uiCardNumber).setOrigin(0, 0).setInteractive()
             .setData("serverCardNumber", serverCardNumber)
             .setData("cardsOrderNumber", this.mainForm.cardsOrderNumber)
+            .setScale(this.handcardScale)
         this.mainForm.gameScene.cardImages.push(image);
         this.mainForm.gameScene.input.setDraggable(image);
         let leftCenter = image.getLeftCenter()
-        let seqText = this.mainForm.gameScene.add.text(leftCenter.x + 2, leftCenter.y + 13, this.suitSequence.toString()).setColor("gray").setFontSize(Coordinates.suitSequenceSize)
+        let seqText = this.mainForm.gameScene.add.text(leftCenter.x + 2 * this.handcardScale, leftCenter.y + 13 * this.handcardScale, this.suitSequence.toString())
+            .setColor("gray")
+            .setFontSize(Coordinates.suitSequenceSize)
+            .setScale(this.handcardScale)
         this.mainForm.gameScene.cardImageSequence.push(seqText);
         this.suitSequence++
+        if (this.mainForm.gameScene.isReplayMode) return;
 
         if (this.mainForm.myCardIsReady[this.mainForm.cardsOrderNumber] === undefined) {
             this.mainForm.myCardIsReady[this.mainForm.cardsOrderNumber] = false
@@ -924,7 +944,7 @@ export class DrawingFormHelper {
                 image.destroy();
             })
             last8Images.length = 0
-        }, 2000);
+        }, 1000);
     }
 
     //基于庄家相对于自己所在的位置，画庄家获得底牌的动画
@@ -1166,5 +1186,12 @@ export class DrawingFormHelper {
             if (msg) msg.destroy();
         });
         this.mainForm.gameScene.danmuMessages = []
+    }
+
+    public resetReplay() {
+        this.destroyAllCards();
+        this.destroyAllShowedCards();
+        this.destroyScoreImageAndCards();
+        this.mainForm.tractorPlayer.destroyAllClientMessages();
     }
 }
