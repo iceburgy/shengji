@@ -194,8 +194,10 @@ export class GameScene extends Phaser.Scene {
         this.noCutCards = cookies.get("noCutCards");
         if (this.noCutCards === undefined) this.noCutCards = 'false'
 
-        if (!IPPort.exec(this.hostName)) {
-            this.processAuth();
+        if (!IPPort.test(this.hostName) && !(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)$)/gi.test(this.hostName)) && !this.processAuth()) {
+            document.body.innerHTML = `<div>!!! 解析服务器地址失败，请确认输入信息无误：${this.hostNameOriginal}</div>`
+            this.hostName = "";
+            return;
         }
         this.danmuHistory = [];
         this.joinAudioUrl = cookies.get("joinAudioUrl") ? cookies.get("joinAudioUrl") : "";
@@ -203,6 +205,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     preload() {
+        if (!this.hostName) return;
         this.progressBar = this.add.graphics();
         this.progressBox = this.add.graphics();
         this.progressBox.fillStyle(0x999999, 0.7);
@@ -340,6 +343,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     create() {
+        if (!this.hostName) return;
         // because loading animation.js is dependent on spine.js, hence defer loading animation.js here
         // The typical flow for a Phaser Scene is that you load assets in the Scene's preload method 
         // and then when the Scene's create method is called you are guaranteed that all of those assets are ready for use and have been loaded.
@@ -527,13 +531,17 @@ export class GameScene extends Phaser.Scene {
         this.mainForm.tractorPlayer.NotifyCurrentTrickState(currentTrickState)
     }
 
-    private processAuth() {
-        var CryptoJS = require("crypto-js");
-        var bytes = CryptoJS.AES.decrypt(this.hostName, dummyValue);
-        var originalText = bytes.toString(CryptoJS.enc.Utf8);
-        if (bytes && bytes.sigBytes > 0 > 0 && originalText) {
-            this.hostName = originalText
-        }
+    private processAuth(): boolean {
+        try {
+            var CryptoJS = require("crypto-js");
+            var bytes = CryptoJS.AES.decrypt(this.hostName, dummyValue);
+            var originalText = bytes.toString(CryptoJS.enc.Utf8);
+            if (bytes && bytes.sigBytes > 0 && originalText) {
+                this.hostName = originalText
+                return true;
+            }
+        } catch { }
+        return false;
     }
 
     public loadAudioFiles() {
