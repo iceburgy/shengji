@@ -96,9 +96,9 @@ export class Coordinates {
     static replayHandCardScale = 0.7
     static handCardPositions = [
         { x: Coordinates.centerX - Coordinates.cardWidth / 2 - Coordinates.handCardOffset * 2, y: screenHeight - 200 },
-        { x: Coordinates.last8CardsForStarterPosition.x - Coordinates.cardWidth * Coordinates.replayHandCardScale, y: Coordinates.showedCardsPositions[0].y + Coordinates.cardHeigh * (1 - Coordinates.replayHandCardScale) },
-        { x: Coordinates.last8CardsForStarterPosition.x - Coordinates.cardWidth * Coordinates.replayHandCardScale, y: Coordinates.showedCardsPositions[2].y + Coordinates.cardHeigh * (1 - Coordinates.replayHandCardScale) },
-        { x: 10, y: Coordinates.showedCardsPositions[0].y + Coordinates.cardHeigh * (1 - Coordinates.replayHandCardScale) },
+        { x: Coordinates.last8CardsForStarterPosition.x - Coordinates.cardWidth * Coordinates.replayHandCardScale, y: Coordinates.showedCardsPositions[0].y - Coordinates.cardHeigh * Coordinates.replayHandCardScale },
+        { x: Coordinates.last8CardsForStarterPosition.x - Coordinates.cardWidth * Coordinates.replayHandCardScale, y: Coordinates.showedCardsPositions[2].y + Coordinates.cardHeigh },
+        { x: 10, y: Coordinates.showedCardsPositions[0].y - Coordinates.cardHeigh * Coordinates.replayHandCardScale },
     ]
     static toolbarSize = 50
     static toolbarPosition = { x: screenWidth - 360, y: Coordinates.handCardPositions[0].y - 100 - 20 }

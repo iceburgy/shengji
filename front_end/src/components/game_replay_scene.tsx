@@ -371,9 +371,9 @@ export class GameReplayScene extends Phaser.Scene {
         }
 
         this.mainForm.lblStarters[0].setText(players[0] == this.mainForm.tractorPlayer.replayEntity.CurrentHandState.Starter ? "庄家" : "1");
-        this.mainForm.lblStarters[1].setText(players[1] == this.mainForm.tractorPlayer.replayEntity.CurrentHandState.Starter ? "庄家" : "1");
-        this.mainForm.lblStarters[2].setText(players[2] == this.mainForm.tractorPlayer.replayEntity.CurrentHandState.Starter ? "庄家" : "1");
-        this.mainForm.lblStarters[3].setText(players[3] == this.mainForm.tractorPlayer.replayEntity.CurrentHandState.Starter ? "庄家" : "1");
+        this.mainForm.lblStarters[1].setText(players[1] == this.mainForm.tractorPlayer.replayEntity.CurrentHandState.Starter ? "庄家" : "2");
+        this.mainForm.lblStarters[2].setText(players[2] == this.mainForm.tractorPlayer.replayEntity.CurrentHandState.Starter ? "庄家" : "3");
+        this.mainForm.lblStarters[3].setText(players[3] == this.mainForm.tractorPlayer.replayEntity.CurrentHandState.Starter ? "庄家" : "4");
         for (let i = 0; i < this.mainForm.lblStarters.length; i++) {
             this.mainForm.lblStarters[i].setVisible(true);
         }
