@@ -205,11 +205,15 @@ export class GameReplayScene extends Phaser.Scene {
             .setVisible(false)
             .setInteractive({ useHandCursor: true })
             .on('pointerup', () => this.btnFirstTrick_Click())
-            .on('pointerover', () => {
+            .on('pointerover', (pointer: Phaser.Input.Pointer) => {
                 this.btnFirstTrick.setStyle({ backgroundColor: 'lightblue' })
+                // tooltip
+                this.btnTT = this.createTooltip(pointer.x, pointer.y, "快捷键：↑ 上箭头")
             })
             .on('pointerout', () => {
-                this.btnFirstTrick.setStyle({ backgroundColor: 'gray' })
+                this.btnFirstTrick.setStyle({ backgroundColor: 'gray' });
+                // tooltip
+                this.btnTT.destroy();
             })
         this.btnFirstTrick.displayWidth = Coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnFirstTrick)
@@ -223,11 +227,15 @@ export class GameReplayScene extends Phaser.Scene {
             .setVisible(false)
             .setInteractive({ useHandCursor: true })
             .on('pointerup', () => this.btnPreviousTrick_Click())
-            .on('pointerover', () => {
+            .on('pointerover', (pointer: Phaser.Input.Pointer) => {
                 this.btnPreviousTrick.setStyle({ backgroundColor: 'lightblue' })
+                // tooltip
+                this.btnTT = this.createTooltip(pointer.x, pointer.y, "快捷键：← 左箭头")
             })
             .on('pointerout', () => {
                 this.btnPreviousTrick.setStyle({ backgroundColor: 'gray' })
+                // tooltip
+                this.btnTT.destroy();
             })
         this.btnPreviousTrick.displayWidth = Coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnPreviousTrick)
@@ -241,11 +249,15 @@ export class GameReplayScene extends Phaser.Scene {
             .setVisible(false)
             .setInteractive({ useHandCursor: true })
             .on('pointerup', () => this.btnNextTrick_Click())
-            .on('pointerover', () => {
+            .on('pointerover', (pointer: Phaser.Input.Pointer) => {
                 this.btnNextTrick.setStyle({ backgroundColor: 'lightblue' })
+                // tooltip
+                this.btnTT = this.createTooltip(pointer.x, pointer.y, "快捷键：→ 右箭头")
             })
             .on('pointerout', () => {
                 this.btnNextTrick.setStyle({ backgroundColor: 'gray' })
+                // tooltip
+                this.btnTT.destroy();
             })
         this.btnNextTrick.displayWidth = Coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnNextTrick)
@@ -259,11 +271,15 @@ export class GameReplayScene extends Phaser.Scene {
             .setVisible(false)
             .setInteractive({ useHandCursor: true })
             .on('pointerup', () => this.btnLastTrick_Click())
-            .on('pointerover', () => {
+            .on('pointerover', (pointer: Phaser.Input.Pointer) => {
                 this.btnLastTrick.setStyle({ backgroundColor: 'lightblue' })
+                // tooltip
+                this.btnTT = this.createTooltip(pointer.x, pointer.y, "快捷键：↓ 下箭头")
             })
             .on('pointerout', () => {
                 this.btnLastTrick.setStyle({ backgroundColor: 'gray' })
+                // tooltip
+                this.btnTT.destroy();
             })
         this.btnLastTrick.displayWidth = Coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnLastTrick)
@@ -688,6 +704,33 @@ export class GameReplayScene extends Phaser.Scene {
         for (i = L; i >= 0; i--) {
             selectElement.remove(i);
         }
+    }
+
+    public createTooltip(x: number, y: number, content: string): Phaser.GameObjects.Text {
+        let temptt = this.add.text(x, y, content)
+            .setColor('white')
+            .setFontSize(20)
+            .setShadow(2, 2, "#333333", 2, true, true)
+            .setVisible(false);
+
+        y = y - (temptt.getBottomLeft().y - y);
+        temptt.setY(y);
+
+        this.tweens.add({
+            targets: temptt,
+            x: x,
+            y: y,
+            delay: 500,
+            duration: 3000,
+            onStart: () => {
+                temptt.setVisible(true);
+            },
+            onComplete: () => {
+                temptt.destroy();
+            }
+        });
+
+        return temptt;
     }
 
     public sendMessageToServer(messageType: string, playerID: string, content: string) { }
