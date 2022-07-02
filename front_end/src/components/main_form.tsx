@@ -64,6 +64,8 @@ export class MainForm {
     public modalForm: any
     public firstWinNormal = 1;
     public firstWinBySha = 3;
+    public hiddenEffects: any
+
     constructor(gs: GameScene) {
         this.gameScene = gs
         this.tractorPlayer = new TractorPlayer(this)
@@ -77,6 +79,10 @@ export class MainForm {
         this.SelectedCards = []
         this.timerIntervalID = []
         this.timerCountDown = 0
+        this.hiddenEffects = {
+            "hadoken": this.drawingFormHelper.DrawSf2ryu,
+            "walker": this.drawingFormHelper.DrawWalker,
+        }
 
         // 房间信息
         this.roomNameText = this.gameScene.add.text(Coordinates.roomNameTextPosition.x, Coordinates.roomNameTextPosition.y, "").setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
@@ -1463,6 +1469,10 @@ export class MainForm {
             this.drawingFormHelper.DrawEmojiByPosition(this.PlayerPosition[playerID], emojiType, emojiIndex, isCenter);
         }
         if (isCenter) return;
+        if (this.hiddenEffects[msgString]) {
+            this.hiddenEffects[msgString](this);
+            return;
+        }
         let finalMsg = `【${playerID}】说：${msgString}`;
         this.gameScene.danmuHistory.push(finalMsg);
         this.drawingFormHelper.DrawDanmu(playerID, finalMsg);

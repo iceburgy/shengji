@@ -21,11 +21,51 @@ export class DrawingFormHelper {
     private handcardScale: number = 1
     private suitSequence: number
     public isDragging: any
-
+    public DrawSf2ryu: Function
+    public DrawWalker: Function
 
     constructor(mf: MainForm) {
         this.mainForm = mf
         this.suitSequence = 0
+
+        this.DrawSf2ryu = function (mf: MainForm) {
+            mf.gameScene.anims.create({
+                key: 'hadoken',
+                frameRate: 12,
+                frames: mf.gameScene.anims.generateFrameNames('sf2ryu', { prefix: 'frame_', end: 15, zeroPad: 2 }),
+                yoyo: false,
+                repeat: 3,
+                hideOnComplete: true
+            });
+            mf.gameScene.add.sprite(Coordinates.centerX, Coordinates.centerY, 'sf2ryu').play('hadoken').setScale(3);
+        }
+
+        this.DrawWalker = function (mf: MainForm) {
+            const animConfig = {
+                key: 'walk',
+                frames: 'walker',
+                frameRate: 60,
+                repeat: -1
+            };
+
+            mf.gameScene.anims.create(animConfig);
+
+            const sprite = mf.gameScene.add.sprite(Coordinates.screenWid, Coordinates.centerY, 'walker', 'frame_0000');
+
+            sprite.play('walk');
+
+            mf.gameScene.tweens.add({
+                targets: sprite,
+                x: 0 - sprite.width / 4,
+                y: 484,
+                delay: 500,
+                duration: 5000,
+                ease: "Cubic.easeInOut",
+                onComplete: () => {
+                    sprite.destroy();
+                }
+            });
+        }
     }
 
     public IGetCard() {
@@ -1040,48 +1080,6 @@ export class DrawingFormHelper {
             .setDisplaySize(Coordinates.overridingFlagWidth / 2, Coordinates.overridingFlagHeight / 2)
         this.mainForm.gameScene.OverridingFlagImage = image
         this.mainForm.gameScene.showedCardImages.push(image);
-    }
-
-    public DrawWalker() {
-        const animConfig = {
-            key: 'walk',
-            frames: 'walker',
-            frameRate: 60,
-            repeat: -1
-        };
-
-        this.mainForm.gameScene.anims.create(animConfig);
-
-        const sprite = this.mainForm.gameScene.add.sprite(Coordinates.screenWid, 484, 'walker', 'frame_0000');
-
-        sprite.play('walk');
-
-        this.mainForm.gameScene.tweens.add({
-            targets: sprite,
-            x: 0 - sprite.width / 4,
-            y: 484,
-            delay: 500,
-            duration: 5000,
-            ease: "Cubic.easeInOut",
-            onComplete: () => {
-                sprite.destroy();
-            }
-        });
-    }
-
-    public DrawSf2ryu() {
-        this.mainForm.gameScene.anims.create({
-            key: 'hadoken',
-            frames: this.mainForm.gameScene.anims.generateFrameNames('sf2ryu', { prefix: 'frame_', end: 15, zeroPad: 2 }),
-            yoyo: false,
-            repeat: -1
-        });
-
-        var ryu = this.mainForm.gameScene.add.sprite(400, 350, 'sf2ryu').play('hadoken').setScale(3);
-
-        setTimeout(() => {
-            ryu.destroy();
-        }, 6000);
     }
 
     public DrawEmojiByPosition(position: number, emojiType: number, emojiIndex: number, isCenter: boolean) {
