@@ -1031,7 +1031,7 @@ export class DrawingFormHelper {
         }, 1500);
     }
 
-    public DrawOverridingFlag(cardsCount: number, position: number, winType: number) {
+    public DrawOverridingFlag(cardsCount: number, position: number, winType: number, playAnimation: boolean) {
         if (this.mainForm.gameScene.OverridingFlagImage) {
             this.mainForm.gameScene.OverridingFlagImage.destroy()
         }
@@ -1061,7 +1061,7 @@ export class DrawingFormHelper {
         this.mainForm.gameScene.OverridingFlagImage = image
         this.mainForm.gameScene.showedCardImages.push(image);
 
-        if (winType >= 2) {
+        if (playAnimation && winType >= 2) {
             this.mainForm.gameScene.decadeUICanvas.style.left = `${x}px`;
             this.mainForm.gameScene.decadeUICanvas.style.top = `${Coordinates.showedCardsPositions[posInd].y - Coordinates.sgsAnimOffsetY}px`;
             this.mainForm.gameScene.drawSgsAni(

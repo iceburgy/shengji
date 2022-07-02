@@ -673,7 +673,7 @@ export class MainForm {
         }
 
         if (winResult > 0) {
-            this.drawingFormHelper.DrawOverridingFlag(showedCards.length, this.PlayerPosition[this.tractorPlayer.playerLocalCache.WinnderID], this.tractorPlayer.playerLocalCache.WinResult - 1);
+            this.drawingFormHelper.DrawOverridingFlag(showedCards.length, this.PlayerPosition[this.tractorPlayer.playerLocalCache.WinnderID], this.tractorPlayer.playerLocalCache.WinResult - 1, true);
 
             //拖拉机动画
             let showedPoker = new CurrentPoker()
@@ -1223,7 +1223,8 @@ export class MainForm {
             this.drawingFormHelper.DrawOverridingFlag(
                 cardsCount,
                 this.PlayerPosition[this.tractorPlayer.playerLocalCache.WinnderID],
-                this.tractorPlayer.playerLocalCache.WinResult - 1);
+                this.tractorPlayer.playerLocalCache.WinResult - 1,
+                false);
         }
     }
 
@@ -1469,11 +1470,13 @@ export class MainForm {
             this.drawingFormHelper.DrawEmojiByPosition(this.PlayerPosition[playerID], emojiType, emojiIndex, isCenter);
         }
         if (isCenter) return;
+        let finalMsg = "";
         if (this.hiddenEffects[msgString]) {
             this.hiddenEffects[msgString](this);
-            return;
+            finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】`;
+        } else {
+            finalMsg = `【${playerID}】说：${msgString}`;
         }
-        let finalMsg = `【${playerID}】说：${msgString}`;
         this.gameScene.danmuHistory.push(finalMsg);
         this.drawingFormHelper.DrawDanmu(playerID, finalMsg);
     }
