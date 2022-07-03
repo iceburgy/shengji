@@ -22,7 +22,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
         <Card sx={{ height: '100vh' }}>
             <CardContent sx={{ bgcolor: red[500], height: '6vh' }}>
                 <Typography sx={{ fontSize: 20 }} color="text.secondary" gutterBottom>
-                    欢迎来到欢乐升级！<br />
+                    欢迎来到西村升级小馆！<br />
                     当前版本：{packageJson.version}
                 </Typography>
             </CardContent>

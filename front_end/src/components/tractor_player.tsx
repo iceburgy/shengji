@@ -73,7 +73,7 @@ export class TractorPlayer {
         }
 
         this.destroyAllClientMessages()
-        let posY = Coordinates.clientMessagePosition.y - (msgs.length - 1) / 2 * Coordinates.lineOffsetY
+        let posY = this.mainForm.gameScene.coordinates.clientMessagePosition.y - (msgs.length - 1) / 2 * this.mainForm.gameScene.coordinates.lineOffsetY
         for (let i = 0; i < msgs.length; i++) {
             let m = msgs[i]
             if (m.includes("获胜！")) {
@@ -110,7 +110,7 @@ export class TractorPlayer {
             }
 
 
-            this.mainForm.gameScene.clientMessages.push(this.mainForm.gameScene.add.text(Coordinates.clientMessagePosition.x, posY + i * Coordinates.lineOffsetY, m)
+            this.mainForm.gameScene.clientMessages.push(this.mainForm.gameScene.add.text(this.mainForm.gameScene.coordinates.clientMessagePosition.x, posY + i * this.mainForm.gameScene.coordinates.lineOffsetY, m)
                 .setColor("yellow")
                 .setFontSize(28)
                 .setShadow(2, 2, "#333333", 2, true, true))

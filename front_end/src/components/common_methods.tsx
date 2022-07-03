@@ -1,5 +1,4 @@
 
-import { Coordinates } from './coordinates';
 import { CurrentPoker } from './current_poker';
 import { PlayerEntity } from './player_entity';
 import { SuitEnums } from './suit_enums';
@@ -22,9 +21,10 @@ export class CommonMethods {
         "能不能快点啊，兵贵神速！",
         "烟花",
         "人心散了，队伍不好带啊……",
-        "额，不好意思，刚才卡了",
+        "有劳点击“就绪”继续游戏",
         "有劳房主点击“继续上盘牌局”",
     ]
+    public static emojiWarningMsg = "请不要过于频繁发送消息，每条消息间隔5秒"
 
     constructor() {
     }

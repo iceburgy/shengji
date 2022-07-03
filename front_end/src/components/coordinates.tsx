@@ -1,136 +1,244 @@
-import { CommonMethods } from "./common_methods";
-
-const screenWidth = document.documentElement.clientWidth;
+const chatWidth = 240;
+const screenWidthReal = document.documentElement.clientWidth;
+const screenWidth = screenWidthReal - chatWidth;
 const screenHeight = document.documentElement.clientHeight;
 
 export class Coordinates {
+    public isReplayMode = false;
     // 屏幕左上角为坐标原点 (0, 0), 横轴为 x, 纵轴为 y
     // 右边无法显示的区域
-    static screenWid = screenWidth
-    static screenHei = screenHeight
-    static centerX = screenWidth * 0.5
-    static centerY = screenHeight * 0.5
-    static hiddenWidth = 20
+    public screenWidReal
+    public screenWid
+    public screenHei
+    public centerXReal
+    public centerX
+    public centerY
+    public hiddenWidth
+    public chatWid
 
     // progress bar
-    static progressBarWidth = 300
-    static progressBarHeight = 30
+    public progressBarWidth
+    public progressBarHeight
 
     // hall controls
-    static hallPlayerHeaderPosition = { x: 50, y: 160 }
-    static hallPlayerTopPosition = { x: 50, y: 240 }
+    public hallPlayerHeaderPosition
+    public hallPlayerTopPosition
 
-    static pokerTablePositionStart = { x: 320, y: 160 }
-    static pokerTableOffsets = { x: 400, y: 320 }
-    static pokerTableLabelOffsets = { x: 40, y: 20 }
+    public pokerTablePositionStart
+    public pokerTableOffsets
+    public pokerTableLabelOffsets
 
-    static pokerChairOffsets = [
-        { x: 40, y: -80 },
-        { x: -80, y: 40 },
-        { x: 40, y: 120 },
-        { x: 160, y: 40 },
-    ]
+    public pokerChairOffsets
 
     // danmu
-    static danmuPositionY = 50
-    static danmuOffset = 40
+    public danmuPositionY
+    public danmuOffset
 
     // room controls
-    static clientMessagePosition = { x: Coordinates.centerX - 200, y: Coordinates.centerY }
-    static lineOffsetY = 40
+    public clientMessagePosition
+    public lineOffsetY
 
-    static cardWidth = 90
-    static cardHeigh = 120
-    static handCardOffset = 24
-    static suitSequenceSize = 15
-    static overridingFlagHeight = 40
-    static overridingFlagWidth = Coordinates.overridingFlagHeight * 3 / 2
+    public cardWidth
+    public cardHeigh
+    public handCardOffset
+    public suitSequenceSize
+    public overridingFlagHeight
+    public overridingFlagWidth
 
-    static btnLowerSize = 100
-    static btnReadyPosition = { x: 10, y: screenHeight - 60 }
-    static btnRobotPosition = { x: Coordinates.btnReadyPosition.x + Coordinates.btnLowerSize, y: screenHeight - 60 }
-    static btnExitRoomPosition = { x: screenWidth - 90, y: Coordinates.btnReadyPosition.y }
-    static btnSendEmojiPosition = { x: Coordinates.btnExitRoomPosition.x - Coordinates.btnLowerSize, y: Coordinates.btnReadyPosition.y }
+    public btnLowerSize
+    public btnReadyPosition
+    public btnRobotPosition
+    public btnExitRoomPosition
+    public btnSendEmojiPosition
 
     // players
-    static playerTextPositions = [
-        { x: Coordinates.centerX, y: screenHeight - 60 },
-        { x: screenWidth - 320, y: Coordinates.centerY },
-        { x: Coordinates.centerX, y: 10 },
-        { x: 5, y: Coordinates.centerY },
-    ]
+    public playerTextPositions
 
-    static playerStarterPositions = [
-        { x: Coordinates.playerTextPositions[0].x - 205, y: Coordinates.playerTextPositions[0].y },
-        { x: Coordinates.playerTextPositions[1].x, y: Coordinates.playerTextPositions[1].y - 50 },
-        { x: Coordinates.playerTextPositions[2].x - 205, y: Coordinates.playerTextPositions[2].y },
-        { x: Coordinates.playerTextPositions[3].x, y: Coordinates.playerTextPositions[3].y - 50 },
-    ]
+    public playerStarterPositions
 
-    static emojiSize = 80;
-    static playerEmojiPositions = [
-        { x: Coordinates.playerTextPositions[0].x - 240, y: Coordinates.playerStarterPositions[0].y - 30 },
-        { x: screenWidth - Coordinates.hiddenWidth - Coordinates.emojiSize, y: Coordinates.playerTextPositions[1].y + 50 },
-        { x: Coordinates.playerTextPositions[2].x, y: Coordinates.danmuPositionY + 10 },
-        { x: Coordinates.playerTextPositions[3].x, y: Coordinates.playerTextPositions[1].y + 50 },
-    ]
-    static sgsAnimWidth = 80;
-    static sgsAnimHeight = 120;
-    static sgsAnimOffsetY = 10;
+    public emojiSize
+    public playerEmojiPositions
+    public sgsAnimWidth
+    public sgsAnimHeight
+    public sgsAnimOffsetY
 
     // cards
-    static showedCardsPositions = [
-        { x: Coordinates.centerX - Coordinates.cardWidth / 2, y: Coordinates.playerTextPositions[0].y - 300 },
-        { x: screenWidth - 300, y: Coordinates.playerTextPositions[1].y - 110 },
-        { x: Coordinates.centerX - Coordinates.cardWidth / 2, y: Coordinates.playerTextPositions[2].y + 100 },
-        { x: Coordinates.playerTextPositions[3].x + 200, y: Coordinates.playerTextPositions[3].y - 110 },
-    ]
+    public showedCardsPositions
 
     // last8cards
-    static last8CardsForStarterPosition = { x: screenWidth - 10 - Coordinates.hiddenWidth, y: 10 }
+    public last8CardsForStarterPosition
 
     // replay
     // account for maximum of five suites, with 4 gaps, shift to left by 2 gaps
-    static replayControlButtonWidth = 60
-    static replayControlButtonOffset = 10
-    static replayHandCardScale = 0.7
-    static handCardPositions = [
-        { x: Coordinates.centerX - Coordinates.cardWidth / 2 - Coordinates.handCardOffset * 2, y: screenHeight - 200 },
-        { x: Coordinates.last8CardsForStarterPosition.x - Coordinates.cardWidth * Coordinates.replayHandCardScale, y: Coordinates.showedCardsPositions[0].y - Coordinates.cardHeigh * Coordinates.replayHandCardScale },
-        { x: Coordinates.last8CardsForStarterPosition.x - Coordinates.cardWidth * Coordinates.replayHandCardScale, y: Coordinates.showedCardsPositions[2].y + Coordinates.cardHeigh },
-        { x: 10, y: Coordinates.showedCardsPositions[0].y - Coordinates.cardHeigh * Coordinates.replayHandCardScale },
-    ]
-    static toolbarSize = 50
-    static toolbarPosition = { x: screenWidth - 360, y: Coordinates.handCardPositions[0].y - 100 - 20 }
-    static btnPigPosition = { x: screenWidth * 0.7, y: Coordinates.handCardPositions[0].y - 100 }
+    public replayControlButtonWidth
+    public replayControlButtonOffset
+    public replayHandCardScale
+    public handCardPositions
+    public toolbarSize
+    public toolbarPosition
+    public btnPigPosition
 
     // sidebar for room info and game state
-    static iconSize = 20
-    static sidebarOffset = 30
-    static roomNameTextPosition = { x: 10, y: 10 }
-    static roomOwnerTextPosition = { x: Coordinates.roomNameTextPosition.x, y: Coordinates.roomNameTextPosition.y + Coordinates.sidebarOffset }
-    static sidebarMyTeamPostion = { x: Coordinates.roomNameTextPosition.x, y: Coordinates.roomNameTextPosition.y + Coordinates.sidebarOffset * 2 }
-    static sidebarOpTeamPostion = { x: Coordinates.roomNameTextPosition.x, y: Coordinates.roomNameTextPosition.y + Coordinates.sidebarOffset * 3 }
-    static sidebarTrumpMaker = { x: Coordinates.roomNameTextPosition.x, y: Coordinates.roomNameTextPosition.y + Coordinates.sidebarOffset * 4 }
-    static sidebarScoreText = { x: Coordinates.roomNameTextPosition.x, y: Coordinates.roomNameTextPosition.y + Coordinates.sidebarOffset * 5 }
-    static sidebarScoreCards = { x: Coordinates.roomNameTextPosition.x, y: Coordinates.roomNameTextPosition.y + Coordinates.sidebarOffset * 6 }
+    public iconSize
+    public sidebarOffset
+    public roomNameTextPosition
+    public roomOwnerTextPosition
+    public sidebarMyTeamPostion
+    public sidebarOpTeamPostion
+    public sidebarTrumpMaker
+    public sidebarScoreText
+    public sidebarScoreCards
 
     // sidebar for replay
-    static replayBarPosition = { x: screenWidth * 0.65, y: 10 }
+    public replayBarPosition
 
     // ending UI
-    static last8Position = { x: Coordinates.centerX - (Coordinates.cardWidth / 2) - Coordinates.handCardOffset * 3.5, y: 100 }
-    static scoreCardsPosition = { x: Coordinates.last8Position.x, y: Coordinates.last8Position.y + Coordinates.cardHeigh + 30 }
-    static winPointsPosition = { x: Coordinates.last8Position.x, y: Coordinates.scoreCardsPosition.y + Coordinates.cardHeigh + 30 }
-    static last8PointsPosition = { x: Coordinates.last8Position.x, y: Coordinates.winPointsPosition.y + 60 }
-    static punishmentPointsPosition = { x: Coordinates.last8Position.x, y: Coordinates.last8PointsPosition.y + 60 }
-    static totalPointsPosition = { x: Coordinates.last8Position.x, y: Coordinates.punishmentPointsPosition.y + 60 }
+    public last8Position
+    public scoreCardsPosition
+    public winPointsPosition
+    public last8PointsPosition
+    public punishmentPointsPosition
+    public totalPointsPosition
 
-    static countDownPosition = { x: screenWidth * 0.1, y: Coordinates.showedCardsPositions[0].y }
-    static countDownSzie = 60
+    public countDownPosition
+    public countDownSzie
 
     // distributing last 8
-    static distributingLast8MaxEdge = 30
-    static distributingLast8Position = { x: Coordinates.centerX - (Coordinates.cardWidth / 2) - Coordinates.handCardOffset * 3.5, y: Coordinates.centerY - Coordinates.cardHeigh / 2 }
+    public distributingLast8MaxEdge
+    public distributingLast8Position
 
+    constructor(isrpm: boolean) {
+        this.isReplayMode = isrpm;
+        // 屏幕左上角为坐标原点 (0, 0), 横轴为 x, 纵轴为 y
+        // 右边无法显示的区域
+        this.screenWidReal = screenWidthReal
+        this.screenWid = this.isReplayMode ? this.screenWidReal : screenWidth
+        this.screenHei = screenHeight
+        this.centerXReal = screenWidthReal * 0.5
+        this.centerX = this.screenWid * 0.5
+        this.centerY = screenHeight * 0.5
+        this.hiddenWidth = 20
+        this.chatWid = chatWidth - 17
+
+        // progress bar
+        this.progressBarWidth = 300
+        this.progressBarHeight = 30
+
+        // hall controls
+        this.hallPlayerHeaderPosition = { x: 50, y: 160 }
+        this.hallPlayerTopPosition = { x: 50, y: 240 }
+
+        this.pokerTablePositionStart = { x: 320, y: 160 }
+        this.pokerTableOffsets = { x: 400, y: 320 }
+        this.pokerTableLabelOffsets = { x: 40, y: 20 }
+
+        this.pokerChairOffsets = [
+            { x: 40, y: -80 },
+            { x: -80, y: 40 },
+            { x: 40, y: 120 },
+            { x: 160, y: 40 },
+        ]
+
+        // danmu
+        this.danmuPositionY = 50
+        this.danmuOffset = 40
+
+        // room controls
+        this.clientMessagePosition = { x: this.centerX - 200, y: this.centerY }
+        this.lineOffsetY = 40
+
+        this.cardWidth = 90
+        this.cardHeigh = 120
+        this.handCardOffset = 24
+        this.suitSequenceSize = 15
+        this.overridingFlagHeight = 40
+        this.overridingFlagWidth = this.overridingFlagHeight * 3 / 2
+
+        this.btnLowerSize = 100
+        this.btnReadyPosition = { x: 10, y: screenHeight - 60 }
+        this.btnRobotPosition = { x: this.btnReadyPosition.x + this.btnLowerSize, y: screenHeight - 60 }
+        this.btnExitRoomPosition = { x: this.screenWid - 90, y: this.btnReadyPosition.y }
+        this.btnSendEmojiPosition = { x: this.btnExitRoomPosition.x - this.btnLowerSize, y: this.btnReadyPosition.y }
+
+        // players
+        this.playerTextPositions = [
+            { x: this.centerX, y: screenHeight - 60 },
+            { x: this.screenWid - 320, y: this.centerY },
+            { x: this.centerX, y: 10 },
+            { x: 5, y: this.centerY },
+        ]
+
+        this.playerStarterPositions = [
+            { x: this.playerTextPositions[0].x - 205, y: this.playerTextPositions[0].y },
+            { x: this.playerTextPositions[1].x, y: this.playerTextPositions[1].y - 50 },
+            { x: this.playerTextPositions[2].x - 205, y: this.playerTextPositions[2].y },
+            { x: this.playerTextPositions[3].x, y: this.playerTextPositions[3].y - 50 },
+        ]
+
+        this.emojiSize = 80;
+        this.playerEmojiPositions = [
+            { x: this.playerTextPositions[0].x - 240, y: this.playerStarterPositions[0].y - 30 },
+            { x: this.screenWid - this.hiddenWidth - this.emojiSize, y: this.playerTextPositions[1].y + 50 },
+            { x: this.playerTextPositions[2].x, y: this.danmuPositionY + 10 },
+            { x: this.playerTextPositions[3].x, y: this.playerTextPositions[1].y + 50 },
+        ]
+        this.sgsAnimWidth = 80;
+        this.sgsAnimHeight = 120;
+        this.sgsAnimOffsetY = 10;
+
+        // cards
+        this.showedCardsPositions = [
+            { x: this.centerX - this.cardWidth / 2, y: this.playerTextPositions[0].y - 300 },
+            { x: this.screenWid - 300, y: this.playerTextPositions[1].y - 110 },
+            { x: this.centerX - this.cardWidth / 2, y: this.playerTextPositions[2].y + 100 },
+            { x: this.playerTextPositions[3].x + 200, y: this.playerTextPositions[3].y - 110 },
+        ]
+
+        // last8cards
+        this.last8CardsForStarterPosition = { x: this.screenWid - 10 - this.hiddenWidth, y: 10 }
+
+        // replay
+        // account for maximum of five suites, with 4 gaps, shift to left by 2 gaps
+        this.replayControlButtonWidth = 60
+        this.replayControlButtonOffset = 10
+        this.replayHandCardScale = 0.7
+        this.handCardPositions = [
+            { x: this.centerX - this.cardWidth / 2 - this.handCardOffset * 2, y: screenHeight - 200 },
+            { x: this.last8CardsForStarterPosition.x - this.cardWidth * this.replayHandCardScale, y: this.showedCardsPositions[0].y - this.cardHeigh * this.replayHandCardScale },
+            { x: this.last8CardsForStarterPosition.x - this.cardWidth * this.replayHandCardScale, y: this.showedCardsPositions[2].y + this.cardHeigh },
+            { x: 10, y: this.showedCardsPositions[0].y - this.cardHeigh * this.replayHandCardScale },
+        ]
+        this.toolbarSize = 50
+        this.toolbarPosition = { x: this.screenWid - 360, y: this.handCardPositions[0].y - 100 - 20 }
+        this.btnPigPosition = { x: this.screenWid * 0.7, y: this.handCardPositions[0].y - 100 }
+
+        // sidebar for room info and game state
+        this.iconSize = 20
+        this.sidebarOffset = 30
+        this.roomNameTextPosition = { x: 10, y: 10 }
+        this.roomOwnerTextPosition = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset }
+        this.sidebarMyTeamPostion = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset * 2 }
+        this.sidebarOpTeamPostion = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset * 3 }
+        this.sidebarTrumpMaker = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset * 4 }
+        this.sidebarScoreText = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset * 5 }
+        this.sidebarScoreCards = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset * 6 }
+
+        // sidebar for replay
+        this.replayBarPosition = { x: this.screenWid * 0.65, y: 10 }
+
+        // ending UI
+        this.last8Position = { x: this.centerX - (this.cardWidth / 2) - this.handCardOffset * 3.5, y: 100 }
+        this.scoreCardsPosition = { x: this.last8Position.x, y: this.last8Position.y + this.cardHeigh + 30 }
+        this.winPointsPosition = { x: this.last8Position.x, y: this.scoreCardsPosition.y + this.cardHeigh + 30 }
+        this.last8PointsPosition = { x: this.last8Position.x, y: this.winPointsPosition.y + 60 }
+        this.punishmentPointsPosition = { x: this.last8Position.x, y: this.last8PointsPosition.y + 60 }
+        this.totalPointsPosition = { x: this.last8Position.x, y: this.punishmentPointsPosition.y + 60 }
+
+        this.countDownPosition = { x: this.screenWid * 0.1, y: this.showedCardsPositions[0].y }
+        this.countDownSzie = 60
+
+        // distributing last 8
+        this.distributingLast8MaxEdge = 30
+        this.distributingLast8Position = { x: this.centerX - (this.cardWidth / 2) - this.handCardOffset * 3.5, y: this.centerY - this.cardHeigh / 2 }
+    }
 }

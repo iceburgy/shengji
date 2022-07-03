@@ -41,7 +41,7 @@ export class MainForm {
     public btnRobot: Phaser.GameObjects.Text
     public btnObserveNext: Phaser.GameObjects.Text
     public btnExitRoom: Phaser.GameObjects.Text
-    public btnSendEmoji: Phaser.GameObjects.Text
+    public isSendEmojiEnabled: boolean
     public btnPig: Phaser.GameObjects.Text
 
     public lblNickNames: Phaser.GameObjects.Text[]
@@ -65,6 +65,7 @@ export class MainForm {
     public firstWinNormal = 1;
     public firstWinBySha = 3;
     public hiddenEffects: any
+    public chatForm: any
 
     constructor(gs: GameScene) {
         this.gameScene = gs
@@ -83,15 +84,16 @@ export class MainForm {
             "hadoken": this.drawingFormHelper.DrawSf2ryu,
             "walker": this.drawingFormHelper.DrawWalker,
         }
+        this.isSendEmojiEnabled = true;
 
         // 房间信息
-        this.roomNameText = this.gameScene.add.text(Coordinates.roomNameTextPosition.x, Coordinates.roomNameTextPosition.y, "").setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
-        this.roomOwnerText = this.gameScene.add.text(Coordinates.roomOwnerTextPosition.x, Coordinates.roomOwnerTextPosition.y, "").setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
+        this.roomNameText = this.gameScene.add.text(this.gameScene.coordinates.roomNameTextPosition.x, this.gameScene.coordinates.roomNameTextPosition.y, "").setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
+        this.roomOwnerText = this.gameScene.add.text(this.gameScene.coordinates.roomOwnerTextPosition.x, this.gameScene.coordinates.roomOwnerTextPosition.y, "").setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
         this.gameScene.roomUIControls.texts.push(this.roomNameText)
         this.gameScene.roomUIControls.texts.push(this.roomOwnerText)
 
         // 就绪按钮
-        this.btnReady = this.gameScene.add.text(Coordinates.btnReadyPosition.x, Coordinates.btnReadyPosition.y, '就绪')
+        this.btnReady = this.gameScene.add.text(this.gameScene.coordinates.btnReadyPosition.x, this.gameScene.coordinates.btnReadyPosition.y, '就绪')
             .setColor('white')
             .setFontSize(30)
             .setPadding(10)
@@ -109,7 +111,7 @@ export class MainForm {
         this.gameScene.roomUIControls.texts.push(this.btnReady)
 
         // 托管按钮
-        this.btnRobot = this.gameScene.add.text(Coordinates.btnRobotPosition.x, Coordinates.btnRobotPosition.y, '托管')
+        this.btnRobot = this.gameScene.add.text(this.gameScene.coordinates.btnRobotPosition.x, this.gameScene.coordinates.btnRobotPosition.y, '托管')
             .setColor('white')
             .setFontSize(30)
             .setPadding(10)
@@ -127,7 +129,7 @@ export class MainForm {
         this.gameScene.roomUIControls.texts.push(this.btnRobot)
 
         // 旁观下家
-        this.btnObserveNext = this.gameScene.add.text(Coordinates.btnReadyPosition.x, Coordinates.btnReadyPosition.y, '旁观下家')
+        this.btnObserveNext = this.gameScene.add.text(this.gameScene.coordinates.btnReadyPosition.x, this.gameScene.coordinates.btnReadyPosition.y, '旁观下家')
             .setColor('white')
             .setFontSize(30)
             .setPadding(10)
@@ -145,7 +147,7 @@ export class MainForm {
         this.gameScene.roomUIControls.texts.push(this.btnObserveNext)
 
         // 退出按钮
-        this.btnExitRoom = this.gameScene.add.text(Coordinates.btnExitRoomPosition.x, Coordinates.btnExitRoomPosition.y, '退出')
+        this.btnExitRoom = this.gameScene.add.text(this.gameScene.coordinates.btnExitRoomPosition.x, this.gameScene.coordinates.btnExitRoomPosition.y, '退出')
             .setColor('white')
             .setFontSize(30)
             .setPadding(10)
@@ -160,26 +162,8 @@ export class MainForm {
                 this.btnExitRoom.setStyle({ backgroundColor: 'gray' })
             })
 
-        // 表情包按钮
-        this.btnSendEmoji = this.gameScene.add.text(Coordinates.btnSendEmojiPosition.x, Coordinates.btnSendEmojiPosition.y, '弹幕')
-            .setColor('white')
-            .setFontSize(30)
-            .setPadding(10)
-            .setShadow(2, 2, "#333333", 2, true, true)
-            .setStyle({ backgroundColor: 'gray' })
-            .setVisible(false)
-            .setInteractive({ useHandCursor: true })
-            .on('pointerup', () => this.btnSendEmoji_Click())
-            .on('pointerover', () => {
-                this.btnSendEmoji.setStyle({ backgroundColor: 'lightblue' })
-            })
-            .on('pointerout', () => {
-                this.btnSendEmoji.setStyle({ backgroundColor: 'gray' })
-            })
-        this.gameScene.roomUIControls.texts.push(this.btnSendEmoji)
-
         // 确定按钮
-        this.btnPig = this.gameScene.add.text(Coordinates.btnPigPosition.x, Coordinates.btnPigPosition.y, '确定')
+        this.btnPig = this.gameScene.add.text(this.gameScene.coordinates.btnPigPosition.x, this.gameScene.coordinates.btnPigPosition.y, '确定')
             .setColor('white')
             .setFontSize(30)
             .setPadding(10)
@@ -199,7 +183,7 @@ export class MainForm {
         // 昵称
         this.lblNickNames = []
         for (let i = 0; i < 4; i++) {
-            var lblNickName = this.gameScene.add.text(Coordinates.playerTextPositions[i].x, Coordinates.playerTextPositions[i].y, "")
+            var lblNickName = this.gameScene.add.text(this.gameScene.coordinates.playerTextPositions[i].x, this.gameScene.coordinates.playerTextPositions[i].y, "")
                 .setColor('white')
                 .setFontSize(30)
                 .setPadding(10)
@@ -232,7 +216,7 @@ export class MainForm {
         // 状态
         this.lblStarters = []
         for (let i = 0; i < 4; i++) {
-            var lblStarter = this.gameScene.add.text(Coordinates.playerStarterPositions[i].x, Coordinates.playerStarterPositions[i].y, "")
+            var lblStarter = this.gameScene.add.text(this.gameScene.coordinates.playerStarterPositions[i].x, this.gameScene.coordinates.playerStarterPositions[i].y, "")
                 .setColor('orange')
                 .setFontSize(30)
                 .setPadding(10)
@@ -249,9 +233,9 @@ export class MainForm {
             this.gameScene.roomUIControls.texts.push(lblStarter)
         }
 
-        this.timerImage = this.gameScene.add.text(Coordinates.countDownPosition.x, Coordinates.countDownPosition.y, "")
+        this.timerImage = this.gameScene.add.text(this.gameScene.coordinates.countDownPosition.x, this.gameScene.coordinates.countDownPosition.y, "")
             .setColor("orange")
-            .setFontSize(Coordinates.countDownSzie)
+            .setFontSize(this.gameScene.coordinates.countDownSzie)
             .setStyle({ fontWeight: "bold" })
             .setVisible(false)
 
@@ -322,7 +306,6 @@ export class MainForm {
         if (!this.tractorPlayer.isObserver) {
             this.btnReady.setVisible(true)
             this.btnRobot.setVisible(true)
-            this.btnSendEmoji.setVisible(true);
         }
         else {
             this.btnObserveNext.setVisible(true)
@@ -349,6 +332,7 @@ export class MainForm {
             }
             curIndex = (curIndex + 1) % 4
         }
+        this.loadEmojiForm();
 
 
         /*
@@ -854,66 +838,51 @@ export class MainForm {
         this.gameScene.sendMessageToServer(ExitRoom_REQUEST, this.tractorPlayer.MyOwnId, "")
     }
 
-    private btnSendEmoji_Click() {
-        if (this.modalForm) return
-        // disable shortcut keys temporarily to allow typing
-        // this.gameScene.input.keyboard.removeCapture('1,2,3,Z,S,R');
+    public loadEmojiForm() {
+        let chatFormWid = this.gameScene.coordinates.chatWid;
+        this.chatForm = this.gameScene.add.dom(this.gameScene.coordinates.screenWid, 10)
+            .setOrigin(0)
+            .createFromCache('emojiForm');
+        this.gameScene.roomUIControls.texts.push(this.chatForm)
+        let inputForm = this.chatForm.getChildByID("input-form")
+        inputForm.style.width = `${chatFormWid}px`;
+        inputForm.style.height = `${this.gameScene.coordinates.screenHei - 30}px`;
 
-        this.modalForm = this.gameScene.add.dom(Coordinates.screenWid * 0.5, Coordinates.screenHei * 0.5).createFromCache('emojiForm');
-        let selectPresetMsgs = this.modalForm.getChildByID("selectPresetMsgs")
-        let textAreaMsg = this.modalForm.getChildByID("textAreaMsg")
-        textAreaMsg.style.width = `${selectPresetMsgs.offsetWidth}px`;
+        let divfooter = this.chatForm.getChildByID("divfooter")
+        let divChatHistory = this.chatForm.getChildByID("divChatHistory")
+        divChatHistory.style.height = `${this.gameScene.coordinates.screenHei - divfooter.offsetHeight - 20}px`;
+
+        let selectPresetMsgs = this.chatForm.getChildByID("selectPresetMsgs")
+        selectPresetMsgs.style.width = `${chatFormWid}px`;
+        let textAreaMsg = this.chatForm.getChildByID("textAreaMsg")
+        textAreaMsg.style.width = `${selectPresetMsgs.offsetWidth - 6}px`;
         selectPresetMsgs.onchange = () => {
             let selectedIndex = selectPresetMsgs.selectedIndex;
             let selectedValue = selectPresetMsgs.value;
             let args: (string | number)[] = [selectedIndex, CommonMethods.GetRandomInt(CommonMethods.winEmojiLength), selectedValue];
-            this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
-            this.resetDanmuState();
-        }
-        let btnDanmuHistory = this.modalForm.getChildByID("btnDanmuHistory")
-        btnDanmuHistory.onclick = () => {
-            let sendEmojiContainer = this.modalForm.getChildByID("sendEmojiContainer")
-            sendEmojiContainer.remove()
-            let divShowDanmuHistory = this.modalForm.getChildByID("divShowDanmuHistory")
-            var h2 = document.createElement("h2");
-            h2.innerText = "聊天记录"
-            divShowDanmuHistory.appendChild(h2);
-            if (this.gameScene.danmuHistory.length == 0) {
-                var pEmpty = document.createElement("p");
-                pEmpty.innerText = "空"
-                divShowDanmuHistory.appendChild(pEmpty);
-            } else {
-                var ul = document.createElement("ul");
-                divShowDanmuHistory.appendChild(ul);
-                this.gameScene.danmuHistory.forEach((msg: string) => {
-                    var li = document.createElement("li");
-                    li.innerText = msg
-                    ul.appendChild(li);
-                })
-            }
-            divShowDanmuHistory.style.display = "block";
+            this.sendEmojiWithCheck(JSON.stringify(args))
         }
     }
 
     private emojiSubmitEventhandler() {
-        if (!this.modalForm) return;
-        let selectPresetMsgs = this.modalForm.getChildByID("selectPresetMsgs")
+        let selectPresetMsgs = this.chatForm.getChildByID("selectPresetMsgs")
         if (!selectPresetMsgs) return;
-        let textAreaMsg = this.modalForm.getChildByID("textAreaMsg")
+        let textAreaMsg = this.chatForm.getChildByID("textAreaMsg")
         let emojiType = -1;
         let emojiIndex = -1;
         let msgString = textAreaMsg.value;
         if (msgString) {
             msgString = msgString.trim()
         }
+        textAreaMsg.value = "";
+        textAreaMsg.blur();
         if (!msgString) {
             msgString = selectPresetMsgs.value;
             emojiType = selectPresetMsgs.selectedIndex;
             emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
         }
         let args: (string | number)[] = [emojiType, emojiIndex, msgString];
-        this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
-        this.resetDanmuState();
+        this.sendEmojiWithCheck(JSON.stringify(args))
     }
 
     private shortcutKeyEventhandler(event: KeyboardEvent) {
@@ -939,51 +908,55 @@ export class MainForm {
                     break;
             }
         } else {
+            if (this.chatForm.getChildByID("textAreaMsg") === document.activeElement) {
+                if (ekey === 'enter') {
+                    this.emojiSubmitEventhandler();
+                }
+                return;
+            }
+
             switch (ekey) {
                 case 'z':
-                    if (this.modalForm) return;
+                    if (this.modalForm || this.tractorPlayer.isObserver) return;
                     this.btnReady_Click();
                     return;
                 case 's':
-                    if (this.modalForm) return;
+                    if (this.modalForm || this.tractorPlayer.isObserver) return;
                     this.btnPig_Click();
                     return;
                 case 'r':
-                    if (this.modalForm) return;
+                    if (this.modalForm || this.tractorPlayer.isObserver) return;
                     this.btnRobot_Click();
-                    return;
-                case 'enter':
-                    this.emojiSubmitEventhandler();
                     return;
                 default:
                     break;
             }
 
             if ('1' <= ekey && ekey <= CommonMethods.emojiMsgs.length.toString() && !this.modalForm) {
-                if (!this.btnSendEmoji.input.enabled) return;
                 let emojiType = parseInt(ekey) - 1;
                 let emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
                 let msgString = CommonMethods.emojiMsgs[emojiType]
                 let args: (string | number)[] = [emojiType, emojiIndex, msgString];
-                this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
-                this.resetDanmuState();
+                this.sendEmojiWithCheck(JSON.stringify(args))
             }
         }
     }
 
-    private resetDanmuState() {
-        this.btnSendEmoji.disableInteractive()
-        this.btnSendEmoji.setColor('gray')
-        this.DesotroyModalForm();
-        setTimeout(() => {
-            this.btnSendEmoji.setInteractive({ useHandCursor: true })
-            this.btnSendEmoji.setColor('white')
-        }, 5000);
+    private sendEmojiWithCheck(args: string) {
+        if (this.isSendEmojiEnabled) {
+            this.isSendEmojiEnabled = false;
+            setTimeout(() => {
+                this.isSendEmojiEnabled = true;
+            }, 5000);
+            this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, args)
+        } else {
+            this.appendChatMsg(CommonMethods.emojiWarningMsg);
+        }
     }
 
     private lblNickName_Click() {
         if (this.modalForm) return
-        this.modalForm = this.gameScene.add.dom(Coordinates.screenWid * 0.5, Coordinates.screenHei * 0.5).createFromCache('settingsForm');
+        this.modalForm = this.gameScene.add.dom(this.gameScene.coordinates.screenWid * 0.5, this.gameScene.coordinates.screenHei * 0.5).createFromCache('settingsForm');
 
         let pAppVersion = this.modalForm.getChildByID("pAppVersion")
         pAppVersion.innerText = `版本：${this.gameScene.appVersion}`
@@ -1350,7 +1323,7 @@ export class MainForm {
     }
 
     public drawGameHall(roomStateList: RoomState[], playerList: string[]) {
-        this.gameScene.btnJoinAudio = this.gameScene.add.text(Coordinates.hallPlayerHeaderPosition.x, 20, "加入语音")
+        this.gameScene.btnJoinAudio = this.gameScene.add.text(this.gameScene.coordinates.hallPlayerHeaderPosition.x, 20, "加入语音")
             .setColor('white')
             .setFontSize(20)
             .setPadding(10)
@@ -1372,14 +1345,14 @@ export class MainForm {
                 }
             }, this)
 
-        this.gameScene.hallPlayerHeader = this.gameScene.add.text(Coordinates.hallPlayerHeaderPosition.x, Coordinates.hallPlayerHeaderPosition.y, "在线").setColor('white').setFontSize(30).setShadow(2, 2, "#333333", 2, true, true)
+        this.gameScene.hallPlayerHeader = this.gameScene.add.text(this.gameScene.coordinates.hallPlayerHeaderPosition.x, this.gameScene.coordinates.hallPlayerHeaderPosition.y, "在线").setColor('white').setFontSize(30).setShadow(2, 2, "#333333", 2, true, true)
         for (let i = 0; i < playerList.length; i++) {
-            this.gameScene.hallPlayerNames[i] = this.gameScene.add.text(Coordinates.hallPlayerTopPosition.x, Coordinates.hallPlayerTopPosition.y + i * 40, playerList[i]).setColor('white').setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
+            this.gameScene.hallPlayerNames[i] = this.gameScene.add.text(this.gameScene.coordinates.hallPlayerTopPosition.x, this.gameScene.coordinates.hallPlayerTopPosition.y + i * 40, playerList[i]).setColor('white').setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
         }
 
         for (let i = 0; i < roomStateList.length; i++) {
-            var thisTableX = Coordinates.pokerTablePositionStart.x + Coordinates.pokerTableOffsets.x * (i % 2)
-            var thisTableY = Coordinates.pokerTablePositionStart.y + Coordinates.pokerTableOffsets.y * Math.floor(i / 2)
+            var thisTableX = this.gameScene.coordinates.pokerTablePositionStart.x + this.gameScene.coordinates.pokerTableOffsets.x * (i % 2)
+            var thisTableY = this.gameScene.coordinates.pokerTablePositionStart.y + this.gameScene.coordinates.pokerTableOffsets.y * Math.floor(i / 2)
             this.gameScene.pokerTableChairImg[i] = {
                 tableImg: undefined,
                 chairImgs: [],
@@ -1409,7 +1382,7 @@ export class MainForm {
                     this.gameScene.pokerTableChairImg[i].tableImg.y += 5
                     this.gameScene.pokerTableChairNames[i].tableName.y += 5
                 })
-            this.gameScene.pokerTableChairNames[i].tableName = this.gameScene.add.text(thisTableX + Coordinates.pokerTableLabelOffsets.x, thisTableY + Coordinates.pokerTableLabelOffsets.y, roomStateList[i].roomSetting.RoomName)
+            this.gameScene.pokerTableChairNames[i].tableName = this.gameScene.add.text(thisTableX + this.gameScene.coordinates.pokerTableLabelOffsets.x, thisTableY + this.gameScene.coordinates.pokerTableLabelOffsets.y, roomStateList[i].roomSetting.RoomName)
                 .setColor('white')
                 .setFontSize(20)
                 .setShadow(2, 2, "#333333", 2, true, true)
@@ -1417,8 +1390,8 @@ export class MainForm {
             this.gameScene.pokerTableChairImg[i].chairImgs = []
             this.gameScene.pokerTableChairNames[i].chairNames = []
             for (let j = 0; j < 4; j++) {
-                var thisChairX = thisTableX + Coordinates.pokerChairOffsets[j].x;
-                var thisChairY = thisTableY + Coordinates.pokerChairOffsets[j].y;
+                var thisChairX = thisTableX + this.gameScene.coordinates.pokerChairOffsets[j].x;
+                var thisChairY = thisTableY + this.gameScene.coordinates.pokerChairOffsets[j].y;
                 this.gameScene.pokerTableChairNames[i].chairNames[j] = {
                     myOwnName: undefined,
                     observerNames: [],
@@ -1465,7 +1438,7 @@ export class MainForm {
     }
 
     public NotifyEmojiEventHandler(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string) {
-        if (0 <= emojiType && emojiType < CommonMethods.winEmojiTypeLength) {
+        if (0 <= emojiType && emojiType < CommonMethods.winEmojiTypeLength && Object.keys(this.PlayerPosition).includes(playerID)) {
             msgString = CommonMethods.emojiMsgs[emojiType];
             this.drawingFormHelper.DrawEmojiByPosition(this.PlayerPosition[playerID], emojiType, emojiIndex, isCenter);
         }
@@ -1477,8 +1450,16 @@ export class MainForm {
         } else {
             finalMsg = `【${playerID}】说：${msgString}`;
         }
-        this.gameScene.danmuHistory.push(finalMsg);
-        this.drawingFormHelper.DrawDanmu(playerID, finalMsg);
+        this.drawingFormHelper.DrawDanmu(finalMsg);
+        this.appendChatMsg(finalMsg);
+    }
+
+    public appendChatMsg(finalMsg: string) {
+        let p = document.createElement("p");
+        p.innerText = finalMsg
+        let divChatHistory = this.chatForm.getChildByID("divChatHistory");
+        divChatHistory.appendChild(p);
+        divChatHistory.scrollTop = divChatHistory.scrollHeight;
     }
 
     public CutCardShoeCardsEventHandler() {
@@ -1491,7 +1472,7 @@ export class MainForm {
             return;
         }
 
-        this.modalForm = this.gameScene.add.dom(Coordinates.screenWid * 0.5, Coordinates.screenHei * 0.5).createFromCache('cutCardsForm');
+        this.modalForm = this.gameScene.add.dom(this.gameScene.coordinates.screenWid * 0.5, this.gameScene.coordinates.screenHei * 0.5).createFromCache('cutCardsForm');
 
         let btnRandom = this.modalForm.getChildByID("btnRandom")
         btnRandom.onclick = () => {

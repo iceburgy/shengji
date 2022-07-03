@@ -24,9 +24,6 @@ import { UndoRounded } from "@mui/icons-material";
 
 const cookies = new Cookies();
 
-const screenWidth = document.documentElement.clientWidth;
-const screenHeight = document.documentElement.clientHeight;
-
 interface Player {
     name: string
     prepare: boolean
@@ -71,7 +68,6 @@ export class GameReplayScene extends Phaser.Scene {
     public soundVolume: number
     public noDanmu: string
     public noCutCards: string
-    public danmuHistory: string[]
     public decadeUICanvas: HTMLElement
     public currentReplayEntities: any[]
     public selectDates: Element
@@ -81,6 +77,7 @@ export class GameReplayScene extends Phaser.Scene {
     public btnNextTrick: Phaser.GameObjects.Text
     public btnLastTrick: Phaser.GameObjects.Text
     public btnReplayAngle: Phaser.GameObjects.Text
+    public coordinates: Coordinates
 
     constructor() {
         super("GameReplayScene")
@@ -107,6 +104,8 @@ export class GameReplayScene extends Phaser.Scene {
         IDBHelper.maxReplays = cookies.get("maxReplays") ? parseInt(cookies.get("maxReplays")) : IDBHelper.maxReplays;
         this.currentReplayEntities = [];
         IDBHelper.InitIDB();
+
+        this.coordinates = new Coordinates(this.isReplayMode);
     }
 
     preload() {
@@ -114,11 +113,11 @@ export class GameReplayScene extends Phaser.Scene {
         this.progressBox = this.add.graphics();
         this.progressBox.fillStyle(0x999999, 0.7);
         this.progressBox.fillRect(
-            Coordinates.centerX - Coordinates.progressBarWidth / 2, Coordinates.centerY - Coordinates.progressBarHeight / 2, Coordinates.progressBarWidth, Coordinates.progressBarHeight);
+            this.coordinates.centerX - this.coordinates.progressBarWidth / 2, this.coordinates.centerY - this.coordinates.progressBarHeight / 2, this.coordinates.progressBarWidth, this.coordinates.progressBarHeight);
 
         this.loadingText = this.make.text({
-            x: Coordinates.centerX,
-            y: Coordinates.centerY - 50,
+            x: this.coordinates.centerX,
+            y: this.coordinates.centerY - 50,
             text: 'Loading...',
             style: {
                 font: '20px monospace',
@@ -127,8 +126,8 @@ export class GameReplayScene extends Phaser.Scene {
         }).setOrigin(0.5, 0.5);
 
         this.percentText = this.make.text({
-            x: Coordinates.centerX,
-            y: Coordinates.centerY,
+            x: this.coordinates.centerX,
+            y: this.coordinates.centerY,
             text: '0%',
             style: {
                 font: '18px monospace',
@@ -137,8 +136,8 @@ export class GameReplayScene extends Phaser.Scene {
         }).setOrigin(0.5, 0.5);
 
         this.assetText = this.make.text({
-            x: Coordinates.centerX,
-            y: Coordinates.centerY + 50,
+            x: this.coordinates.centerX,
+            y: this.coordinates.centerY + 50,
             text: '',
             style: {
                 font: '18px monospace',
@@ -151,7 +150,7 @@ export class GameReplayScene extends Phaser.Scene {
             this.progressBar.clear();
             this.progressBar.fillStyle(0xffffff, 1);
             this.progressBar.fillRect(
-                Coordinates.centerX - Coordinates.progressBarWidth / 2, Coordinates.centerY - Coordinates.progressBarHeight / 2, Coordinates.progressBarWidth * value, Coordinates.progressBarHeight);
+                this.coordinates.centerX - this.coordinates.progressBarWidth / 2, this.coordinates.centerY - this.coordinates.progressBarHeight / 2, this.coordinates.progressBarWidth * value, this.coordinates.progressBarHeight);
             this.percentText.setText(parseInt(value * 100) + '%');
         }, this);
 
@@ -161,16 +160,16 @@ export class GameReplayScene extends Phaser.Scene {
 
         this.load.image("bg2", bgimage)
         this.load.spritesheet('poker', pokerImage, {
-            frameWidth: Coordinates.cardWidth,
-            frameHeight: Coordinates.cardHeigh
+            frameWidth: this.coordinates.cardWidth,
+            frameHeight: this.coordinates.cardHeigh
         });
         this.load.spritesheet('suitsImage', suitsImage, {
-            frameWidth: Coordinates.toolbarSize,
-            frameHeight: Coordinates.toolbarSize
+            frameWidth: this.coordinates.toolbarSize,
+            frameHeight: this.coordinates.toolbarSize
         });
         this.load.spritesheet('suitsbarImage', suitsbarImage, {
-            frameWidth: Coordinates.toolbarSize,
-            frameHeight: Coordinates.toolbarSize
+            frameWidth: this.coordinates.toolbarSize,
+            frameHeight: this.coordinates.toolbarSize
         });
         this.load.html('settingsForm', settingsForm);
         this.load.html('replayForm', replayForm);
@@ -190,13 +189,13 @@ export class GameReplayScene extends Phaser.Scene {
         this.percentText.destroy();
         this.assetText.destroy();
 
-        this.add.image(0, 0, 'bg2').setOrigin(0).setDisplaySize(screenWidth, screenHeight);
+        this.add.image(0, 0, 'bg2').setOrigin(0).setDisplaySize(this.coordinates.screenWid, this.coordinates.screenHei);
         this.mainForm = new MainForm(this)
         CommonMethods.BuildCardNumMap()
 
         this.loadReplayForm();
 
-        this.btnFirstTrick = this.add.text(Coordinates.btnReadyPosition.x, Coordinates.btnReadyPosition.y, '|←')
+        this.btnFirstTrick = this.add.text(this.coordinates.btnReadyPosition.x, this.coordinates.btnReadyPosition.y, '|←')
             .setColor('white')
             .setFontSize(20)
             .setPadding(10)
@@ -215,10 +214,10 @@ export class GameReplayScene extends Phaser.Scene {
                 // tooltip
                 this.btnTT.destroy();
             })
-        this.btnFirstTrick.displayWidth = Coordinates.replayControlButtonWidth;
+        this.btnFirstTrick.displayWidth = this.coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnFirstTrick)
 
-        this.btnPreviousTrick = this.add.text(Coordinates.btnReadyPosition.x + Coordinates.replayControlButtonOffset + Coordinates.replayControlButtonWidth, Coordinates.btnReadyPosition.y, '←')
+        this.btnPreviousTrick = this.add.text(this.coordinates.btnReadyPosition.x + this.coordinates.replayControlButtonOffset + this.coordinates.replayControlButtonWidth, this.coordinates.btnReadyPosition.y, '←')
             .setColor('white')
             .setFontSize(20)
             .setPadding(10)
@@ -237,10 +236,10 @@ export class GameReplayScene extends Phaser.Scene {
                 // tooltip
                 this.btnTT.destroy();
             })
-        this.btnPreviousTrick.displayWidth = Coordinates.replayControlButtonWidth;
+        this.btnPreviousTrick.displayWidth = this.coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnPreviousTrick)
 
-        this.btnNextTrick = this.add.text(Coordinates.btnReadyPosition.x + (Coordinates.replayControlButtonOffset + Coordinates.replayControlButtonWidth) * 2, Coordinates.btnReadyPosition.y, '→')
+        this.btnNextTrick = this.add.text(this.coordinates.btnReadyPosition.x + (this.coordinates.replayControlButtonOffset + this.coordinates.replayControlButtonWidth) * 2, this.coordinates.btnReadyPosition.y, '→')
             .setColor('white')
             .setFontSize(20)
             .setPadding(10)
@@ -259,10 +258,10 @@ export class GameReplayScene extends Phaser.Scene {
                 // tooltip
                 this.btnTT.destroy();
             })
-        this.btnNextTrick.displayWidth = Coordinates.replayControlButtonWidth;
+        this.btnNextTrick.displayWidth = this.coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnNextTrick)
 
-        this.btnLastTrick = this.add.text(Coordinates.btnReadyPosition.x + (Coordinates.replayControlButtonOffset + Coordinates.replayControlButtonWidth) * 3, Coordinates.btnReadyPosition.y, '→|')
+        this.btnLastTrick = this.add.text(this.coordinates.btnReadyPosition.x + (this.coordinates.replayControlButtonOffset + this.coordinates.replayControlButtonWidth) * 3, this.coordinates.btnReadyPosition.y, '→|')
             .setColor('white')
             .setFontSize(20)
             .setPadding(10)
@@ -281,10 +280,10 @@ export class GameReplayScene extends Phaser.Scene {
                 // tooltip
                 this.btnTT.destroy();
             })
-        this.btnLastTrick.displayWidth = Coordinates.replayControlButtonWidth;
+        this.btnLastTrick.displayWidth = this.coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnLastTrick)
 
-        this.btnReplayAngle = this.add.text(Coordinates.btnExitRoomPosition.x - 150, Coordinates.btnExitRoomPosition.y, '切换视角')
+        this.btnReplayAngle = this.add.text(this.coordinates.btnExitRoomPosition.x - 150, this.coordinates.btnExitRoomPosition.y, '切换视角')
             .setColor('white')
             .setFontSize(30)
             .setPadding(10)
@@ -302,7 +301,7 @@ export class GameReplayScene extends Phaser.Scene {
         this.roomUIControls.texts.push(this.btnReplayAngle)
     }
     private loadReplayForm() {
-        let replayForm = this.add.dom(Coordinates.replayBarPosition.x, Coordinates.replayBarPosition.y).setOrigin(0).createFromCache('replayForm');
+        let replayForm = this.add.dom(this.coordinates.replayBarPosition.x, this.coordinates.replayBarPosition.y).setOrigin(0).createFromCache('replayForm');
         this.selectDates = replayForm.getChildByID("selectDates")
         this.selectTimes = replayForm.getChildByID("selectTimes")
         let btnLoadReplay = replayForm.getChildByID("btnLoadReplay")
@@ -428,7 +427,7 @@ export class GameReplayScene extends Phaser.Scene {
 
     private drawAllOtherHandCards() {
         for (let i = 1; i < 4; i++) {
-            this.mainForm.drawingFormHelper.DrawHandCardsByPosition(i + 1, this.mainForm.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[this.mainForm.PositionPlayer[i + 1]], Coordinates.replayHandCardScale);
+            this.mainForm.drawingFormHelper.DrawHandCardsByPosition(i + 1, this.mainForm.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[this.mainForm.PositionPlayer[i + 1]], this.coordinates.replayHandCardScale);
         }
     }
 
@@ -594,6 +593,7 @@ export class GameReplayScene extends Phaser.Scene {
         this.mainForm.tractorPlayer.replayEntity.CurrentTrickStates.unshift(trick);
         if (trick == null) {
             this.mainForm.tractorPlayer.CurrentHandState.Score -= this.mainForm.tractorPlayer.CurrentHandState.ScorePunishment + this.mainForm.tractorPlayer.CurrentHandState.ScoreLast8CardsBase * this.mainForm.tractorPlayer.CurrentHandState.ScoreLast8CardsMultiplier;
+            this.mainForm.drawingFormHelper.DrawDiscardedCards();
         }
         else if (Object.keys(trick.ShowedCards).length == 4) {
             for (const [key, value] of Object.entries(trick.ShowedCards)) {

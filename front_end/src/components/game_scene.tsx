@@ -104,8 +104,6 @@ const NotifyEmoji_RESPONSE = "NotifyEmoji"
 const CutCardShoeCards_RESPONSE = "CutCardShoeCards"
 const NotifyReplayState_RESPONSE = "NotifyReplayState"
 
-const screenWidth = document.documentElement.clientWidth;
-const screenHeight = document.documentElement.clientHeight;
 const dummyValue = "dummyValue"
 const IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
 
@@ -156,8 +154,8 @@ export class GameScene extends Phaser.Scene {
     public soundVolume: number
     public noDanmu: string
     public noCutCards: string
-    public danmuHistory: string[]
     public decadeUICanvas: HTMLElement
+    public coordinates: Coordinates
 
     constructor(hostName, playerName: string) {
         super("GameScene")
@@ -199,9 +197,9 @@ export class GameScene extends Phaser.Scene {
             this.hostName = "";
             return;
         }
-        this.danmuHistory = [];
         this.joinAudioUrl = cookies.get("joinAudioUrl") ? cookies.get("joinAudioUrl") : "";
         IDBHelper.maxReplays = cookies.get("maxReplays") ? parseInt(cookies.get("maxReplays")) : IDBHelper.maxReplays;
+        this.coordinates = new Coordinates(this.isReplayMode);
     }
 
     preload() {
@@ -210,11 +208,11 @@ export class GameScene extends Phaser.Scene {
         this.progressBox = this.add.graphics();
         this.progressBox.fillStyle(0x999999, 0.7);
         this.progressBox.fillRect(
-            Coordinates.centerX - Coordinates.progressBarWidth / 2, Coordinates.centerY - Coordinates.progressBarHeight / 2, Coordinates.progressBarWidth, Coordinates.progressBarHeight);
+            this.coordinates.centerXReal - this.coordinates.progressBarWidth / 2, this.coordinates.centerY - this.coordinates.progressBarHeight / 2, this.coordinates.progressBarWidth, this.coordinates.progressBarHeight);
 
         this.loadingText = this.make.text({
-            x: Coordinates.centerX,
-            y: Coordinates.centerY - 50,
+            x: this.coordinates.centerXReal,
+            y: this.coordinates.centerY - 50,
             text: 'Loading...',
             style: {
                 font: '20px monospace',
@@ -223,8 +221,8 @@ export class GameScene extends Phaser.Scene {
         }).setOrigin(0.5, 0.5);
 
         this.percentText = this.make.text({
-            x: Coordinates.centerX,
-            y: Coordinates.centerY,
+            x: this.coordinates.centerXReal,
+            y: this.coordinates.centerY,
             text: '0%',
             style: {
                 font: '18px monospace',
@@ -233,8 +231,8 @@ export class GameScene extends Phaser.Scene {
         }).setOrigin(0.5, 0.5);
 
         this.assetText = this.make.text({
-            x: Coordinates.centerX,
-            y: Coordinates.centerY + 50,
+            x: this.coordinates.centerXReal,
+            y: this.coordinates.centerY + 50,
             text: '',
             style: {
                 font: '18px monospace',
@@ -247,7 +245,7 @@ export class GameScene extends Phaser.Scene {
             this.progressBar.clear();
             this.progressBar.fillStyle(0xffffff, 1);
             this.progressBar.fillRect(
-                Coordinates.centerX - Coordinates.progressBarWidth / 2, Coordinates.centerY - Coordinates.progressBarHeight / 2, Coordinates.progressBarWidth * value, Coordinates.progressBarHeight);
+                this.coordinates.centerXReal - this.coordinates.progressBarWidth / 2, this.coordinates.centerY - this.coordinates.progressBarHeight / 2, this.coordinates.progressBarWidth * value, this.coordinates.progressBarHeight);
             this.percentText.setText(parseInt(value * 100) + '%');
         }, this);
 
@@ -280,16 +278,16 @@ export class GameScene extends Phaser.Scene {
             ["effect_shoujidonghua", "play5"]
         ]
         this.load.spritesheet('poker', pokerImage, {
-            frameWidth: Coordinates.cardWidth,
-            frameHeight: Coordinates.cardHeigh
+            frameWidth: this.coordinates.cardWidth,
+            frameHeight: this.coordinates.cardHeigh
         });
         this.load.spritesheet('suitsImage', suitsImage, {
-            frameWidth: Coordinates.toolbarSize,
-            frameHeight: Coordinates.toolbarSize
+            frameWidth: this.coordinates.toolbarSize,
+            frameHeight: this.coordinates.toolbarSize
         });
         this.load.spritesheet('suitsbarImage', suitsbarImage, {
-            frameWidth: Coordinates.toolbarSize,
-            frameHeight: Coordinates.toolbarSize
+            frameWidth: this.coordinates.toolbarSize,
+            frameHeight: this.coordinates.toolbarSize
         });
         this.load.audio("biyue1", biyue1);
         this.load.audio("draw", draw);
@@ -356,7 +354,7 @@ export class GameScene extends Phaser.Scene {
             this.percentText.destroy();
             this.assetText.destroy();
 
-            this.add.image(0, 0, 'bg2').setOrigin(0).setDisplaySize(screenWidth, screenHeight);
+            this.add.image(0, 0, 'bg2').setOrigin(0).setDisplaySize(this.coordinates.screenWidReal, this.coordinates.screenHei);
             try {
                 this.websocket = new WebSocket(`ws://${this.hostName}`)
                 this.websocket.onerror = this.onerror.bind(this)
@@ -406,8 +404,8 @@ export class GameScene extends Phaser.Scene {
             }
         } else {
             this.decadeUICanvas = document.getElementById("decadeUI-canvas");
-            this.decadeUICanvas.style.width = `${Coordinates.sgsAnimWidth}px`
-            this.decadeUICanvas.style.height = `${Coordinates.sgsAnimHeight}px`
+            this.decadeUICanvas.style.width = `${this.coordinates.sgsAnimWidth}px`
+            this.decadeUICanvas.style.height = `${this.coordinates.sgsAnimHeight}px`
             this.decadeUICanvas.style.position = "absolute";
             this.decadeUICanvas.style.left = "0px";
             this.decadeUICanvas.style.top = "0px";
