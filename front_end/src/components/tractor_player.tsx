@@ -73,7 +73,12 @@ export class TractorPlayer {
         }
 
         this.destroyAllClientMessages()
+        let posX = this.mainForm.gameScene.coordinates.clientMessagePosition.x;
         let posY = this.mainForm.gameScene.coordinates.clientMessagePosition.y - (msgs.length - 1) / 2 * this.mainForm.gameScene.coordinates.lineOffsetY
+        if (msgs.length >= 2 && msgs[1].includes("获胜！")) {
+            posX = this.mainForm.gameScene.coordinates.totalPointsPosition.x;
+            posY = this.mainForm.gameScene.coordinates.totalPointsPosition.y + 30;
+        }
         for (let i = 0; i < msgs.length; i++) {
             let m = msgs[i]
             if (m.includes("获胜！")) {
@@ -109,8 +114,7 @@ export class TractorPlayer {
                 if (this.mainForm.enableSound) this.mainForm.gameScene.soundfankui2.play()
             }
 
-
-            this.mainForm.gameScene.clientMessages.push(this.mainForm.gameScene.add.text(this.mainForm.gameScene.coordinates.clientMessagePosition.x, posY + i * this.mainForm.gameScene.coordinates.lineOffsetY, m)
+            this.mainForm.gameScene.clientMessages.push(this.mainForm.gameScene.add.text(posX, posY + i * this.mainForm.gameScene.coordinates.lineOffsetY, m)
                 .setColor("yellow")
                 .setFontSize(28)
                 .setShadow(2, 2, "#333333", 2, true, true))

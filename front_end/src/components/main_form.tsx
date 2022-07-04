@@ -334,7 +334,6 @@ export class MainForm {
         }
         this.loadEmojiForm();
 
-
         /*
             bool isHelpSeen = FormSettings.GetSettingBool(FormSettings.KeyIsHelpSeen);
             if (!isHelpSeen && meJoined)
@@ -839,6 +838,7 @@ export class MainForm {
     }
 
     public loadEmojiForm() {
+        if (this.chatForm && this.chatForm.visible) return;
         let chatFormWid = this.gameScene.coordinates.chatWid;
         this.chatForm = this.gameScene.add.dom(this.gameScene.coordinates.screenWid, 10)
             .setOrigin(0)

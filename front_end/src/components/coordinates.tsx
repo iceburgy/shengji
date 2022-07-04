@@ -230,9 +230,9 @@ export class Coordinates {
         this.last8Position = { x: this.centerX - (this.cardWidth / 2) - this.handCardOffset * 3.5, y: 100 }
         this.scoreCardsPosition = { x: this.last8Position.x, y: this.last8Position.y + this.cardHeigh + 30 }
         this.winPointsPosition = { x: this.last8Position.x, y: this.scoreCardsPosition.y + this.cardHeigh + 30 }
-        this.last8PointsPosition = { x: this.last8Position.x, y: this.winPointsPosition.y + 60 }
-        this.punishmentPointsPosition = { x: this.last8Position.x, y: this.last8PointsPosition.y + 60 }
-        this.totalPointsPosition = { x: this.last8Position.x, y: this.punishmentPointsPosition.y + 60 }
+        this.last8PointsPosition = { x: this.last8Position.x, y: this.winPointsPosition.y + 30 }
+        this.punishmentPointsPosition = { x: this.last8Position.x, y: this.last8PointsPosition.y + 30 }
+        this.totalPointsPosition = { x: this.last8Position.x, y: this.punishmentPointsPosition.y + 30 }
 
         this.countDownPosition = { x: this.screenWid * 0.1, y: this.showedCardsPositions[0].y }
         this.countDownSzie = 60
