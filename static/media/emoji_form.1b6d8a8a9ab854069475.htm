@@ -1,0 +1,46 @@
+<style>
+    #divChatHistory {
+        padding-left: 5px;
+        padding-right: 5px;
+        color: #c0cad1dd;
+        overflow: auto;
+        background-color: darkslategrey;
+        border-radius: 6px;
+    }
+
+    #divfooter {
+        position: absolute;
+        bottom: -5px;
+    }
+
+    select {
+        border-radius: 3px;
+    }
+
+    textarea {
+        resize: none;
+        border-radius: 3px;
+    }
+</style>
+<div id="input-form" class="formroot">
+    <div id="divChatHistory"></div>
+
+    <div id="divfooter">
+        <p id="pPresetMsgs">
+            <select id="selectPresetMsgs">
+                <option value="这波操作，666！">1-这波操作，666！</option>
+                <option value="亲，请注意细节">2-亲，请注意细节</option>
+                <option value="猴开心：）">3-猴开心：）</option>
+                <option value="嚎啕大哭：（">4-嚎啕大哭：（</option>
+                <option value="能不能快点啊，兵贵神速！">5-能不能快点啊，兵贵神速！</option>
+                <option value="烟花">6-烟花</option>
+                <option value="人心散了，队伍不好带啊……">7-人心散了，队伍不好带啊……</option>
+                <option value="有劳点击“就绪”继续游戏">8-有劳点击“就绪”继续游戏</option>
+                <option value="有劳房主点击“继续上盘牌局”">9-有劳房主点击“继续上盘牌局”</option>
+            </select>
+        </p>
+
+        <textarea id="textAreaMsg" rows="4" cols="20" maxlength="50"
+            placeholder="消息长度不超过50，按“回车键”发送，快捷消息的快捷键为对应的数字键"></textarea>
+    </div>
+</div>
