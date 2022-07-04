@@ -64,7 +64,6 @@ export class MainForm {
     public modalForm: any
     public firstWinNormal = 1;
     public firstWinBySha = 3;
-    public hiddenEffects: any
     public chatForm: any
 
     constructor(gs: GameScene) {
@@ -80,10 +79,6 @@ export class MainForm {
         this.SelectedCards = []
         this.timerIntervalID = []
         this.timerCountDown = 0
-        this.hiddenEffects = {
-            "hadoken": this.drawingFormHelper.DrawSf2ryu,
-            "walker": this.drawingFormHelper.DrawWalker,
-        }
         this.isSendEmojiEnabled = true;
 
         // 房间信息
@@ -1444,8 +1439,8 @@ export class MainForm {
         }
         if (isCenter) return;
         let finalMsg = "";
-        if (this.hiddenEffects[msgString]) {
-            this.hiddenEffects[msgString](this);
+        if (this.drawingFormHelper.hiddenEffects[msgString]) {
+            this.drawingFormHelper.hiddenEffects[msgString].apply(this.drawingFormHelper);
             finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】`;
         } else {
             finalMsg = `【${playerID}】说：${msgString}`;

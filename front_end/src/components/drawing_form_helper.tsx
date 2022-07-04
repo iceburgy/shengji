@@ -23,24 +23,25 @@ export class DrawingFormHelper {
     public isDragging: any
     public DrawSf2ryu: Function
     public DrawWalker: Function
+    public hiddenEffects: any
 
     constructor(mf: MainForm) {
         this.mainForm = mf
         this.suitSequence = 0
 
-        this.DrawSf2ryu = function (mf: MainForm) {
-            mf.gameScene.anims.create({
+        this.DrawSf2ryu = function () {
+            this.mainForm.gameScene.anims.create({
                 key: 'hadoken',
                 frameRate: 12,
-                frames: mf.gameScene.anims.generateFrameNames('sf2ryu', { prefix: 'frame_', end: 15, zeroPad: 2 }),
+                frames: this.mainForm.gameScene.anims.generateFrameNames('sf2ryu', { prefix: 'frame_', end: 15, zeroPad: 2 }),
                 yoyo: false,
                 repeat: 3,
                 hideOnComplete: true
             });
-            mf.gameScene.add.sprite(this.mainForm.gameScene.coordinates.centerX, this.mainForm.gameScene.coordinates.centerY, 'sf2ryu').play('hadoken').setScale(3);
+            this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.centerX, this.mainForm.gameScene.coordinates.centerY, 'sf2ryu').play('hadoken').setScale(3);
         }
 
-        this.DrawWalker = function (mf: MainForm) {
+        this.DrawWalker = function () {
             const animConfig = {
                 key: 'walk',
                 frames: 'walker',
@@ -48,13 +49,13 @@ export class DrawingFormHelper {
                 repeat: -1
             };
 
-            mf.gameScene.anims.create(animConfig);
+            this.mainForm.gameScene.anims.create(animConfig);
 
-            const sprite = mf.gameScene.add.sprite(this.mainForm.gameScene.coordinates.screenWid, this.mainForm.gameScene.coordinates.centerY, 'walker', 'frame_0000');
+            const sprite = this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.screenWid, this.mainForm.gameScene.coordinates.centerY, 'walker', 'frame_0000');
 
             sprite.play('walk');
 
-            mf.gameScene.tweens.add({
+            this.mainForm.gameScene.tweens.add({
                 targets: sprite,
                 x: 0 - sprite.width / 4,
                 y: 484,
@@ -65,6 +66,11 @@ export class DrawingFormHelper {
                     sprite.destroy();
                 }
             });
+        }
+
+        this.hiddenEffects = {
+            "hadoken": this.DrawSf2ryu,
+            "walker": this.DrawWalker,
         }
     }
 
