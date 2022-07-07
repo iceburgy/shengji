@@ -139,8 +139,8 @@ export class TractorPlayer {
             msgs.push(`允许投降：${roomSetting.AllowSurrender ? "是" : "否"}`)
             msgs.push(`允许J到底：${roomSetting.AllowJToBottom ? "是" : "否"}`)
             msgs.push(`允许托管自动亮牌：${roomSetting.AllowRobotMakeTrump ? "是" : "否"}`)
-            msgs.push(`允许分数小于等于X时革命：${roomSetting.AllowRiotWithTooFewScoreCards ? "是" : "否"}`)
-            msgs.push(`允许主牌小于等于X张时革命：${roomSetting.AllowRiotWithTooFewTrumpCards ? "是" : "否"}`)
+            msgs.push(`允许分数小于等于X时革命：${roomSetting.AllowRiotWithTooFewScoreCards >= 0 ? roomSetting.AllowRiotWithTooFewScoreCards : "否"}`)
+            msgs.push(`允许主牌小于等于X张时革命：${roomSetting.AllowRiotWithTooFewTrumpCards >= 0 ? roomSetting.AllowRiotWithTooFewTrumpCards : "否"}`)
             msgs.push(`断线重连等待时长：${roomSetting.secondsToWaitForReenter}秒`)
 
             var mandRanksString = "没有必打牌"

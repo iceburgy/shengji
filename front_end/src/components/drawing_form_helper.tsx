@@ -24,6 +24,7 @@ export class DrawingFormHelper {
     public DrawSf2ryu: Function
     public DrawWalker: Function
     public hiddenEffects: any
+    public hiddenEffectImage: any
 
     constructor(mf: MainForm) {
         this.mainForm = mf
@@ -38,11 +39,11 @@ export class DrawingFormHelper {
                 repeat: 3,
                 hideOnComplete: true
             });
-            this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.centerX, this.mainForm.gameScene.coordinates.centerY, 'sf2ryu').play('hadoken').setScale(3);
+            this.hiddenEffectImage = this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.centerX, this.mainForm.gameScene.coordinates.centerY, 'sf2ryu').play('hadoken').setScale(3);
         }
 
         this.DrawWalker = function () {
-            const animConfig = {
+            let animConfig = {
                 key: 'walk',
                 frames: 'walker',
                 frameRate: 60,
@@ -51,19 +52,20 @@ export class DrawingFormHelper {
 
             this.mainForm.gameScene.anims.create(animConfig);
 
-            const sprite = this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.screenWid, this.mainForm.gameScene.coordinates.centerY, 'walker', 'frame_0000');
+            this.hiddenEffectImage = this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.screenWid, this.mainForm.gameScene.coordinates.centerY, 'walker', 'frame_0000');
+            this.hiddenEffectImage.setX(this.mainForm.gameScene.coordinates.screenWid + this.hiddenEffectImage.width / 4);
 
-            sprite.play('walk');
+            this.hiddenEffectImage.play('walk');
 
             this.mainForm.gameScene.tweens.add({
-                targets: sprite,
-                x: 0 - sprite.width / 4,
-                y: 484,
+                targets: this.hiddenEffectImage,
+                x: 0 - this.hiddenEffectImage.width / 2,
+                y: this.mainForm.gameScene.coordinates.centerY,
                 delay: 500,
                 duration: 5000,
                 ease: "Cubic.easeInOut",
                 onComplete: () => {
-                    sprite.destroy();
+                    this.hiddenEffectImage.destroy();
                 }
             });
         }

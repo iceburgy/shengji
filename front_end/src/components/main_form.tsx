@@ -855,7 +855,7 @@ export class MainForm {
             let selectedIndex = selectPresetMsgs.selectedIndex;
             let selectedValue = selectPresetMsgs.value;
             let args: (string | number)[] = [selectedIndex, CommonMethods.GetRandomInt(CommonMethods.winEmojiLength), selectedValue];
-            this.sendEmojiWithCheck(JSON.stringify(args))
+            this.sendEmojiWithCheck(args)
         }
     }
 
@@ -877,7 +877,7 @@ export class MainForm {
             emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
         }
         let args: (string | number)[] = [emojiType, emojiIndex, msgString];
-        this.sendEmojiWithCheck(JSON.stringify(args))
+        this.sendEmojiWithCheck(args)
     }
 
     private shortcutKeyEventhandler(event: KeyboardEvent) {
@@ -932,20 +932,22 @@ export class MainForm {
                 let emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
                 let msgString = CommonMethods.emojiMsgs[emojiType]
                 let args: (string | number)[] = [emojiType, emojiIndex, msgString];
-                this.sendEmojiWithCheck(JSON.stringify(args))
+                this.sendEmojiWithCheck(args)
             }
         }
     }
 
-    private sendEmojiWithCheck(args: string) {
-        if (this.isSendEmojiEnabled) {
+    private sendEmojiWithCheck(args: (string | number)[]) {
+        if (this.drawingFormHelper.hiddenEffects[args[2]] && this.drawingFormHelper.hiddenEffectImage && this.drawingFormHelper.hiddenEffectImage.visible) {
+            this.appendChatMsg(CommonMethods.hiddenEffectsWarningMsg);
+        } else if (!this.isSendEmojiEnabled) {
+            this.appendChatMsg(CommonMethods.emojiWarningMsg);
+        } else {
             this.isSendEmojiEnabled = false;
             setTimeout(() => {
                 this.isSendEmojiEnabled = true;
             }, 5000);
-            this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, args)
-        } else {
-            this.appendChatMsg(CommonMethods.emojiWarningMsg);
+            this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
         }
     }
 
