@@ -1136,13 +1136,7 @@ export class DrawingFormHelper {
     }
 
     public DrawDanmu(msgString: string) {
-        if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true') {
-            this.mainForm.tractorPlayer.NotifyMessage([msgString]);
-            setTimeout(() => {
-                this.mainForm.tractorPlayer.destroyAllClientMessages();
-            }, CommonMethods.danmuDuration);
-            return
-        }
+        if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true') return;
         let x = this.mainForm.gameScene.coordinates.screenWid;
         let y = this.mainForm.gameScene.coordinates.danmuPositionY;
         let danmuIndex = 0;

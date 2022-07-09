@@ -22,7 +22,7 @@ export class CommonMethods {
         "烟花",
         "人心散了，队伍不好带啊……",
         "有劳点击“就绪”继续游戏",
-        "有劳房主点击“继续上盘牌局”",
+        "有劳房主点击自己昵称，再点击“继续上盘牌局”",
     ]
     public static emojiWarningMsg = "请不要过于频繁发送消息，每条消息间隔5秒"
     public static hiddenEffectsWarningMsg = "已有其他玩家发动了隐藏技，请稍后再试"

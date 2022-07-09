@@ -690,7 +690,9 @@ export class MainForm {
             let showingCardsValidationResult: ShowingCardsValidationResult =
                 TractorRules.IsValid(this.tractorPlayer.CurrentTrickState, this.SelectedCards, this.tractorPlayer.CurrentPoker);
             if (showingCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid) {
-                this.ToShowCards();
+                setTimeout(() => {
+                    this.ToShowCards();
+                }, 250);
             }
             else {
 
@@ -740,7 +742,9 @@ export class MainForm {
             let showingCardsValidationResult: ShowingCardsValidationResult =
                 TractorRules.IsValid(this.tractorPlayer.CurrentTrickState, this.SelectedCards, this.tractorPlayer.CurrentPoker);
             if (showingCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid) {
-                this.ToShowCards();
+                setTimeout(() => {
+                    this.ToShowCards();
+                }, 250);
             }
             else {
                 alert(`failed to auto select cards: ${this.SelectedCards}, please manually select`)
@@ -870,7 +874,6 @@ export class MainForm {
             msgString = msgString.trim()
         }
         textAreaMsg.value = "";
-        textAreaMsg.blur();
         if (!msgString) {
             msgString = selectPresetMsgs.value;
             emojiType = selectPresetMsgs.selectedIndex;
@@ -878,6 +881,13 @@ export class MainForm {
         }
         let args: (string | number)[] = [emojiType, emojiIndex, msgString];
         this.sendEmojiWithCheck(args)
+    }
+
+    private blurChat() {
+        if (!this.chatForm) return;
+        let textAreaMsg = this.chatForm.getChildByID("textAreaMsg")
+        if (!textAreaMsg) return;
+        textAreaMsg.blur();
     }
 
     private shortcutKeyEventhandler(event: KeyboardEvent) {
@@ -1225,6 +1235,7 @@ export class MainForm {
             }
         } else {
             // 左键键点空白区
+            this.blurChat();
             if (this.modalForm && !this.modalForm.getChildByID("btnBapi1")) {
                 if (!this.gameScene.isReplayMode) this.gameScene.loadAudioFiles()
                 this.gameScene.saveSettings()
