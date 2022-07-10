@@ -9,7 +9,7 @@ export class CommonMethods {
     public static reenterRoomSignal = "断线重连中,请稍后...";
     public static resumeGameSignal = "牌局加载中,请稍后...";
 
-    public static wsErrorType_Insecure = "an insecure websocket connection may not be initiated from a page loaded over https";
+    public static wsErrorType_Insecure = "insecure";
     public static winEmojiLength = 4
     public static winEmojiTypeLength = 6
     public static danmuDuration = 8000
