@@ -192,10 +192,15 @@ export class GameScene extends Phaser.Scene {
         this.noCutCards = cookies.get("noCutCards");
         if (this.noCutCards === undefined) this.noCutCards = 'false'
 
-        if (!IPPort.test(this.hostName) && !(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)$)/gi.test(this.hostName)) && !this.processAuth()) {
+        let isIPPort = IPPort.test(this.hostName);
+        let isValidUrl = (/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)$)/gi.test(this.hostName)) || this.processAuth()
+        if (!isIPPort && !isValidUrl) {
             document.body.innerHTML = `<div>!!! 解析服务器地址失败，请确认输入信息无误：${this.hostNameOriginal}</div>`
             this.hostName = "";
             return;
+        }
+        if (!isIPPort) {
+            this.resolveUrl()
         }
         this.joinAudioUrl = cookies.get("joinAudioUrl") ? cookies.get("joinAudioUrl") : "";
         IDBHelper.maxReplays = cookies.get("maxReplays") ? parseInt(cookies.get("maxReplays")) : IDBHelper.maxReplays;
@@ -342,6 +347,11 @@ export class GameScene extends Phaser.Scene {
 
     create() {
         if (!this.hostName) return;
+        if (!IPPort.test(this.hostName)) {
+            document.body.innerHTML = `<div>!!! 解析服务器URL失败，请确认输入信息无误：${this.hostNameOriginal}</div>`
+            return;
+        }
+
         // because loading animation.js is dependent on spine.js, hence defer loading animation.js here
         // The typical flow for a Phaser Scene is that you load assets in the Scene's preload method 
         // and then when the Scene's create method is called you are guaranteed that all of those assets are ready for use and have been loaded.
@@ -539,6 +549,20 @@ export class GameScene extends Phaser.Scene {
                 return true;
             }
         } catch { }
+        return false;
+    }
+
+    private async resolveUrl(): boolean {
+        try {
+            let urlParts = this.hostName.split(":");
+            var response = await fetch(`https://dns.google/resolve?name=${urlParts[0]}`);
+            var json = await response.json();
+            this.hostName = `${json.Answer[0].data}:${urlParts[1]}`;
+            return true;
+        } catch (ex) {
+            console.log("===")
+            console.log(ex)
+        }
         return false;
     }
 
