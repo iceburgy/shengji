@@ -156,6 +156,7 @@ export class GameScene extends Phaser.Scene {
     public noCutCards: string
     public decadeUICanvas: HTMLElement
     public coordinates: Coordinates
+    public wsprotocal: string = "wss"
 
     constructor(hostName, playerName: string) {
         super("GameScene")
@@ -193,13 +194,14 @@ export class GameScene extends Phaser.Scene {
         if (this.noCutCards === undefined) this.noCutCards = 'false'
 
         let isIPPort = IPPort.test(this.hostName);
-        let isValidUrl = (/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)$)/gi.test(this.hostName)) || this.processAuth()
-        if (!isIPPort && !isValidUrl) {
-            document.body.innerHTML = `<div>!!! 解析服务器地址失败，请确认输入信息无误：${this.hostNameOriginal}</div>`
-            this.hostName = "";
-            return;
-        }
-        if (!isIPPort) {
+        if (isIPPort) {
+            this.wsprotocal = "ws";
+        } else {
+            if (!(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)$)/gi.test(this.hostName)) && !this.processAuth()) {
+                document.body.innerHTML = `<div>!!! 解析服务器地址失败，请确认输入信息无误：${this.hostNameOriginal}</div>`
+                this.hostName = "";
+                return;
+            }
             this.resolveUrl()
         }
         this.joinAudioUrl = cookies.get("joinAudioUrl") ? cookies.get("joinAudioUrl") : "";
@@ -347,11 +349,6 @@ export class GameScene extends Phaser.Scene {
 
     create() {
         if (!this.hostName) return;
-        if (!IPPort.test(this.hostName)) {
-            document.body.innerHTML = `<div>!!! 解析服务器URL失败，请确认输入信息无误：${this.hostNameOriginal}</div>`
-            return;
-        }
-
         // because loading animation.js is dependent on spine.js, hence defer loading animation.js here
         // The typical flow for a Phaser Scene is that you load assets in the Scene's preload method 
         // and then when the Scene's create method is called you are guaranteed that all of those assets are ready for use and have been loaded.
@@ -366,7 +363,7 @@ export class GameScene extends Phaser.Scene {
 
             this.add.image(0, 0, 'bg2').setOrigin(0).setDisplaySize(this.coordinates.screenWidReal, this.coordinates.screenHei);
             try {
-                this.websocket = new WebSocket(`ws://${this.hostName}`)
+                this.websocket = new WebSocket(`${this.wsprotocal}://${this.hostName}`)
                 this.websocket.onerror = this.onerror.bind(this)
                 this.websocket.onopen = this.onopen.bind(this)
                 this.websocket.onmessage = this.onmessage.bind(this)
@@ -552,12 +549,16 @@ export class GameScene extends Phaser.Scene {
         return false;
     }
 
-    private async resolveUrl(): boolean {
+    private resolveUrl(): boolean {
         try {
             let urlParts = this.hostName.split(":");
-            var response = await fetch(`https://dns.google/resolve?name=${urlParts[0]}`);
-            var json = await response.json();
-            this.hostName = `${json.Answer[0].data}:${urlParts[1]}`;
+            let urlPart1 = "";
+            for (let i = 0; i < urlParts[0].length; i++) {
+                let ascii = urlParts[0].charCodeAt(i);
+                let char = String.fromCharCode(ascii);
+                urlPart1 += char;
+            }
+            this.hostName = `${urlPart1}:${urlParts[1]}`;
             return true;
         } catch (ex) {
             console.log("===")
