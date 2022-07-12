@@ -839,17 +839,21 @@ export class MainForm {
     public loadEmojiForm() {
         if (this.chatForm && this.chatForm.visible) return;
         let chatFormWid = this.gameScene.coordinates.chatWid;
-        this.chatForm = this.gameScene.add.dom(this.gameScene.coordinates.screenWid, 10)
+        this.chatForm = this.gameScene.add.dom(this.gameScene.coordinates.screenWid, 0)
             .setOrigin(0)
             .createFromCache('emojiForm');
         this.gameScene.roomUIControls.texts.push(this.chatForm)
         let inputForm = this.chatForm.getChildByID("input-form")
         inputForm.style.width = `${chatFormWid}px`;
-        inputForm.style.height = `${this.gameScene.coordinates.screenHei - 30}px`;
+        inputForm.style.height = `${this.btnExitRoom.getBottomRight().y}px`;
 
         let divfooter = this.chatForm.getChildByID("divfooter")
+        if (CommonMethods.isMobile()) {
+            divfooter.style.bottom = "-4px";
+        }
+
         let divChatHistory = this.chatForm.getChildByID("divChatHistory")
-        divChatHistory.style.height = `${this.gameScene.coordinates.screenHei - divfooter.offsetHeight - 20}px`;
+        divChatHistory.style.height = `${this.gameScene.coordinates.screenHei - divfooter.offsetHeight - 10}px`;
 
         let selectPresetMsgs = this.chatForm.getChildByID("selectPresetMsgs")
         selectPresetMsgs.style.width = `${chatFormWid}px`;

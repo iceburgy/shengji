@@ -465,4 +465,8 @@ export class CommonMethods {
         if (currentPoker.Trump == SuitEnums.Suit.Joker && currentPoker.HasSomeCards(5)) num++;
         return num;
     }
+
+    public static isMobile(): boolean {
+        return /Mobi|Android/i.test(navigator.userAgent)
+    }
 }

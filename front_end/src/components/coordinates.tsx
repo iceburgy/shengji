@@ -118,7 +118,7 @@ export class Coordinates {
         this.centerX = this.screenWid * 0.5
         this.centerY = screenHeight * 0.5
         this.hiddenWidth = 20
-        this.chatWid = chatWidth - 17
+        this.chatWid = chatWidth
 
         // progress bar
         this.progressBarWidth = 300
