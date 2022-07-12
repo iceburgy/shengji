@@ -913,7 +913,7 @@ export class MainForm {
                     break;
             }
         } else {
-            if (this.chatForm.getChildByID("textAreaMsg") === document.activeElement) {
+            if (this.chatForm && this.chatForm.getChildByID("textAreaMsg") === document.activeElement) {
                 if (ekey === 'enter') {
                     this.emojiSubmitEventhandler();
                 }
