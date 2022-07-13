@@ -20,6 +20,7 @@ export class DrawingFormHelper {
     private startY: number = 0
     private handcardScale: number = 1
     private suitSequence: number
+    private maxCountTrumpMadeCards: number = 0
     public isDragging: any
     public DrawSf2ryu: Function
     public DrawWalker: Function
@@ -658,6 +659,7 @@ export class DrawingFormHelper {
     }
 
     public TrumpMadeCardsShowFromLastTrick() {
+        this.maxCountTrumpMadeCards = 0;
         let trumpDict: any = {}
         let lastTrumpStates: TrumpState[] = this.mainForm.tractorPlayer.CurrentHandState.LastTrumpStates
         lastTrumpStates.forEach(lastHandState => {
@@ -701,6 +703,7 @@ export class DrawingFormHelper {
                 }
             }
             this.DrawTrumpMadeCardsByPositionFromLastTrick(allTrumpCards, posIndex)
+            this.maxCountTrumpMadeCards = Math.max(this.maxCountTrumpMadeCards, allTrumpCards.length);
         }
     }
 
@@ -775,31 +778,24 @@ export class DrawingFormHelper {
         this.DrawShowedCards(cards, coords.x, coords.y, this.mainForm.gameScene.showedCardImages, 0.5)
     }
 
-    // drawing showed cards from last trick
+    // drawing TrumpMade cards from last trick
     public DrawTrumpMadeCardsByPositionFromLastTrick(cards: number[], pos: number) {
-        let coords: any = {}
-        if (pos === 2 || pos === 4) {
-            coords = this.getShowedCardsCoordinatesByPositionFromLastTrick(pos, cards.length)
-            if (pos == 2) coords.x = this.mainForm.gameScene.coordinates.screenWid - 10 - this.mainForm.gameScene.coordinates.hiddenWidth - this.mainForm.gameScene.coordinates.cardWidth - this.mainForm.gameScene.coordinates.handCardOffset * (cards.length - 1)
-            else coords.x = 10
-            coords.y = coords.y - this.mainForm.gameScene.coordinates.cardHeigh
-        } else {
-            coords = this.getShowedCardsCoordinatesByPosition(cards.length, pos)
-        }
-        this.DrawShowedCards(cards, coords.x, coords.y, this.mainForm.gameScene.showedCardImages, 1)
+        this.DrawShowedCardsByPosition(cards, pos);
     }
 
     private getShowedCardsCoordinatesByPositionFromLastTrick(pos: number, count: number): any {
         let posInd = pos - 1
         let x = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].x
         let y = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].y
+        let trumpMadeCardsExtraOffsetWidth = (this.maxCountTrumpMadeCards - 1) * this.mainForm.gameScene.coordinates.handCardOffset
+        let trumpMadeCardsWidth = this.mainForm.gameScene.coordinates.cardWidth + trumpMadeCardsExtraOffsetWidth
         switch (posInd) {
             case 0:
                 x = x + this.mainForm.gameScene.coordinates.cardWidth / 4 - (count - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 4
                 y = y - this.mainForm.gameScene.coordinates.cardHeigh / 2
                 break;
             case 1:
-                x = x - (count - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 2 - this.mainForm.gameScene.coordinates.cardWidth / 2
+                x = x - (count - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 2 - this.mainForm.gameScene.coordinates.cardWidth / 2 - trumpMadeCardsExtraOffsetWidth
                 y = y + this.mainForm.gameScene.coordinates.cardHeigh / 4
                 break;
             case 2:
@@ -807,7 +803,7 @@ export class DrawingFormHelper {
                 y = y + this.mainForm.gameScene.coordinates.cardHeigh
                 break;
             case 3:
-                x = x + this.mainForm.gameScene.coordinates.cardWidth
+                x = x + trumpMadeCardsWidth
                 y = y + this.mainForm.gameScene.coordinates.cardHeigh / 4
                 break;
             default:

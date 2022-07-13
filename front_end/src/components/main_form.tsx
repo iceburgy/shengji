@@ -1261,11 +1261,12 @@ export class MainForm {
 
         this.tractorPlayer.NotifyMessage(["回看上轮出牌"]);
 
+        //查看谁亮过什么牌
+        //need to draw this first so that we have max count for trump made cards
+        this.drawingFormHelper.TrumpMadeCardsShowFromLastTrick();
+
         //绘制上一轮各家所出的牌，缩小至一半，放在左下角，或者重画当前轮各家所出的牌
         this.PlayerLastTrickShowedCards();
-
-        //查看谁亮过什么牌
-        this.drawingFormHelper.TrumpMadeCardsShowFromLastTrick();
     }
 
     //绘制上一轮各家所出的牌，缩小一半

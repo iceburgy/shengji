@@ -189,9 +189,9 @@ export class Coordinates {
         // cards
         this.showedCardsPositions = [
             { x: this.centerX - this.cardWidth / 2, y: this.playerTextPositions[0].y - 300 },
-            { x: this.screenWid - 300, y: this.playerTextPositions[1].y - 110 },
+            { x: this.screenWid - 300, y: this.playerTextPositions[1].y - 100 },
             { x: this.centerX - this.cardWidth / 2, y: this.playerTextPositions[2].y + 100 },
-            { x: this.playerTextPositions[3].x + 200, y: this.playerTextPositions[3].y - 110 },
+            { x: this.playerTextPositions[3].x + 200, y: this.playerTextPositions[3].y - 100 },
         ]
 
         // last8cards
@@ -201,12 +201,12 @@ export class Coordinates {
         // account for maximum of five suites, with 4 gaps, shift to left by 2 gaps
         this.replayControlButtonWidth = 60
         this.replayControlButtonOffset = 10
-        this.replayHandCardScale = 0.7
+        this.replayHandCardScale = 0.6
         this.handCardPositions = [
             { x: this.centerX - this.cardWidth / 2 - this.handCardOffset * 2, y: screenHeight - 200 },
-            { x: this.last8CardsForStarterPosition.x - this.cardWidth * this.replayHandCardScale, y: this.showedCardsPositions[0].y - this.cardHeigh * this.replayHandCardScale },
-            { x: this.last8CardsForStarterPosition.x - this.cardWidth * this.replayHandCardScale, y: this.showedCardsPositions[2].y + this.cardHeigh },
-            { x: 10, y: this.showedCardsPositions[0].y - this.cardHeigh * this.replayHandCardScale },
+            { x: this.last8CardsForStarterPosition.x - this.cardWidth * this.replayHandCardScale, y: this.showedCardsPositions[0].y + this.cardHeigh * (1 - this.replayHandCardScale) },
+            { x: this.last8CardsForStarterPosition.x - this.cardWidth * this.replayHandCardScale, y: this.showedCardsPositions[2].y + this.cardHeigh * (1 - this.replayHandCardScale) },
+            { x: 10, y: this.showedCardsPositions[0].y + this.cardHeigh * (1 - this.replayHandCardScale) },
         ]
         this.toolbarSize = 50
         this.toolbarPosition = { x: this.screenWid - 360, y: this.handCardPositions[0].y - 100 - 20 }

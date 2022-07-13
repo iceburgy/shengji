@@ -419,15 +419,14 @@ export class GameReplayScene extends Phaser.Scene {
         this.mainForm.drawingFormHelper.DrawDiscardedCards();
 
         if (shouldDraw) {
-            this.mainForm.drawingFormHelper.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1);
-            this.drawAllOtherHandCards();
             this.mainForm.drawingFormHelper.TrumpMadeCardsShowFromLastTrick();
+            this.drawAllPlayerHandCards();
         }
     }
 
-    private drawAllOtherHandCards() {
-        for (let i = 1; i < 4; i++) {
-            this.mainForm.drawingFormHelper.DrawHandCardsByPosition(i + 1, this.mainForm.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[this.mainForm.PositionPlayer[i + 1]], this.coordinates.replayHandCardScale);
+    private drawAllPlayerHandCards() {
+        for (let i = 1; i <= 4; i++) {
+            this.mainForm.drawingFormHelper.DrawHandCardsByPosition(i, this.mainForm.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[this.mainForm.PositionPlayer[i]], this.coordinates.replayHandCardScale);
         }
     }
 
@@ -454,9 +453,9 @@ export class GameReplayScene extends Phaser.Scene {
 
         this.mainForm.tractorPlayer.CurrentTrickState = trick;
         let curPlayer: string = trick.Learder;
-        let drawDelay = 200;
-        let drawDelayOffset = 100;
-        for (let i = 0; i < Object.keys(trick.ShowedCards).length; i++) {
+        let drawDelay = 100;
+        let i = 1;
+        for (; i <= Object.keys(trick.ShowedCards).length; i++) {
             let position = this.mainForm.PlayerPosition[curPlayer];
             if (Object.keys(trick.ShowedCards).length == 4) {
                 trick.ShowedCards[curPlayer].forEach(card => {
@@ -467,8 +466,7 @@ export class GameReplayScene extends Phaser.Scene {
             let cardsList: number[] = CommonMethods.deepCopy<number[]>(trick.ShowedCards[curPlayer]);
             setTimeout(() => {
                 this.mainForm.drawingFormHelper.DrawShowedCardsByPosition(cardsList, position)
-            }, drawDelay);
-            drawDelay += drawDelayOffset;
+            }, i * drawDelay);
             curPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this.mainForm.tractorPlayer.CurrentGameState.Players, curPlayer).PlayerId;
         }
 
@@ -476,8 +474,9 @@ export class GameReplayScene extends Phaser.Scene {
             this.DrawDumpFailureMessage(trick);
         }
 
-        this.mainForm.drawingFormHelper.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1);
-        this.drawAllOtherHandCards();
+        setTimeout(() => {
+            this.drawAllPlayerHandCards();
+        }, i * drawDelay);
 
         if (trick.Winner) {
             if (!this.mainForm.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(
