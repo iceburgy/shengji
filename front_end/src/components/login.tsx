@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import { red, grey } from '@mui/material/colors';
+import { red, grey, lightGreen } from '@mui/material/colors';
 import Button from '@mui/material/Button';
 import Cookies from 'universal-cookie';
 import { Link } from "@mui/material";
@@ -18,10 +18,11 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
     if (gotNewVersion) {
         cookies.set('appVersion', packageJson.version, { path: '/' })
     }
+    const greyDegree = 400
     return (
         <Card sx={{ height: '100vh' }}>
-            <CardContent sx={{ bgcolor: red[500], height: '6vh' }}>
-                <Typography sx={{ fontSize: 20 }} color="text.secondary" gutterBottom>
+            <CardContent sx={{ bgcolor: grey[700], height: '6vh', textAlign: "center" }}>
+                <Typography sx={{ fontSize: 20 }} color="white" gutterBottom>
                     欢迎来到西村升级小馆！<br />
                     当前版本：{packageJson.version}
                 </Typography>
@@ -29,7 +30,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
             <CardContent
                 sx={{
                     height: '95vh',
-                    bgcolor: grey[500],
+                    bgcolor: grey[greyDegree],
                     textAlign: "center",
                 }}
             >
@@ -59,7 +60,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                 />
                 <CardContent
                     sx={{
-                        bgcolor: grey[500],
+                        bgcolor: grey[greyDegree],
                         textAlign: "center",
                     }}
                 >
@@ -71,13 +72,20 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                 </CardContent>
                 <CardContent
                     sx={{
-                        bgcolor: grey[500],
+                        bgcolor: grey[greyDegree],
                         textAlign: "center",
                     }}
                 >
                     <Button variant="contained" color="success" size="large" onClick={() => {
                         setIsGameReplay(true);
                     }}>录像回放</Button>
+                </CardContent>
+                <CardContent
+                    sx={{
+                        textAlign: "center",
+                    }}
+                >
+                    <div dangerouslySetInnerHTML={{ __html: "<b>重要通知：</b>之前按照<a href=\"javascript:void(0)\" onclick=\"javascript:{window.open('https://bit.ly/chromstep')}\">此图解</a>修改过‘insecure content’浏览器设置的用户，请将此设置还原。" }} />
                 </CardContent>
                 {showNotice === 'none' ? '' : <LoginNoticeScreen />}
                 {gotNewVersion ? <VersionInfo /> : ''}

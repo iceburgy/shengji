@@ -370,7 +370,7 @@ export class GameScene extends Phaser.Scene {
             } catch (e) {
                 let errString = e.toString()
                 if (errString.toLowerCase().includes(CommonMethods.wsErrorType_Insecure)) {
-                    document.body.innerHTML = `<div>检测到您的浏览器尚未设置，请参照<a href="#" onclick="javascript:{window.open('https://bit.ly/chromstep')}">此图解</a>先进行相应设置</div>`
+                    document.body.innerHTML = `<div>检测到您的浏览器尚未设置，请参照<a href="javascript:void(0)" onclick="javascript:{window.open('https://bit.ly/chromstep')}">此图解</a>先进行相应设置</div>`
                 } else {
                     document.body.innerHTML = `<div>!!! 尝试链接服务器失败，错误信息：${errString}</div>`
                     console.log(e);
