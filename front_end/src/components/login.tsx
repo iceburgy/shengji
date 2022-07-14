@@ -20,8 +20,8 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
     }
     const greyDegree = 400
     return (
-        <Card sx={{ height: '100vh' }}>
-            <CardContent sx={{ bgcolor: grey[700], height: '6vh', textAlign: "center" }}>
+        <Card sx={{ height: '100vh', overflow: "auto", bgcolor: grey[greyDegree], }}>
+            <CardContent sx={{ bgcolor: grey[700], height: '3em', textAlign: "center" }}>
                 <Typography sx={{ fontSize: 20 }} color="white" gutterBottom>
                     欢迎来到西村升级小馆！<br />
                     当前版本：{packageJson.version}
