@@ -80,15 +80,8 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                         setIsGameReplay(true);
                     }}>录像回放</Button>
                 </CardContent>
-                <CardContent
-                    sx={{
-                        textAlign: "center",
-                    }}
-                >
-                    <div dangerouslySetInnerHTML={{ __html: "<b>重要通知：</b>之前按照<a href=\"javascript:void(0)\" onclick=\"javascript:{window.open('https://bit.ly/chromstep')}\">此图解</a>修改过‘insecure content’浏览器设置的用户，请将此设置还原。" }} />
-                </CardContent>
                 {showNotice === 'none' ? '' : <LoginNoticeScreen />}
-                {gotNewVersion ? <VersionInfo /> : ''}
+                <VersionInfo />
             </CardContent>
         </Card>
     )

@@ -1,9 +1,10 @@
 {
   "name": "front_end",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "versioninfo": {
     "1.0.3": [
-      "新增安全通讯模式"
+      "新增安全通讯模式",
+      "<b>重要通知：</b>此版本之前的用户请注意<br/>如果之前按照<a href=\"javascript:void(0)\" onclick=\"javascript:{window.open('https://bit.ly/chromstep')}\">此图解</a><br/>修改过‘insecure content’浏览器设置<br/>请将此设置还原。"
     ],
     "1.0.2": [
       "新增聊天窗口"

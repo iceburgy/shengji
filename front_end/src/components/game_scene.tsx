@@ -162,8 +162,8 @@ export class GameScene extends Phaser.Scene {
         super("GameScene")
         this.isReplayMode = false;
         this.appVersion = packageJson.version
-        this.hostName = hostName
-        this.hostNameOriginal = hostName
+        this.hostName = hostName.trim()
+        this.hostNameOriginal = this.hostName
         this.playerName = playerName
         this.existPlayers = [1]
         this.players = [{ name: playerName, prepare: false }, null, null, null]
