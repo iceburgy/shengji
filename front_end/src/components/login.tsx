@@ -64,7 +64,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                         textAlign: "center",
                     }}
                 >
-                    <Button variant="contained" color="success" size="large" onClick={() => {
+                    <Button disabled={!(hostName !== undefined && hostName.trim() && playerName !== undefined && playerName.trim())} variant="contained" color="success" size="large" onClick={() => {
                         setIsSetName(true);
                         cookies.set('hostName', hostName, { path: '/' });
                         cookies.set('playerName', playerName, { path: '/' });

@@ -164,7 +164,12 @@ export class GameScene extends Phaser.Scene {
         this.appVersion = packageJson.version
         this.hostName = hostName.trim()
         this.hostNameOriginal = this.hostName
-        this.playerName = playerName
+        this.playerName = playerName.trim()
+        if (CommonMethods.IsNumber(this.playerName)) {
+            document.body.innerHTML = `<div>!!! 昵称不能以数字开头结尾：${this.playerName}</div>`
+            this.hostName = "";
+            return;
+        }
         this.existPlayers = [1]
         this.players = [{ name: playerName, prepare: false }, null, null, null]
         this.websocket = null
