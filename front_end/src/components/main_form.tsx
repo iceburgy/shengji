@@ -641,9 +641,6 @@ export class MainForm {
             this.PlayerCurrentTrickShowedCards();
         }
 
-        if (!this.IsDebug && this.tractorPlayer.CurrentTrickState.NextPlayer() == this.tractorPlayer.PlayerId)
-            this.drawingFormHelper.DrawMyPlayingCards();
-
         //即时更新旁观手牌
         if (this.tractorPlayer.isObserver && this.tractorPlayer.PlayerId == latestPlayer) {
             this.tractorPlayer.CurrentPoker.CloneFrom(this.tractorPlayer.CurrentHandState.PlayerHoldingCards[this.tractorPlayer.PlayerId])
@@ -716,17 +713,21 @@ export class MainForm {
                 for (let i = 0; i < myCardsNumber.length; i++) {
                     let serverCardNumber: number = myCardsNumber[i].getData("serverCardNumber")
                     if (tempSelectedCards.includes(serverCardNumber)) {
-                        //将选定的牌向上提升 via myCardIsReady
                         this.myCardIsReady[i] = true;
                         this.SelectedCards.push(serverCardNumber);
                         tempSelectedCards = CommonMethods.ArrayRemoveOneByValue(tempSelectedCards, serverCardNumber);
+                        //将选定的牌向上提升 via gameScene.cardImages
+                        let toAddImage = this.gameScene.cardImages[i] as Phaser.GameObjects.Sprite;
+                        if (toAddImage.data === null || !toAddImage.getData("status") || toAddImage.getData("status") === "down") {
+                            toAddImage.setData("status", "up");
+                            toAddImage.y -= 30;
+                        }
                     }
                 }
-
-                this.drawingFormHelper.DrawMyPlayingCards();
                 this.gameScene.sendMessageToServer(CardsReady_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.myCardIsReady));
             }
         }
+        this.drawingFormHelper.validateSelectedCards()
     }
 
     //托管代打，先手

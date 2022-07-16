@@ -97,7 +97,7 @@ export class DrawingFormHelper {
 
         this.validateSelectedCards()
     }
-    private validateSelectedCards() {
+    public validateSelectedCards() {
         if (this.mainForm.tractorPlayer.isObserver) return
         this.mainForm.SelectedCards = []
         for (let k = 0; k < this.mainForm.myCardIsReady.length; k++) {
@@ -592,10 +592,15 @@ export class DrawingFormHelper {
                 let toAddImage = (this.mainForm.gameScene.cardImages[k] as Phaser.GameObjects.Sprite)
                 let toAddCardNumber = toAddImage.getData("serverCardNumber")
                 this.mainForm.SelectedCards.push(toAddCardNumber);
+                //将选定的牌向上提升 via gameScene.cardImages
+                if (toAddImage.data === null || !toAddImage.getData("status") || toAddImage.getData("status") === "down") {
+                    toAddImage.setData("status", "up");
+                    toAddImage.y -= 30;
+                }
             }
         }
 
-        this.mainForm.drawingFormHelper.DrawMyPlayingCards();
+        this.mainForm.drawingFormHelper.validateSelectedCards();
         this.mainForm.gameScene.sendMessageToServer(CardsReady_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.mainForm.myCardIsReady));
     }
 
