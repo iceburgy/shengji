@@ -918,6 +918,10 @@ export class MainForm {
                     break;
             }
         } else {
+            if (ekey === 'escape') {
+                this.resetGameRoomUI();
+                return;
+            }
             if (this.chatForm && this.chatForm.getChildByID("textAreaMsg") === document.activeElement) {
                 if (ekey === 'enter') {
                     this.emojiSubmitEventhandler();
@@ -1240,10 +1244,21 @@ export class MainForm {
             }
         } else {
             // 左键键点空白区
-            this.blurChat();
-            if (this.modalForm && !this.modalForm.getChildByID("btnBapi1")) {
-                if (!this.gameScene.isReplayMode) this.gameScene.loadAudioFiles()
-                this.gameScene.saveSettings()
+            this.resetGameRoomUI();
+        }
+    }
+
+    private resetGameRoomUI() {
+        this.blurChat();
+        if (this.modalForm) {
+            if (this.modalForm.getChildByID("btnBapi1")) {
+                let cutPoint = 0;
+                let cutInfo = `取消,${cutPoint}`;
+                this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+            } else {
+                if (!this.gameScene.isReplayMode)
+                    this.gameScene.loadAudioFiles();
+                this.gameScene.saveSettings();
                 this.DesotroyModalForm();
             }
         }
