@@ -957,12 +957,10 @@ export class MainForm {
     }
 
     private sendEmojiWithCheck(args: (string | number)[]) {
-        if (this.drawingFormHelper.hiddenEffects[args[2]]) {
-            if (this.drawingFormHelper.hiddenEffectImage && this.drawingFormHelper.hiddenEffectImage.visible) {
-                this.appendChatMsg(CommonMethods.hiddenEffectsWarningMsg);
-            } else if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
-                this.appendChatMsg("游戏中途不允许发隐藏技扰乱视听");
-            }
+        if (this.drawingFormHelper.hiddenEffects[args[2]] && this.drawingFormHelper.hiddenEffectImage && this.drawingFormHelper.hiddenEffectImage.visible) {
+            this.appendChatMsg(CommonMethods.hiddenEffectsWarningMsg);
+        } else if (this.drawingFormHelper.hiddenEffects[args[2]] && CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
+            this.appendChatMsg("游戏中途不允许发隐藏技扰乱视听");
         } else if (!this.isSendEmojiEnabled) {
             this.appendChatMsg(CommonMethods.emojiWarningMsg);
         } else {
