@@ -588,8 +588,8 @@ export class DrawingFormHelper {
         this.mainForm.SelectedCards.length = 0
 
         for (let k = 0; k < crlength; k++) {
+            let toAddImage = (this.mainForm.gameScene.cardImages[k] as Phaser.GameObjects.Sprite)
             if (this.mainForm.myCardIsReady[k]) {
-                let toAddImage = (this.mainForm.gameScene.cardImages[k] as Phaser.GameObjects.Sprite)
                 let toAddCardNumber = toAddImage.getData("serverCardNumber")
                 this.mainForm.SelectedCards.push(toAddCardNumber);
                 //将选定的牌向上提升 via gameScene.cardImages
@@ -597,6 +597,9 @@ export class DrawingFormHelper {
                     toAddImage.setData("status", "up");
                     toAddImage.y -= 30;
                 }
+            } else if (toAddImage.data !== null && toAddImage.getData("status") && toAddImage.getData("status") === "up") {
+                toAddImage.setData("status", "down");
+                toAddImage.y += 30;
             }
         }
 
