@@ -263,7 +263,6 @@ export class MainForm {
 
         let shouldTrigger = isRobot && isRobot != this.IsDebug;
         this.IsDebug = isRobot;
-        this.btnRobot.setText(isRobot ? "取消" : "托管")
 
         if (shouldTrigger) {
             if (!this.tractorPlayer.CurrentTrickState.IsStarted()) this.RobotPlayStarting();
@@ -802,7 +801,7 @@ export class MainForm {
     }
 
     private btnReady_Click() {
-        if (this.tractorPlayer.isObserver || !this.btnReady.input.enabled) return;
+        if (!this.btnReady.input.enabled) return;
         //为防止以外连续点两下就绪按钮，造成重复发牌，点完一下就立即disable就绪按钮
         this.btnReady.disableInteractive()
         this.btnReady.setColor('gray')
@@ -811,6 +810,7 @@ export class MainForm {
     }
 
     private btnRobot_Click() {
+        if (!this.btnRobot.input.enabled) return;
         this.gameScene.sendMessageToServer(ToggleIsRobot_REQUEST, this.tractorPlayer.PlayerId, "")
     }
 
@@ -1061,6 +1061,7 @@ export class MainForm {
     }
 
     private btnPig_Click() {
+        if (!this.btnPig || !this.btnPig.input.enabled) return;
         this.ToDiscard8Cards();
         this.ToShowCards();
     }
@@ -1149,6 +1150,10 @@ export class MainForm {
             //甩牌失败播放提示音
             // soundPlayerDumpFailure.Play(this.enableSound);
 
+            //暂时关闭托管功能，以免甩牌失败后立即点托管，会出别的牌
+            this.btnRobot.disableInteractive()
+            this.btnRobot.setColor('gray')
+
             setTimeout(() => {
                 result.MustShowCardsForDumpingFail.forEach(card => {
                     this.tractorPlayer.CurrentPoker.RemoveCard(card);
@@ -1157,6 +1162,8 @@ export class MainForm {
                 this.ShowCards();
                 this.drawingFormHelper.ResortMyHandCards();
                 this.SelectedCards = []
+                this.btnRobot.setInteractive({ useHandCursor: true })
+                this.btnRobot.setColor('white')
             }, 5000);
         }
     }
