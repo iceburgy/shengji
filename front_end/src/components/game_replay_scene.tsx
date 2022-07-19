@@ -426,7 +426,7 @@ export class GameReplayScene extends Phaser.Scene {
 
     private drawAllPlayerHandCards() {
         for (let i = 1; i <= 4; i++) {
-            this.mainForm.drawingFormHelper.DrawHandCardsByPosition(i, this.mainForm.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[this.mainForm.PositionPlayer[i]], this.coordinates.replayHandCardScale);
+            this.mainForm.drawingFormHelper.DrawHandCardsByPosition(i, this.mainForm.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[this.mainForm.PositionPlayer[i]], i == 1 ? 1 : this.coordinates.replayHandCardScale);
         }
     }
 
