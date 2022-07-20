@@ -80,7 +80,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                         setIsGameReplay(true);
                     }}>录像回放</Button>
                 </CardContent>
-                {showNotice === 'none' ? '' : <LoginNoticeScreen />}
+                <LoginNoticeScreen />
                 <VersionInfo />
             </CardContent>
         </Card>
