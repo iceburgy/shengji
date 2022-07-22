@@ -977,6 +977,7 @@ export class MainForm {
     private lblNickName_Click() {
         if (this.modalForm) return
         this.modalForm = this.gameScene.add.dom(this.gameScene.coordinates.screenWid * 0.5, this.gameScene.coordinates.screenHei * 0.5).createFromCache('settingsForm');
+        this.gameScene.decadeUICanvas.style.zIndex = "-1000";
 
         let pAppVersion = this.modalForm.getChildByID("pAppVersion")
         pAppVersion.innerText = `版本：${this.gameScene.appVersion}`
@@ -1279,6 +1280,7 @@ export class MainForm {
         if (!this.modalForm) return;
         this.modalForm.destroy();
         this.modalForm = undefined;
+        this.gameScene.decadeUICanvas.style.zIndex = "1000";
     }
 
     private ShowLastTrickAndTumpMade() {
@@ -1513,6 +1515,7 @@ export class MainForm {
         }
 
         this.modalForm = this.gameScene.add.dom(this.gameScene.coordinates.screenWid * 0.5, this.gameScene.coordinates.screenHei * 0.5).createFromCache('cutCardsForm');
+        this.gameScene.decadeUICanvas.style.zIndex = "-1000";
 
         let btnRandom = this.modalForm.getChildByID("btnRandom")
         btnRandom.onclick = () => {
