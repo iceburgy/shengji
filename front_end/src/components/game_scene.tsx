@@ -103,6 +103,7 @@ const NotifyStartTimer_RESPONSE = "NotifyStartTimer" // both
 const NotifyEmoji_RESPONSE = "NotifyEmoji"
 const CutCardShoeCards_RESPONSE = "CutCardShoeCards"
 const NotifyReplayState_RESPONSE = "NotifyReplayState"
+const NotifyPing_RESPONSE = "NotifyPing"
 
 const dummyValue = "dummyValue"
 const IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
@@ -464,11 +465,17 @@ export class GameScene extends Phaser.Scene {
             this.handleCutCardShoeCards();
         } else if (messageType === NotifyReplayState_RESPONSE) {
             this.handleNotifyReplayState(objList);
+        } else if (messageType === NotifyPing_RESPONSE) {
+            this.handleNotifyPing_RESPONSE();
         }
         // } catch (e) {
         //     // alert("error")
         //     document.body.innerHTML = `<div>!!! onmessage Error: ${e}</div>`
         // }
+    }
+
+    private handleNotifyPing_RESPONSE() {
+        this.mainForm.tractorPlayer.NotifyPing()
     }
 
     private handleNotifyReplayState(objList: []) {

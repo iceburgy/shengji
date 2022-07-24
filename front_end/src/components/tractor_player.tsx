@@ -18,6 +18,7 @@ import { ReplayEntity } from './replay_entity';
 import { IDBHelper } from './idb_helper';
 
 const PlayerMakeTrump_REQUEST = "PlayerMakeTrump"
+const NotifyPong_REQUEST = "NotifyPong"
 
 export class TractorPlayer {
     public mainForm: MainForm
@@ -38,6 +39,8 @@ export class TractorPlayer {
     public replayEntity: ReplayEntity;
     public replayedTricks: CurrentTrickState[];
     public replayAngle: number;
+    public PingInterval = 6000;
+    public PingCount = 0;
 
     constructor(mf: MainForm) {
         this.mainForm = mf
@@ -473,5 +476,23 @@ export class TractorPlayer {
 
     public NotifyReplayState(replayState: ReplayEntity) {
         IDBHelper.SaveReplayEntity(replayState)
+    }
+
+    public NotifyPing() {
+        this.mainForm.gameScene.sendMessageToServer(NotifyPong_REQUEST, this.PlayerId, "");
+
+        this.PingCount++;
+        setTimeout(() => {
+            if (this.mainForm.gameScene.isInGameHall() || this.CurrentHandState.CurrentHandStep != SuitEnums.HandStep.Playing) {
+                this.PingCount = 0;
+                return;
+            }
+            if (this.PingCount <= 1) {
+                this.NotifyMessage(["您已离线，请尝试刷新页面重连"]);
+                this.PingCount = 0;
+            } else {
+                this.PingCount--;
+            }
+        }, this.PingInterval + this.PingInterval / 2);
     }
 }
