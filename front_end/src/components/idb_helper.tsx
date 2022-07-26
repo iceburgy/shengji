@@ -39,7 +39,31 @@ export class IDBHelper {
         }
     }
 
-    public static SaveReplayEntity(replayState: ReplayEntity) {
+    public static CleanupReplayEntity(callbackFunc: any) {
+        let tx = IDBHelper.LocalIDB.transaction([IDBHelper.ReplayEntityStore], 'readwrite');
+        let store = tx.objectStore(IDBHelper.ReplayEntityStore);
+        tx.oncomplete = function () { }
+        tx.onerror = function (event: any) {
+            console.log('error SaveReplayEntity');
+            console.log(event);
+        }
+
+        let index = store.index(IDBHelper.Key_datetime);
+        let getAllKeysRequest = index.getAllKeys(undefined);
+        getAllKeysRequest.onsuccess = function () {
+            let clearReq = store.clear();
+            clearReq.onsuccess = function () {
+                console.log(`attemped to clean up all replay records`);
+                callbackFunc.apply();
+            }
+        }
+        getAllKeysRequest.onerror = function (event: any) {
+            console.log('error in getAllKeysRequest');
+            console.log(event);
+        }
+    }
+
+    public static SaveReplayEntity(replayState: ReplayEntity, callback: any) {
         let tx = IDBHelper.LocalIDB.transaction([IDBHelper.ReplayEntityStore], 'readwrite');
         let store = tx.objectStore(IDBHelper.ReplayEntityStore);
         tx.oncomplete = function () { }
@@ -51,6 +75,9 @@ export class IDBHelper {
         var req = store.count();
         req.onsuccess = function () {
             let numToRemove: number = req.result - IDBHelper.maxReplays + 1;
+            if (-9 <= numToRemove && numToRemove <= 0) {
+                alert(`录像文件存储数即将饱和，已存储录像数：${req.result}，最多录像个数上限（可在设置界面中更改）：${IDBHelper.maxReplays}。请在设置界面中清理录像文件，否则系统将自动覆盖最旧的文件`);
+            }
             if (numToRemove > 0) {
                 let index = store.index(IDBHelper.Key_datetime);
                 let getAllKeysRequest = index.getAllKeys(undefined, numToRemove);
@@ -60,14 +87,14 @@ export class IDBHelper {
                     let deleteRange = IDBKeyRange.bound(lowerRange, upperRange)
                     store.delete(deleteRange)
                     console.log(`attemped to clean up ${numToRemove} records before saving the new one: ${JSON.stringify(getAllKeysRequest.result)}`);
-                    IDBHelper.SaveReplayEntityWorker(replayState, store);
+                    IDBHelper.SaveReplayEntityWorker(replayState, store, callback);
                 }
                 getAllKeysRequest.onerror = function (event: any) {
                     console.log('error in getAllKeysRequest');
                     console.log(event);
                 }
             } else {
-                IDBHelper.SaveReplayEntityWorker(replayState, store);
+                IDBHelper.SaveReplayEntityWorker(replayState, store, callback);
             }
         }
         req.onerror = function (event: any) {
@@ -76,9 +103,17 @@ export class IDBHelper {
         }
     }
 
-    public static SaveReplayEntityWorker(replayState: ReplayEntity, store: any) {
+    public static SaveReplayEntityWorker(replayState: ReplayEntity, store: any, callback: any) {
         let re = { datetime: replayState.ReplayId, text: JSON.stringify(replayState) };
-        store.add(re);
+        var req = store.add(re);
+        req.onerror = function (event: any) {
+            console.log('error in adding entry to store');
+            console.log(event);
+        }
+        req.onsuccess = function () {
+            callback.apply();
+            console.log(`attemped to save replay record: ${replayState.ReplayId}`);
+        }
 
         // test
         // store.add({ datetime: "2022-06-26===20-18-54-test-33-4", text: JSON.stringify(replayState) });
@@ -129,6 +164,7 @@ export class IDBHelper {
                 let temp = new ReplayEntity();
                 temp.CloneFrom(re)
                 reList.push(temp)
+                console.log(`attemped to read replay record: ${temp.ReplayId}`);
                 cursor.continue();
             } else {
                 callback(reList)

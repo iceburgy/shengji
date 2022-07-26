@@ -475,7 +475,7 @@ export class TractorPlayer {
     }
 
     public NotifyReplayState(replayState: ReplayEntity) {
-        IDBHelper.SaveReplayEntity(replayState)
+        IDBHelper.SaveReplayEntity(replayState, () => { void (0); })
     }
 
     public NotifyPing() {

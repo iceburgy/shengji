@@ -310,22 +310,7 @@ export class GameReplayScene extends Phaser.Scene {
             this.onDatesSelectChange(true, 0)
         }
 
-        IDBHelper.ReadReplayEntityAll((dtList: string[]) => {
-            let dates: string[] = [];
-            for (let i = 0; i < dtList.length; i++) {
-                let dt: ReplayEntity = dtList[i];
-                let datetimes: string[] = dt.split(IDBHelper.replaySeparator)
-                let dateString = datetimes[0];
-                if (!dates.includes(dateString)) {
-                    dates.push(dateString)
-                    var option = document.createElement("option");
-                    option.text = dateString;
-                    this.selectDates.add(option);
-                }
-            }
-            this.selectDates.selectedIndex = selectDates.options.length - 1;
-            this.onDatesSelectChange(true, 0)
-        });
+        this.InitReplayEntities(this);
         btnLoadReplay.onclick = () => {
             if (this.selectTimes.selectedIndex < 0) return;
             this.loadReplayEntity(this.currentReplayEntities[1][this.selectTimes.selectedIndex], true);
@@ -335,6 +320,26 @@ export class GameReplayScene extends Phaser.Scene {
             this.btnLastTrick.setVisible(true);
             this.btnReplayAngle.setVisible(true);
         }
+    }
+
+    public InitReplayEntities(that: GameReplayScene) {
+        this.removeOptions(this.selectDates);
+        IDBHelper.ReadReplayEntityAll((dtList: string[]) => {
+            let dates: string[] = [];
+            for (let i = 0; i < dtList.length; i++) {
+                let dt: ReplayEntity = dtList[i];
+                let datetimes: string[] = dt.split(IDBHelper.replaySeparator);
+                let dateString = datetimes[0];
+                if (!dates.includes(dateString)) {
+                    dates.push(dateString);
+                    var option = document.createElement("option");
+                    option.text = dateString;
+                    that.selectDates.add(option);
+                }
+            }
+            that.selectDates.selectedIndex = selectDates.options.length - 1;
+            that.onDatesSelectChange(true, 0);
+        });
     }
 
     private loadReplayEntity(re: ReplayEntity, shouldDraw: boolean) {

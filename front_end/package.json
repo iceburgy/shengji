@@ -1,7 +1,10 @@
 {
   "name": "front_end",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "versioninfo": {
+    "1.0.4": [
+      "新增录像文件管理功能：导入、导出、清空<br />从游戏设置界面中进行管理<br />“导入”仅支持zip文件格式<br />“导出”的文件与Windows客户端兼容<br /><b>“清空”操作不可逆，请谨慎使用！</b>"
+    ],
     "1.0.3": [
       "新增安全通讯模式",
       "<b>重要通知：</b>此版本之前的用户请注意<br/>如果之前按照<a href=\"javascript:void(0)\" onclick=\"javascript:{window.open('https://bit.ly/chromstep')}\">此图解</a><br/>修改过‘insecure content’浏览器设置<br/>请将此设置还原。"

@@ -20,6 +20,7 @@ import { RoomState } from './room_state';
 import { IDBHelper } from './idb_helper';
 import { ReplayEntity } from './replay_entity';
 import { GameReplayScene } from './game_replay_scene';
+import { FileHelper } from './file_helper';
 
 const ReadyToStart_REQUEST = "ReadyToStart"
 const ToggleIsRobot_REQUEST = "ToggleIsRobot"
@@ -979,7 +980,9 @@ export class MainForm {
     private lblNickName_Click() {
         if (this.modalForm) return
         this.modalForm = this.gameScene.add.dom(this.gameScene.coordinates.screenWid * 0.5, this.gameScene.coordinates.screenHei * 0.5).createFromCache('settingsForm');
-        this.gameScene.decadeUICanvas.style.zIndex = "-1000";
+        if (!this.gameScene.isReplayMode) {
+            this.gameScene.decadeUICanvas.style.zIndex = "-1000";
+        }
 
         let pAppVersion = this.modalForm.getChildByID("pAppVersion")
         pAppVersion.innerText = `版本：${this.gameScene.appVersion}`
@@ -1010,6 +1013,39 @@ export class MainForm {
             IDBHelper.maxReplays = maxInt
         }
 
+        let btnCleanupReplays = this.modalForm.getChildByID("btnCleanupReplays")
+        btnCleanupReplays.onclick = () => {
+            var c = window.confirm("你确定要清空所有录像文件吗？");
+            if (c === false) {
+                return
+            }
+            IDBHelper.CleanupReplayEntity(() => {
+                this.ReinitReplayEntities(this);
+                if (this.gameScene.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试清空全部录像文件"]);
+            });
+            this.DesotroyModalForm();
+        }
+
+        let btnExportZipFile = this.modalForm.getChildByID("btnExportZipFile")
+        btnExportZipFile.onclick = () => {
+            FileHelper.ExportZipFile();
+            this.DesotroyModalForm();
+        }
+
+        let inputZipFile = this.modalForm.getChildByID("inputZipFile")
+        let btnImportZipFile = this.modalForm.getChildByID("btnImportZipFile")
+        btnImportZipFile.onclick = () => {
+            if (!inputZipFile || !inputZipFile.files || inputZipFile.files.length <= 0) {
+                alert("No file has been selected!");
+                return;
+            }
+            FileHelper.ImportZipFile(inputZipFile.files[0], () => {
+                this.ReinitReplayEntities(this);
+                if (this.gameScene.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
+            });
+            this.DesotroyModalForm();
+        }
+
         let noDanmu = this.modalForm.getChildByID("cbxNoDanmu")
         noDanmu.checked = this.gameScene.noDanmu.toLowerCase() === "true"
         noDanmu.onchange = () => {
@@ -1022,7 +1058,7 @@ export class MainForm {
             this.gameScene.noCutCards = cbxCutCards.checked.toString()
         }
 
-        if (this.gameScene.isInGameHall() || this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
+        if (this.gameScene.isReplayMode || this.gameScene.isInGameHall() || this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
             let pResumeGame = this.modalForm.getChildByID("pResumeGame")
             let pRandomSeat = this.modalForm.getChildByID("pRandomSeat")
             let pSwapSeat = this.modalForm.getChildByID("pSwapSeat")
@@ -1060,6 +1096,13 @@ export class MainForm {
                 }
                 this.DesotroyModalForm();
             }
+        }
+    }
+
+    private ReinitReplayEntities(that: any) {
+        if (that.gameScene.isReplayMode) {
+            let grs = that.gameScene as GameReplayScene;
+            grs.InitReplayEntities(grs);
         }
     }
 
@@ -1282,7 +1325,9 @@ export class MainForm {
         if (!this.modalForm) return;
         this.modalForm.destroy();
         this.modalForm = undefined;
-        this.gameScene.decadeUICanvas.style.zIndex = "1000";
+        if (!this.gameScene.isReplayMode) {
+            this.gameScene.decadeUICanvas.style.zIndex = "1000";
+        }
     }
 
     private ShowLastTrickAndTumpMade() {
