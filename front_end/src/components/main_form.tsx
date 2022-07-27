@@ -1033,8 +1033,7 @@ export class MainForm {
         }
 
         let inputZipFile = this.modalForm.getChildByID("inputZipFile")
-        let btnImportZipFile = this.modalForm.getChildByID("btnImportZipFile")
-        btnImportZipFile.onclick = () => {
+        inputZipFile.onchange = () => {
             if (!inputZipFile || !inputZipFile.files || inputZipFile.files.length <= 0) {
                 alert("No file has been selected!");
                 return;
