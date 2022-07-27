@@ -846,7 +846,6 @@ export class MainForm {
         this.chatForm = this.gameScene.add.dom(this.gameScene.coordinates.screenWid, 0)
             .setOrigin(0)
             .createFromCache('emojiForm');
-        this.gameScene.roomUIControls.texts.push(this.chatForm)
         let inputForm = this.chatForm.getChildByID("input-form")
         inputForm.style.width = `${chatFormWid}px`;
         inputForm.style.height = `${this.btnExitRoom.getBottomRight().y}px`;
@@ -1375,6 +1374,7 @@ export class MainForm {
         this.destroyGameRoom();
         this.destroyGameHall();
         this.drawGameHall(roomStateList, playerList);
+        this.loadEmojiForm();
     }
 
     public destroyGameHall() {
@@ -1526,19 +1526,22 @@ export class MainForm {
     }
 
     public NotifyEmojiEventHandler(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string) {
+        let isPlayerInGameHall = this.gameScene.isInGameHall();
         if (0 <= emojiType && emojiType < CommonMethods.winEmojiTypeLength && Object.keys(this.PlayerPosition).includes(playerID)) {
             msgString = CommonMethods.emojiMsgs[emojiType];
-            this.drawingFormHelper.DrawEmojiByPosition(this.PlayerPosition[playerID], emojiType, emojiIndex, isCenter);
+            if (!isPlayerInGameHall) {
+                this.drawingFormHelper.DrawEmojiByPosition(this.PlayerPosition[playerID], emojiType, emojiIndex, isCenter);
+            }
         }
         if (isCenter) return;
         let finalMsg = "";
-        if (this.drawingFormHelper.hiddenEffects[msgString]) {
+        if (!isPlayerInGameHall && this.drawingFormHelper.hiddenEffects[msgString]) {
             this.drawingFormHelper.hiddenEffects[msgString].apply(this.drawingFormHelper);
             finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】`;
         } else {
             finalMsg = `【${playerID}】说：${msgString}`;
         }
-        this.drawingFormHelper.DrawDanmu(finalMsg);
+        if (!isPlayerInGameHall) this.drawingFormHelper.DrawDanmu(finalMsg);
         this.appendChatMsg(finalMsg);
     }
 
