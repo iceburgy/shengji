@@ -117,7 +117,7 @@ export class DrawingFormHelper {
                 &&
                 (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid ||
                     selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.TryToDump)) {
-                this.mainForm.btnPig.setVisible(true);
+                if (this.mainForm.btnPig && this.mainForm.btnPig.input.enabled) this.mainForm.btnPig.setVisible(true);
             }
             else if ((this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing
                 && this.mainForm.tractorPlayer.CurrentTrickState.NextPlayer() == this.mainForm.tractorPlayer.PlayerId)) {
