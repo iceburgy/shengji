@@ -35,7 +35,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                 }}
             >
                 <TextField
-                    label="服务器地址或者访问密钥"
+                    label="访问密钥"
                     color="error"
                     margin='normal'
                     value={hostName}
@@ -47,7 +47,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                     }}
                 />
                 <TextField
-                    label="请输入一个昵称"
+                    label="昵称-不超过10个字符"
                     color="error"
                     margin='normal'
                     value={playerName}

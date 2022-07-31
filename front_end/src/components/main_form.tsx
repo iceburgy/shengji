@@ -125,7 +125,7 @@ export class MainForm {
         this.gameScene.roomUIControls.texts.push(this.btnRobot)
 
         // 旁观下家
-        this.btnObserveNext = this.gameScene.add.text(this.gameScene.coordinates.btnReadyPosition.x, this.gameScene.coordinates.btnReadyPosition.y, '旁观下家')
+        this.btnObserveNext = this.gameScene.add.text(this.gameScene.coordinates.btnObserveNextPosition.x, this.gameScene.coordinates.btnObserveNextPosition.y, '旁观下家')
             .setColor('white')
             .setFontSize(30)
             .setPadding(10)
@@ -878,7 +878,7 @@ export class MainForm {
         let emojiIndex = -1;
         let msgString = textAreaMsg.value;
         if (msgString) {
-            msgString = msgString.trim()
+            msgString = msgString.trim().replace(/(\r\n|\n|\r)/gm, "");
         }
         textAreaMsg.value = "";
         if (!msgString) {

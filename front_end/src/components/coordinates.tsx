@@ -46,10 +46,10 @@ export class Coordinates {
     public overridingFlagWidth
 
     public btnLowerSize
+    public btnExitRoomPosition
     public btnReadyPosition
     public btnRobotPosition
-    public btnExitRoomPosition
-    public btnSendEmojiPosition
+    public btnObserveNextPosition
 
     // players
     public playerTextPositions
@@ -154,11 +154,11 @@ export class Coordinates {
         this.overridingFlagHeight = 40
         this.overridingFlagWidth = this.overridingFlagHeight * 3 / 2
 
-        this.btnLowerSize = 100
-        this.btnReadyPosition = { x: 10, y: screenHeight - 60 }
-        this.btnRobotPosition = { x: this.btnReadyPosition.x + this.btnLowerSize, y: screenHeight - 60 }
-        this.btnExitRoomPosition = { x: this.screenWid - 90, y: this.btnReadyPosition.y }
-        this.btnSendEmojiPosition = { x: this.btnExitRoomPosition.x - this.btnLowerSize, y: this.btnReadyPosition.y }
+        this.btnLowerSize = 90
+        this.btnExitRoomPosition = { x: 10, y: screenHeight - 60 }
+        this.btnReadyPosition = { x: this.screenWid - 90, y: this.btnExitRoomPosition.y }
+        this.btnRobotPosition = { x: this.btnReadyPosition.x - this.btnLowerSize, y: this.btnReadyPosition.y }
+        this.btnObserveNextPosition = { x: this.screenWid - 150, y: this.btnExitRoomPosition.y }
 
         // players
         this.playerTextPositions = [
