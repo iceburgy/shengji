@@ -195,7 +195,7 @@ export class GameReplayScene extends Phaser.Scene {
 
         this.loadReplayForm();
 
-        this.btnFirstTrick = this.add.text(this.coordinates.btnReadyPosition.x, this.coordinates.btnReadyPosition.y, '|←')
+        this.btnFirstTrick = this.add.text(this.coordinates.btnFirstTrickPosition.x, this.coordinates.btnFirstTrickPosition.y, '|←')
             .setColor('white')
             .setFontSize(20)
             .setPadding(10)
@@ -217,7 +217,7 @@ export class GameReplayScene extends Phaser.Scene {
         this.btnFirstTrick.displayWidth = this.coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnFirstTrick)
 
-        this.btnPreviousTrick = this.add.text(this.coordinates.btnReadyPosition.x + this.coordinates.replayControlButtonOffset + this.coordinates.replayControlButtonWidth, this.coordinates.btnReadyPosition.y, '←')
+        this.btnPreviousTrick = this.add.text(this.coordinates.btnFirstTrickPosition.x + this.coordinates.replayControlButtonOffset + this.coordinates.replayControlButtonWidth, this.coordinates.btnFirstTrickPosition.y, '←')
             .setColor('white')
             .setFontSize(20)
             .setPadding(10)
@@ -239,7 +239,7 @@ export class GameReplayScene extends Phaser.Scene {
         this.btnPreviousTrick.displayWidth = this.coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnPreviousTrick)
 
-        this.btnNextTrick = this.add.text(this.coordinates.btnReadyPosition.x + (this.coordinates.replayControlButtonOffset + this.coordinates.replayControlButtonWidth) * 2, this.coordinates.btnReadyPosition.y, '→')
+        this.btnNextTrick = this.add.text(this.coordinates.btnFirstTrickPosition.x + (this.coordinates.replayControlButtonOffset + this.coordinates.replayControlButtonWidth) * 2, this.coordinates.btnFirstTrickPosition.y, '→')
             .setColor('white')
             .setFontSize(20)
             .setPadding(10)
@@ -261,7 +261,7 @@ export class GameReplayScene extends Phaser.Scene {
         this.btnNextTrick.displayWidth = this.coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnNextTrick)
 
-        this.btnLastTrick = this.add.text(this.coordinates.btnReadyPosition.x + (this.coordinates.replayControlButtonOffset + this.coordinates.replayControlButtonWidth) * 3, this.coordinates.btnReadyPosition.y, '→|')
+        this.btnLastTrick = this.add.text(this.coordinates.btnFirstTrickPosition.x + (this.coordinates.replayControlButtonOffset + this.coordinates.replayControlButtonWidth) * 3, this.coordinates.btnFirstTrickPosition.y, '→|')
             .setColor('white')
             .setFontSize(20)
             .setPadding(10)
@@ -283,7 +283,7 @@ export class GameReplayScene extends Phaser.Scene {
         this.btnLastTrick.displayWidth = this.coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnLastTrick)
 
-        this.btnReplayAngle = this.add.text(this.coordinates.btnExitRoomPosition.x - 150, this.coordinates.btnExitRoomPosition.y, '切换视角')
+        this.btnReplayAngle = this.add.text(this.coordinates.btnObserveNextPosition.x, this.coordinates.btnObserveNextPosition.y, '切换视角')
             .setColor('white')
             .setFontSize(30)
             .setPadding(10)
