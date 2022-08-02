@@ -824,20 +824,18 @@ export class MainForm {
     }
 
     private btnExitRoom_Click() {
-        if (this.gameScene.isInGameHall() || this.gameScene.isReplayMode) {
-            window.location.reload()
-            return
-        }
         if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
             var c = window.confirm("游戏进行中退出将会重启游戏，是否确定退出？");
             if (c == true) {
                 window.location.reload()
-                return
-            } else {
-                return
             }
+            return
         }
-        this.gameScene.sendMessageToServer(ExitRoom_REQUEST, this.tractorPlayer.MyOwnId, "")
+        if (this.gameScene.isInGameRoom()) {
+            this.gameScene.sendMessageToServer(ExitRoom_REQUEST, this.tractorPlayer.MyOwnId, "")
+            return
+        }
+        window.location.reload()
     }
 
     public loadEmojiForm() {

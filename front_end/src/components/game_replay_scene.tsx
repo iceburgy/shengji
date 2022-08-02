@@ -702,6 +702,11 @@ export class GameReplayScene extends Phaser.Scene {
         return this.hallPlayerHeader && this.hallPlayerHeader.visible
     }
 
+    public isInGameRoom() {
+        return this.mainForm.btnReady && this.mainForm.btnReady.visible ||
+            this.mainForm.btnObserveNext && this.mainForm.btnObserveNext.visible
+    }
+
     public removeOptions(selectElement) {
         var i, L = selectElement.options.length - 1;
         for (i = L; i >= 0; i--) {
