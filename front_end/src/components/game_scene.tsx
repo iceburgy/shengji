@@ -141,6 +141,7 @@ export class GameScene extends Phaser.Scene {
     public hallPlayerNames: Phaser.GameObjects.Text[]
     public btnJoinAudio: Phaser.GameObjects.Text
     public joinAudioUrl: string
+    public nickNameOverridePass: string
     public clientMessages: Phaser.GameObjects.Text[]
     public danmuMessages: any[]
     public roomUIControls: { images: Phaser.GameObjects.Image[], texts: Phaser.GameObjects.Text[] }
@@ -159,7 +160,7 @@ export class GameScene extends Phaser.Scene {
     public coordinates: Coordinates
     public wsprotocal: string = "wss"
 
-    constructor(hostName, playerName: string) {
+    constructor(hostName, playerName, nickNameOverridePass: string) {
         super("GameScene")
         this.isReplayMode = false;
         this.appVersion = packageJson.version
@@ -212,6 +213,8 @@ export class GameScene extends Phaser.Scene {
         }
         this.joinAudioUrl = cookies.get("joinAudioUrl") ? cookies.get("joinAudioUrl") : "";
         IDBHelper.maxReplays = cookies.get("maxReplays") ? parseInt(cookies.get("maxReplays")) : IDBHelper.maxReplays;
+        this.nickNameOverridePass = nickNameOverridePass;
+
         this.coordinates = new Coordinates(this.isReplayMode);
     }
 
@@ -393,9 +396,7 @@ export class GameScene extends Phaser.Scene {
         console.log("连接成功")
         cookies.set('showNotice', 'none', { path: '/' });
 
-        this.sendMessageToServer(PLAYER_ENTER_HALL_REQUEST, this.playerName, JSON.stringify({
-            playerName: this.playerName,
-        }))
+        this.sendMessageToServer(PLAYER_ENTER_HALL_REQUEST, this.playerName, this.nickNameOverridePass);
         this.mainForm = new MainForm(this)
         this.loadAudioFiles()
         this.input.mouse.disableContextMenu();
@@ -608,6 +609,11 @@ export class GameScene extends Phaser.Scene {
         }
         cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/' });
         cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/' });
+    }
+
+    public saveNickNameOverridePass(nnorp: string) {
+        this.nickNameOverridePass = nnorp;
+        cookies.set('NickNameOverridePass', nnorp, { path: '/' });
     }
 
     public sendMessageToServer(messageType: string, playerID: string, content: string) {

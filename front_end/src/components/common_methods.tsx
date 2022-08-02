@@ -26,6 +26,7 @@ export class CommonMethods {
     ]
     public static emojiWarningMsg = "请不要过于频繁发送消息，每条消息间隔5秒"
     public static hiddenEffectsWarningMsg = "已有其他玩家发动了隐藏技，请稍后再试"
+    public static nickNameOverridePassLength = 5
 
     constructor() {
     }

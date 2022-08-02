@@ -10,11 +10,12 @@ import { Link } from "@mui/material";
 import { LoginNoticeScreen } from './login_notice';
 import { VersionInfo } from './version_info';
 import packageJson from '../../package.json';
+import { CommonMethods } from "./common_methods";
 
 const cookies = new Cookies();
 const gotNewVersion = packageJson.version !== cookies.get('appVersion')
 
-export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, setIsSetName, showNotice, setIsGameReplay }: any) => {
+export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, nickNameOverridePass, setNickNameOverridePass, setIsSetName, showNotice, setIsGameReplay }: any) => {
     if (gotNewVersion) {
         cookies.set('appVersion', packageJson.version, { path: '/' })
     }
@@ -53,6 +54,19 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                     value={playerName}
                     onChange={e => {
                         setPlayerName(e.target.value.trim())
+                    }}
+                    sx={{
+                        fontSize: "40"
+                    }}
+                />
+                <TextField
+                    label="昵称验证码,仅在找回昵称时需要"
+                    color="error"
+                    margin='normal'
+                    value={nickNameOverridePass}
+                    disabled={nickNameOverridePass !== undefined && nickNameOverridePass.trim() && nickNameOverridePass.trim().length == CommonMethods.nickNameOverridePassLength}
+                    onChange={e => {
+                        setNickNameOverridePass(e.target.value.trim())
                     }}
                     sx={{
                         fontSize: "40"

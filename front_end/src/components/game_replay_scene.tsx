@@ -54,6 +54,7 @@ export class GameReplayScene extends Phaser.Scene {
     public hallPlayerNames: Phaser.GameObjects.Text[]
     public btnJoinAudio: Phaser.GameObjects.Text
     public joinAudioUrl: string
+    public nickNameOverridePass: string
     public clientMessages: Phaser.GameObjects.Text[]
     public danmuMessages: any[]
     public roomUIControls: { images: Phaser.GameObjects.Image[], texts: Phaser.GameObjects.Text[] }
@@ -744,4 +745,5 @@ export class GameReplayScene extends Phaser.Scene {
     public sendMessageToServer(messageType: string, playerID: string, content: string) { }
     public loadAudioFiles() { }
     public drawSgsAni(effectName: string, effectNature: string, wid: number, hei: number) { }
+    public saveNickNameOverridePass(nnorp: string) { }
 }

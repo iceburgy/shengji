@@ -999,6 +999,9 @@ export class MainForm {
             this.gameScene.joinAudioUrl = txtJoinAudioUrl.value
         }
 
+        let txtNickNameOverridePass = this.modalForm.getChildByID("txtNickNameOverridePass")
+        txtNickNameOverridePass.value = this.gameScene.nickNameOverridePass;
+
         let txtMaxReplays = this.modalForm.getChildByID("txtMaxReplays")
         txtMaxReplays.value = IDBHelper.maxReplays
         txtMaxReplays.oninput = () => {
