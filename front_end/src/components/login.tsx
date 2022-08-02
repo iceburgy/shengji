@@ -40,7 +40,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                     margin='normal'
                     value={hostName}
                     onChange={e => {
-                        setHostName(e.target.value)
+                        setHostName(e.target.value.trim())
                     }}
                     sx={{
                         fontSize: "40"
@@ -52,7 +52,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                     margin='normal'
                     value={playerName}
                     onChange={e => {
-                        setPlayerName(e.target.value)
+                        setPlayerName(e.target.value.trim())
                     }}
                     sx={{
                         fontSize: "40"
