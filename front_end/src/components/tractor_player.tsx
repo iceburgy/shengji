@@ -40,7 +40,7 @@ export class TractorPlayer {
     public replayedTricks: CurrentTrickState[];
     public replayAngle: number;
     public PingInterval = 6000;
-    public PingCount = 0;
+    public PingStatus = 0; // 0: uninitialized; -1: unhealthy; 1: healthy
 
     constructor(mf: MainForm) {
         this.mainForm = mf
@@ -485,14 +485,17 @@ export class TractorPlayer {
 
     public NotifyPing() {
         this.mainForm.gameScene.sendMessageToServer(NotifyPong_REQUEST, this.PlayerId, "");
+        // during initial login after a new release, it'll take more than 5 seconds to fully load
+        // and it tends to time out. 
+        // hence don't trigger health check if it is not fully loaded
+        if (!(this.mainForm.gameScene.isInGameHall() || this.mainForm.gameScene.isInGameRoom())) return;
 
-        this.PingCount++;
+        this.PingStatus = 1;
         setTimeout(() => {
-            if (this.PingCount <= 1) {
+            if (this.PingStatus < 0) {
                 this.NotifyMessage(["您已离线，请尝试刷新页面重连"]);
-                this.PingCount = 0;
             } else {
-                this.PingCount--;
+                this.PingStatus = -1;
             }
         }, this.PingInterval + this.PingInterval / 2);
     }
