@@ -392,7 +392,6 @@ export class MainForm {
         this.drawingFormHelper.destroySidebar()
         this.drawingFormHelper.destroyScoreImageAndCards()
         this.drawingFormHelper.destroyLast8Cards()
-        this.tractorPlayer.PingCount = 0;
 
         //重置状态
         this.tractorPlayer.CurrentGameState = new GameState();
@@ -500,7 +499,6 @@ export class MainForm {
     }
 
     public StartGame() {
-        this.tractorPlayer.PingCount = 0;
         this.tractorPlayer.CurrentPoker = new CurrentPoker()
         this.tractorPlayer.CurrentPoker.Rank = this.tractorPlayer.CurrentHandState.Rank;
 

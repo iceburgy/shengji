@@ -488,10 +488,6 @@ export class TractorPlayer {
 
         this.PingCount++;
         setTimeout(() => {
-            if (this.mainForm.gameScene.isInGameHall() || this.CurrentHandState.CurrentHandStep != SuitEnums.HandStep.Playing) {
-                this.PingCount = 0;
-                return;
-            }
             if (this.PingCount <= 1) {
                 this.NotifyMessage(["您已离线，请尝试刷新页面重连"]);
                 this.PingCount = 0;
