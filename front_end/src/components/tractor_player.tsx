@@ -484,7 +484,7 @@ export class TractorPlayer {
     }
 
     public NotifyPing() {
-        this.mainForm.gameScene.sendMessageToServer(NotifyPong_REQUEST, this.PlayerId, "");
+        this.mainForm.gameScene.sendMessageToServer(NotifyPong_REQUEST, this.MyOwnId, "");
         // during initial login after a new release, it'll take more than 5 seconds to fully load
         // and it tends to time out. 
         // hence don't trigger health check if it is not fully loaded
