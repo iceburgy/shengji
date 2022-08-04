@@ -236,10 +236,32 @@ export class MainForm {
             .setVisible(false)
 
         this.gameScene.input.on('pointerdown', (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
-            // only if it is not clicking on any objects
-            if (!currentlyOver || currentlyOver.length == 0) {
-                this.handleGeneralClick(pointer)
+            // 右键点空白区
+            if ((!currentlyOver || currentlyOver.length == 0) && pointer.rightButtonDown()) {
+                if (this.tractorPlayer.mainForm.gameScene.isReplayMode) return;
+                if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing ||
+                    this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
+                    this.tractorPlayer.ShowLastTrickCards = !this.tractorPlayer.ShowLastTrickCards;
+                    if (this.tractorPlayer.ShowLastTrickCards) {
+                        this.ShowLastTrickAndTumpMade();
+                    }
+                    else {
+                        this.PlayerCurrentTrickShowedCards();
+                    }
+                }
+                //一局结束时右键查看最后一轮各家所出的牌，缩小至一半，放在左下角
+                else if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Ending) {
+                    this.tractorPlayer.ShowLastTrickCards = !this.tractorPlayer.ShowLastTrickCards;
+                    if (this.tractorPlayer.ShowLastTrickCards) {
+                        this.ShowLastTrickAndTumpMade();
+                    }
+                    else {
+                        this.drawingFormHelper.DrawFinishedSendedCards()
+                    }
+                }
             }
+            // 任意键
+            this.resetGameRoomUI();
         });
 
         // 快捷键
@@ -1274,37 +1296,6 @@ export class MainForm {
                 this.PlayerPosition[this.tractorPlayer.playerLocalCache.WinnderID],
                 this.tractorPlayer.playerLocalCache.WinResult - 1,
                 false);
-        }
-    }
-
-    // 点空白区
-    private handleGeneralClick(pointer: Phaser.Input.Pointer) {
-        if (pointer.rightButtonDown()) {
-            if (this.tractorPlayer.mainForm.gameScene.isReplayMode) return;
-            // 右键点空白区
-            if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing ||
-                this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
-                this.tractorPlayer.ShowLastTrickCards = !this.tractorPlayer.ShowLastTrickCards;
-                if (this.tractorPlayer.ShowLastTrickCards) {
-                    this.ShowLastTrickAndTumpMade();
-                }
-                else {
-                    this.PlayerCurrentTrickShowedCards();
-                }
-            }
-            //一局结束时右键查看最后一轮各家所出的牌，缩小至一半，放在左下角
-            else if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Ending) {
-                this.tractorPlayer.ShowLastTrickCards = !this.tractorPlayer.ShowLastTrickCards;
-                if (this.tractorPlayer.ShowLastTrickCards) {
-                    this.ShowLastTrickAndTumpMade();
-                }
-                else {
-                    this.drawingFormHelper.DrawFinishedSendedCards()
-                }
-            }
-        } else {
-            // 左键键点空白区
-            this.resetGameRoomUI();
         }
     }
 
