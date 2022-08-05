@@ -159,8 +159,8 @@ export class Coordinates {
         this.btnExitRoomPosition = { x: 10, y: screenHeight - 60 }
         this.btnReadyPosition = { x: this.screenWid - 90, y: this.btnExitRoomPosition.y }
         this.btnRobotPosition = { x: this.btnReadyPosition.x - this.btnLowerSize, y: this.btnReadyPosition.y }
-        this.btnObserveNextPosition = { x: this.screenWid - 150, y: this.btnExitRoomPosition.y }
-        this.btnFirstTrickPosition = { x: this.btnExitRoomPosition.x + this.btnLowerSize, y: this.btnExitRoomPosition.y }
+        this.btnFirstTrickPosition = { x: this.screenWid - 300, y: this.btnExitRoomPosition.y }
+        this.btnObserveNextPosition = { x: this.btnExitRoomPosition.x + this.btnLowerSize, y: this.btnExitRoomPosition.y }
 
         // players
         this.playerTextPositions = [
