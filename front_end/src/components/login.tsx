@@ -64,7 +64,6 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                     color="error"
                     margin='normal'
                     value={nickNameOverridePass}
-                    disabled={nickNameOverridePass !== undefined && nickNameOverridePass.trim() && nickNameOverridePass.trim().length == CommonMethods.nickNameOverridePassLength}
                     onChange={e => {
                         setNickNameOverridePass(e.target.value.trim())
                     }}
