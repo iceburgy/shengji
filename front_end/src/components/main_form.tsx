@@ -1449,6 +1449,7 @@ export class MainForm {
                 .setInteractive({ useHandCursor: true })
                 .on('pointerup', () => {
                     if (this.modalForm) return
+                    this.destroyGameHall();
                     this.gameScene.sendMessageToServer(PLAYER_ENTER_ROOM_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify({
                         roomID: i,
                         posID: -1,
@@ -1498,6 +1499,7 @@ export class MainForm {
                         .setInteractive({ useHandCursor: true })
                         .on('pointerup', () => {
                             if (this.modalForm) return
+                            this.destroyGameHall();
                             this.gameScene.sendMessageToServer(PLAYER_ENTER_ROOM_REQUEST, this.gameScene.playerName, JSON.stringify({
                                 roomID: i,
                                 posID: j,
