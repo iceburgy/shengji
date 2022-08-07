@@ -21,6 +21,7 @@ import { IDBHelper } from './idb_helper';
 import { ReplayEntity } from './replay_entity';
 import { GameReplayScene } from './game_replay_scene';
 import { FileHelper } from './file_helper';
+import Cookies from 'universal-cookie';
 
 const ReadyToStart_REQUEST = "ReadyToStart"
 const ToggleIsRobot_REQUEST = "ToggleIsRobot"
@@ -34,6 +35,7 @@ const ResumeGameFromFile_REQUEST = "ResumeGameFromFile"
 const RandomSeat_REQUEST = "RandomSeat"
 const SwapSeat_REQUEST = "SwapSeat"
 const PLAYER_ENTER_ROOM_REQUEST = "PlayerEnterRoom"
+const cookies = new Cookies();
 
 export class MainForm {
     public gameScene: GameScene | GameReplayScene
@@ -1020,7 +1022,7 @@ export class MainForm {
         }
 
         let txtNickNameOverridePass = this.modalForm.getChildByID("txtNickNameOverridePass")
-        txtNickNameOverridePass.value = this.gameScene.nickNameOverridePass;
+        txtNickNameOverridePass.value = cookies.get("NickNameOverridePass") ? cookies.get("NickNameOverridePass") : "";
 
         let txtMaxReplays = this.modalForm.getChildByID("txtMaxReplays")
         txtMaxReplays.value = IDBHelper.maxReplays
