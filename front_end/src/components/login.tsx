@@ -17,7 +17,7 @@ const gotNewVersion = packageJson.version !== cookies.get('appVersion')
 
 export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, nickNameOverridePass, setNickNameOverridePass, setIsSetName, showNotice, setIsGameReplay }: any) => {
     if (gotNewVersion) {
-        cookies.set('appVersion', packageJson.version, { path: '/' })
+        cookies.set('appVersion', packageJson.version, { path: '/', expires: CommonMethods.GetCookieExpires() })
     }
     const greyDegree = 400
     return (
@@ -79,8 +79,8 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                 >
                     <Button disabled={!(hostName !== undefined && hostName.trim() && playerName !== undefined && playerName.trim() && playerName.trim().length <= 10)} variant="contained" color="success" size="large" onClick={() => {
                         setIsSetName(true);
-                        cookies.set('hostName', hostName, { path: '/' });
-                        cookies.set('playerName', playerName, { path: '/' });
+                        cookies.set('hostName', hostName, { path: '/', expires: CommonMethods.GetCookieExpires() });
+                        cookies.set('playerName', playerName, { path: '/', expires: CommonMethods.GetCookieExpires() });
                     }}>进入大厅</Button>
                 </CardContent>
                 <CardContent

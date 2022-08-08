@@ -688,15 +688,15 @@ export class GameReplayScene extends Phaser.Scene {
     }
 
     public saveSettings() {
-        cookies.set('soundVolume', this.soundVolume, { path: '/' });
-        cookies.set('noDanmu', this.noDanmu, { path: '/' });
-        cookies.set('noCutCards', this.noCutCards, { path: '/' });
+        cookies.set('soundVolume', this.soundVolume, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
 
         if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
             this.joinAudioUrl = 'http://' + this.joinAudioUrl;
         }
-        cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/' });
-        cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/' });
+        cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
     }
 
     public isInGameHall() {

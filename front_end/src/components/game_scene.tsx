@@ -394,7 +394,7 @@ export class GameScene extends Phaser.Scene {
     onopen() {
         // try {
         console.log("连接成功")
-        cookies.set('showNotice', 'none', { path: '/' });
+        cookies.set('showNotice', 'none', { path: '/', expires: CommonMethods.GetCookieExpires() });
 
         this.sendMessageToServer(PLAYER_ENTER_HALL_REQUEST, this.playerName, this.nickNameOverridePass);
         this.mainForm = new MainForm(this)
@@ -600,20 +600,20 @@ export class GameScene extends Phaser.Scene {
     }
 
     public saveSettings() {
-        cookies.set('soundVolume', this.soundVolume, { path: '/' });
-        cookies.set('noDanmu', this.noDanmu, { path: '/' });
-        cookies.set('noCutCards', this.noCutCards, { path: '/' });
+        cookies.set('soundVolume', this.soundVolume, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
 
         if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
             this.joinAudioUrl = 'http://' + this.joinAudioUrl;
         }
-        cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/' });
-        cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/' });
+        cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
     }
 
     public saveNickNameOverridePass(nnorp: string) {
         this.nickNameOverridePass = nnorp;
-        cookies.set('NickNameOverridePass', nnorp, { path: '/' });
+        cookies.set('NickNameOverridePass', nnorp, { path: '/', expires: CommonMethods.GetCookieExpires() });
     }
 
     public sendMessageToServer(messageType: string, playerID: string, content: string) {
