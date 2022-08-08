@@ -1277,8 +1277,9 @@ export class MainForm {
         let cardsCount = 0
         if (this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick != null) {
             for (const [key, value] of Object.entries(this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick)) {
-                let player: string = key;
                 let cards: number[] = value as number[]
+                if (!cards || cards.length == 0) continue;
+                let player: string = key;
                 cardsCount = cards.length
                 let position = this.PlayerPosition[player];
                 this.drawingFormHelper.DrawShowedCardsByPosition(cards, position)
@@ -1355,8 +1356,9 @@ export class MainForm {
         }
 
         for (const [key, value] of Object.entries(trickState.ShowedCards)) {
-            let position = this.PlayerPosition[key];
             let cards: number[] = value as number[]
+            if (!cards || cards.length == 0) continue;
+            let position = this.PlayerPosition[key];
             cardsCount = cards.length
             this.drawingFormHelper.DrawShowedCardsByPositionFromLastTrick(cards, position)
         }
