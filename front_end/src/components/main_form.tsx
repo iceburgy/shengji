@@ -68,6 +68,7 @@ export class MainForm {
     public firstWinNormal = 1;
     public firstWinBySha = 3;
     public chatForm: any
+    public IsPlayingGame: boolean = false;
 
     constructor(gs: GameScene) {
         this.gameScene = gs
@@ -267,7 +268,8 @@ export class MainForm {
         });
 
         // 快捷键
-        this.gameScene.input.keyboard.on('keyup', this.shortcutKeyEventhandler, this)
+        this.gameScene.input.keyboard.on('keydown', this.shortcutKeyDownEventhandler, this)
+        this.gameScene.input.keyboard.on('keyup', this.shortcutKeyUpEventhandler, this)
     }
 
     public NewPlayerReadyToStart(readyToStart: boolean) {
@@ -910,16 +912,39 @@ export class MainForm {
         this.sendEmojiWithCheck(args)
     }
 
-    private blurChat() {
+    public blurChat() {
         if (!this.chatForm) return;
         let textAreaMsg = this.chatForm.getChildByID("textAreaMsg")
         if (!textAreaMsg) return;
         textAreaMsg.blur();
     }
 
-    private shortcutKeyEventhandler(event: KeyboardEvent) {
+    private shortcutKeyDownEventhandler(event: KeyboardEvent) {
+        if (!event || !event.key || !this.IsPlayingGame) return;
+        let ekey: string = event.key.toLowerCase();
+        if (!['arrowup', 'arrowleft', 'arrowright'].includes(ekey)) return;
+
+        switch (ekey) {
+            case 'arrowup':
+                this.drawingFormHelper.playerJump();
+                return;
+            case 'arrowleft':
+                this.drawingFormHelper.moveLeft();
+                return;
+            case 'arrowright':
+                this.drawingFormHelper.moveRight();
+                return;
+            default:
+                break;
+        }
+    }
+
+    private shortcutKeyUpEventhandler(event: KeyboardEvent) {
         if (!event || !event.key) return;
         let ekey: string = event.key.toLowerCase();
+        if (this.IsPlayingGame) {
+            if (['arrowleft', 'arrowright'].includes(ekey)) this.drawingFormHelper.playerStop();
+        }
         if (this.gameScene.isReplayMode) {
             if (this.modalForm) return;
             event.preventDefault();
@@ -941,6 +966,7 @@ export class MainForm {
             }
         } else {
             if (ekey === 'escape') {
+                if (this.IsPlayingGame) this.drawingFormHelper.destroyGame();
                 this.resetGameRoomUI();
                 return;
             }
@@ -964,6 +990,14 @@ export class MainForm {
                     if (this.modalForm || this.tractorPlayer.isObserver) return;
                     this.btnRobot_Click();
                     return;
+                case 'c':
+                    if (this.modalForm || this.tractorPlayer.isObserver || !this.IsPlayingGame || !this.drawingFormHelper.gameOver) return;
+                    this.drawingFormHelper.restartGame();
+                    return;
+                case 'p':
+                    if (this.modalForm || this.tractorPlayer.isObserver || !this.IsPlayingGame || this.drawingFormHelper.gameOver) return;
+                    this.drawingFormHelper.pauseGame();
+                    return;
                 default:
                     break;
             }
@@ -979,12 +1013,17 @@ export class MainForm {
     }
 
     private sendEmojiWithCheck(args: (string | number)[]) {
-        if (this.drawingFormHelper.hiddenEffects[args[2]] && this.drawingFormHelper.hiddenEffectImage && this.drawingFormHelper.hiddenEffectImage.visible) {
-            this.appendChatMsg(CommonMethods.hiddenEffectsWarningMsg);
-        } else if (this.drawingFormHelper.hiddenEffects[args[2]] &&
+        if ((this.drawingFormHelper.hiddenEffects[args[2]] || this.drawingFormHelper.hiddenGames[args[2]]) &&
             CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) &&
             (SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing)) {
             this.appendChatMsg("游戏中途不允许发隐藏技扰乱视听");
+        } else if (this.drawingFormHelper.hiddenEffectImages &&
+            this.drawingFormHelper.hiddenEffectImages.length > 0 &&
+            this.drawingFormHelper.hiddenEffectImages[0].visible ||
+            this.drawingFormHelper.hiddenGamesImages &&
+            this.drawingFormHelper.hiddenGamesImages.length > 0 &&
+            this.drawingFormHelper.hiddenGamesImages[0].visible) {
+            this.appendChatMsg(CommonMethods.hiddenEffectsWarningMsg);
         } else if (!this.isSendEmojiEnabled) {
             this.appendChatMsg(CommonMethods.emojiWarningMsg);
         } else {
@@ -1248,6 +1287,7 @@ export class MainForm {
 
         this.timerCountDown = timerLength
         this.timerImage.setVisible(true)
+        this.timerImage.depth = 100;
         this.timerImage.setText(this.timerCountDown.toString())
         this.timerIntervalID.push(setInterval(() => { this.timerTicker() }, 1000))
     }
@@ -1536,8 +1576,19 @@ export class MainForm {
         if (isCenter) return;
         let finalMsg = "";
         if (!isPlayerInGameHall && this.drawingFormHelper.hiddenEffects[msgString]) {
-            this.drawingFormHelper.hiddenEffects[msgString].apply(this.drawingFormHelper);
+            if (!(this.drawingFormHelper.hiddenGamesImages &&
+                this.drawingFormHelper.hiddenGamesImages.length > 0 &&
+                this.drawingFormHelper.hiddenGamesImages[0].visible)) {
+                this.drawingFormHelper.hiddenEffects[msgString].apply(this.drawingFormHelper);
+                finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】`;
+            } else {
+                finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】，因为游戏中已屏蔽`;
+            }
+        } else if (!isPlayerInGameHall && this.drawingFormHelper.hiddenGames[msgString]) {
             finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】`;
+            if (playerID === this.tractorPlayer.MyOwnId) {
+                this.drawingFormHelper.hiddenGames[msgString].apply(this.drawingFormHelper);
+            }
         } else {
             finalMsg = `【${playerID}】说：${msgString}`;
         }

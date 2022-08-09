@@ -24,6 +24,13 @@ export const GameScreen = ({ hostName, playerName, nickNameOverridePass }: GameS
             },
             dom: {
                 createContainer: true
+            },
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 300 },
+                    debug: false
+                }
             }
         };
         new Phaser.Game(config);

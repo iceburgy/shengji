@@ -60,6 +60,14 @@ import emFireworks3 from "../assets/sprites/fireworks3.png"
 import emFireworks4 from "../assets/sprites/fireworks4.png"
 import emMovingTractor from "../assets/sprites/movingtractor.png"
 
+// collectstar
+import cssky from "../assets/collectstar/sky.png"
+import csground from "../assets/collectstar/ground.png"
+import csground2 from "../assets/collectstar/ground2.png"
+import csstar from "../assets/collectstar/star.png"
+import csbomb from "../assets/collectstar/bomb.png"
+import csdude from "../assets/collectstar/dude.png"
+
 import { nanoid } from 'nanoid'
 import { Match } from './match';
 import { RoomState } from './room_state';
@@ -349,6 +357,14 @@ export class GameScene extends Phaser.Scene {
         this.load.spritesheet('emFireworks3', emFireworks3, { frameWidth: EmojiUtil.emojiFrameSize[5][2].x, frameHeight: EmojiUtil.emojiFrameSize[5][2].y });
         this.load.spritesheet('emFireworks4', emFireworks4, { frameWidth: EmojiUtil.emojiFrameSize[5][3].x, frameHeight: EmojiUtil.emojiFrameSize[5][3].y });
         this.load.spritesheet('emMovingTractor', emMovingTractor, { frameWidth: EmojiUtil.emMovingTractorFrameSize.x, frameHeight: EmojiUtil.emMovingTractorFrameSize.y });
+
+        // loading collectstar
+        this.load.image('ground', csground);
+        this.load.image('ground2', csground2);
+        this.load.image('sky', cssky);
+        this.load.image('star', csstar);
+        this.load.image('bomb', csbomb);
+        this.load.spritesheet('dude', csdude, { frameWidth: 34, frameHeight: 50 });
 
         // loading spine
         window.publicPath = process.env.PUBLIC_URL;

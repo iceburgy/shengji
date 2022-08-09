@@ -24,14 +24,29 @@ export class DrawingFormHelper {
     public isDragging: any
     public DrawSf2ryu: Function
     public DrawWalker: Function
+    public createCollectStar: Function
     public hiddenEffects: any
-    public hiddenEffectImage: any
+    public hiddenEffectImages: any[]
+    public hiddenGames: any
+    public hiddenGamesImages: any[]
+    public player: any;
+    public stars: any;
+    public bombs: any;
+    public platforms: any;
+    public score = 0;
+    public gameOver = true;
+    public gamePaused = false;
+    public scoreText: any;
+    public usageText: any;
 
     constructor(mf: MainForm) {
         this.mainForm = mf
         this.suitSequence = 0
+        this.hiddenEffectImages = [];
+        this.hiddenGamesImages = [];
 
         this.DrawSf2ryu = function () {
+            this.hiddenEffectImages = [];
             this.mainForm.gameScene.anims.create({
                 key: 'hadoken',
                 frameRate: 12,
@@ -40,10 +55,11 @@ export class DrawingFormHelper {
                 repeat: 3,
                 hideOnComplete: true
             });
-            this.hiddenEffectImage = this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.centerX, this.mainForm.gameScene.coordinates.centerY, 'sf2ryu').play('hadoken').setScale(3);
+            this.hiddenEffectImages.push(this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.centerX, this.mainForm.gameScene.coordinates.centerY, 'sf2ryu').play('hadoken').setScale(3))
         }
 
         this.DrawWalker = function () {
+            this.hiddenEffectImages = [];
             let animConfig = {
                 key: 'walk',
                 frames: 'walker',
@@ -53,28 +69,217 @@ export class DrawingFormHelper {
 
             this.mainForm.gameScene.anims.create(animConfig);
 
-            this.hiddenEffectImage = this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.screenWid, this.mainForm.gameScene.coordinates.centerY, 'walker', 'frame_0000');
-            this.hiddenEffectImage.setX(this.mainForm.gameScene.coordinates.screenWid + this.hiddenEffectImage.width / 4);
+            this.hiddenEffectImages.push(this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.screenWid, this.mainForm.gameScene.coordinates.centerY, 'walker', 'frame_0000'))
+            this.hiddenEffectImages[0].setX(this.mainForm.gameScene.coordinates.screenWid + this.hiddenEffectImages[0].width / 4);
 
-            this.hiddenEffectImage.play('walk');
+            this.hiddenEffectImages[0].play('walk');
 
             this.mainForm.gameScene.tweens.add({
-                targets: this.hiddenEffectImage,
-                x: 0 - this.hiddenEffectImage.width / 2,
+                targets: this.hiddenEffectImages[0],
+                x: 0 - this.hiddenEffectImages[0].width / 2,
                 y: this.mainForm.gameScene.coordinates.centerY,
                 delay: 500,
                 duration: 5000,
                 ease: "Cubic.easeInOut",
                 onComplete: () => {
-                    this.hiddenEffectImage.destroy();
+                    this.hiddenEffectImages[0].destroy();
                 }
             });
+        }
+
+        this.createCollectStar = function () {
+            this.mainForm.blurChat();
+            this.score = 0;
+            this.gameOver = false;
+            this.mainForm.gameScene.physics.resume();
+            this.hiddenGamesImages = [];
+            this.mainForm.gameScene.physics.world.setBounds(this.mainForm.gameScene.coordinates.centerX - 400, this.mainForm.gameScene.coordinates.centerY - 300, 800, 600);
+
+            //  A simple background for our game
+            this.hiddenGamesImages.push(this.mainForm.gameScene.add.image(this.mainForm.gameScene.coordinates.centerX, this.mainForm.gameScene.coordinates.centerY, 'sky'));
+
+            //  The platforms group contains the ground and the 2 ledges we can jump on
+            this.platforms = this.mainForm.gameScene.physics.add.staticGroup();
+            this.hiddenGamesImages.push(this.platforms);
+
+            //  Here we create the ground.
+            //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
+            this.platforms.create(this.mainForm.gameScene.coordinates.centerX, this.mainForm.gameScene.coordinates.centerY + 268, 'ground').setScale(2).refreshBody();
+
+            //  Now let's create some ledges
+            this.platforms.create(this.mainForm.gameScene.coordinates.centerX + 200, this.mainForm.gameScene.coordinates.centerY + 100, 'ground');
+            this.platforms.create(this.mainForm.gameScene.coordinates.centerX - 275, this.mainForm.gameScene.coordinates.centerY - 50, 'ground2');
+            this.platforms.create(this.mainForm.gameScene.coordinates.centerX + 275, this.mainForm.gameScene.coordinates.centerY - 80, 'ground2');
+
+            // The player and its settings
+            this.player = this.mainForm.gameScene.physics.add.sprite(this.mainForm.gameScene.coordinates.centerX - 300, this.mainForm.gameScene.coordinates.centerY + 150, 'dude');
+            this.hiddenGamesImages.push(this.player);
+
+            //  Player physics properties. Give the little guy a slight bounce.
+            this.player.setBounce(0.2);
+            this.player.setCollideWorldBounds(true);
+
+            //  Our player animations, turning, walking left and walking right.
+            this.mainForm.gameScene.anims.create({
+                key: 'left',
+                frames: this.mainForm.gameScene.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+                frameRate: 10,
+                repeat: -1
+            });
+
+            this.mainForm.gameScene.anims.create({
+                key: 'turn',
+                frames: [{ key: 'dude', frame: 4 }],
+                frameRate: 20
+            });
+
+            this.mainForm.gameScene.anims.create({
+                key: 'right',
+                frames: this.mainForm.gameScene.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
+                frameRate: 10,
+                repeat: -1
+            });
+
+            //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
+            this.stars = this.mainForm.gameScene.physics.add.group({
+                key: 'star',
+                repeat: 11,
+                setXY: { x: this.mainForm.gameScene.coordinates.centerX - 388, y: this.mainForm.gameScene.coordinates.centerY - 300, stepX: 70 },
+                setScale: { x: 0.25, y: 0.25 }
+            });
+            this.hiddenGamesImages.push(this.stars);
+
+            this.stars.children.iterate(function (child: any) {
+                //  Give each star a slightly different bounce
+                child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+            });
+
+            this.bombs = this.mainForm.gameScene.physics.add.group();
+            this.hiddenGamesImages.push(this.bombs);
+            this.createBomb();
+
+            //  The score
+            this.scoreText = this.mainForm.gameScene.add.text(this.mainForm.gameScene.coordinates.centerX - 384, this.mainForm.gameScene.coordinates.centerY - 284, 'score: 0\nstage: 1')
+                .setColor("black")
+                .setFontSize(16);
+            this.hiddenGamesImages.push(this.scoreText);
+
+            //  usage
+            this.usageText = this.mainForm.gameScene.add.text(this.mainForm.gameScene.coordinates.centerX - 384, this.mainForm.gameScene.coordinates.centerY - 254, 'move: ← and →\njump: ↑\npause: p\nrestart: c\nquit: esc')
+                .setColor("black")
+                .setFontSize(16);
+            this.hiddenGamesImages.push(this.usageText);
+
+            //  Collide the player and the stars with the platforms
+            this.mainForm.gameScene.physics.add.collider(this.player, this.platforms);
+            this.mainForm.gameScene.physics.add.collider(this.stars, this.platforms);
+            this.mainForm.gameScene.physics.add.collider(this.bombs, this.platforms);
+
+            //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
+            this.mainForm.gameScene.physics.add.overlap(this.player, this.stars, (player, star) => { this.collectStar.apply(this, [player, star]); }, undefined, this.mainForm.gameScene);
+            this.mainForm.gameScene.physics.add.collider(this.player, this.bombs, (player, bomb) => { this.hitBomb.apply(this, [player, bomb]); }, undefined, this.mainForm.gameScene);
+            this.mainForm.IsPlayingGame = true;
         }
 
         this.hiddenEffects = {
             "hadoken": this.DrawSf2ryu,
             "walker": this.DrawWalker,
         }
+        this.hiddenGames = {
+            "collectstar": this.createCollectStar,
+        }
+    }
+
+    public moveLeft() {
+        if (this.gameOver || this.gamePaused) return;
+        this.player.setVelocityX(-160);
+        this.player.anims.play('left', true);
+    }
+
+    public moveRight() {
+        if (this.gameOver || this.gamePaused) return;
+        this.player.setVelocityX(160);
+        this.player.anims.play('right', true);
+    }
+
+    public playerJump() {
+        if (this.gameOver || this.gamePaused) return;
+        if (this.player.body.touching.down) {
+            this.player.setVelocityY(-330);
+        }
+    }
+
+    public playerStop() {
+        if (this.gameOver) return;
+        this.player.setVelocityX(0);
+        this.player.anims.play('turn');
+    }
+
+    public collectStar(player: any, star: any) {
+        star.disableBody(true, true);
+
+        //  Add and update the score
+        this.score += 10;
+        this.scoreText.setText(`Score: ${this.score}\nstage: ${Math.floor(this.score / 120) + 1}`);
+
+        if (this.stars.countActive(true) === 0) {
+            //  A new batch of stars to collect
+            let that = this;
+            this.stars.children.iterate(function (child: any) {
+                child.enableBody(true, Phaser.Math.Between(that.mainForm.gameScene.coordinates.centerX - 400, that.mainForm.gameScene.coordinates.centerX + 400), that.mainForm.gameScene.coordinates.centerY - 300, true, true);
+            });
+            this.createBomb();
+        }
+    }
+
+    public createBomb() {
+        var x = (this.player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+        var bomb = this.bombs.create(x, 16, 'bomb');
+        bomb.setBounce(1);
+        bomb.setCollideWorldBounds(true);
+        bomb.setVelocity(Phaser.Math.Between(50, 200) * [1, -1][CommonMethods.GetRandomInt(2)], 20);
+        bomb.setScale(0.25);
+    }
+
+    public hitBomb(player: any, bomb: any) {
+        this.gameOver = true;
+        this.mainForm.gameScene.physics.pause();
+        this.player.setTint(0xff0000);
+        this.player.anims.play('turn');
+    }
+
+    public destroyGame() {
+        this.mainForm.gameScene.physics.pause();
+        this.player.setTint(0xff0000);
+        this.player.anims.play('turn');
+        this.mainForm.IsPlayingGame = false;
+        this.mainForm.NotifyStartTimerEventHandler(2)
+        setTimeout(() => {
+            this.hiddenGamesImages.forEach(image => {
+                if (image.clear && typeof image.clear === "function") image.clear(true, true);
+                else image.destroy();
+            })
+            this.hiddenGamesImages = [];
+        }, 2000);
+    }
+
+    public restartGame() {
+        this.hiddenGamesImages.forEach(image => {
+            if (image.clear && typeof image.clear === "function") image.clear(true, true);
+            else image.destroy();
+        })
+        this.hiddenGamesImages = [];
+        this.createCollectStar();
+    }
+
+    public pauseGame() {
+        if (this.gamePaused) {
+            this.mainForm.gameScene.physics.resume();
+        } else {
+            this.mainForm.gameScene.physics.pause();
+            this.playerStop();
+        }
+        this.gamePaused = !this.gamePaused;
     }
 
     public IGetCard() {
