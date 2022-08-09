@@ -407,6 +407,9 @@ export class MainForm {
         this.gameScene.roomUIControls.texts.forEach(text => {
             text.setVisible(false)
         })
+        if (this.IsPlayingGame) {
+            this.drawingFormHelper.destroyGame(0);
+        }
     }
 
     public PlayerOnGetCard(cardNumber: number) {
@@ -966,7 +969,7 @@ export class MainForm {
             }
         } else {
             if (ekey === 'escape') {
-                if (this.IsPlayingGame) this.drawingFormHelper.destroyGame();
+                if (this.IsPlayingGame) this.drawingFormHelper.destroyGame(2);
                 this.resetGameRoomUI();
                 return;
             }

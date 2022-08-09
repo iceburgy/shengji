@@ -248,19 +248,19 @@ export class DrawingFormHelper {
         this.player.anims.play('turn');
     }
 
-    public destroyGame() {
+    public destroyGame(delaySeconds: number) {
         this.mainForm.gameScene.physics.pause();
         this.player.setTint(0xff0000);
         this.player.anims.play('turn');
         this.mainForm.IsPlayingGame = false;
-        this.mainForm.NotifyStartTimerEventHandler(2)
+        this.mainForm.NotifyStartTimerEventHandler(delaySeconds)
         setTimeout(() => {
             this.hiddenGamesImages.forEach(image => {
                 if (image.clear && typeof image.clear === "function") image.clear(true, true);
                 else image.destroy();
             })
             this.hiddenGamesImages = [];
-        }, 2000);
+        }, delaySeconds * 1000);
     }
 
     public restartGame() {
