@@ -28,7 +28,7 @@ export class SGDrawingHelper {
     public platforms: any;
     public scoreTexts: any;
     public usageText: any;
-    public IsPlayingGame: boolean = false;
+    public IsPlayingGame: string = "";
     public sgcsState: SGCSState;
     public myPlayerIndex: number = -1;
 
@@ -215,7 +215,7 @@ export class SGDrawingHelper {
         //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
         this.mainForm.gameScene.physics.add.overlap(this.players, this.stars, (player, star) => { this.collectStar.apply(this, [player, star]); }, undefined, this.mainForm.gameScene);
         this.mainForm.gameScene.physics.add.overlap(this.players, this.bombs, (player, bomb) => { this.hitBomb.apply(this, [player, bomb]); }, undefined, this.mainForm.gameScene);
-        this.IsPlayingGame = true;
+        this.IsPlayingGame = SGCSState.GameName;
     }
 
     public moveLeft(player: any) {
@@ -311,7 +311,7 @@ export class SGDrawingHelper {
     public destroyGame(delaySeconds: number) {
         if (!this.IsPlayingGame) return;
         this.mainForm.gameScene.physics.pause();
-        this.IsPlayingGame = false;
+        this.IsPlayingGame = "";
         this.mainForm.NotifyStartTimerEventHandler(delaySeconds)
         setTimeout(() => {
             this.hiddenGamesImages.forEach(image => {

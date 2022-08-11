@@ -9,7 +9,7 @@ export class PlayerEntity {
 
     public OfflineSince: string
     public PlayerId: string
-    public PlayerName: string
+    public PlayingSG: string
     public Rank: number
     public Team: number
     public IsReadyToStart: boolean
@@ -19,7 +19,7 @@ export class PlayerEntity {
     constructor() {
         this.OfflineSince = ""
         this.PlayerId = ""
-        this.PlayerName = ""
+        this.PlayingSG = ""
         this.Rank = 0
         this.Team = 0
         this.IsReadyToStart = false
@@ -30,7 +30,7 @@ export class PlayerEntity {
     public CloneFrom(from: PlayerEntity) {
         this.OfflineSince = from.OfflineSince
         this.PlayerId = from.PlayerId
-        this.PlayerName = from.PlayerName
+        this.PlayingSG = from.PlayingSG
         this.Rank = from.Rank
         this.Team = from.Team
         this.IsReadyToStart = from.IsReadyToStart

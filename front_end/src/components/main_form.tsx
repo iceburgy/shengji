@@ -824,6 +824,9 @@ export class MainForm {
             if (curPlayer && curPlayer.IsOffline) {
                 this.lblStarters[i].setText("离线中")
             }
+            else if (curPlayer && curPlayer.PlayingSG) {
+                this.lblStarters[i].setText(curPlayer.PlayingSG)
+            }
             else if (curPlayer && curPlayer.IsRobot) {
                 this.lblStarters[i].setText("托管中")
             }

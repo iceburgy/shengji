@@ -6,6 +6,8 @@ import { SGCSStar } from "./sg_cs_star";
 
 // Small Game Collect Star State
 export class SGCSState {
+    public static GameName: string = "CatchStar";
+
     public PlayerId: string;
     public IsGameOver: boolean;
     public Score: number = 0;
