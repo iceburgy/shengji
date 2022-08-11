@@ -87,6 +87,8 @@ import Cookies from 'universal-cookie';
 import { EmojiUtil } from "./emoji_util";
 import { ReplayEntity } from "./replay_entity";
 import { IDBHelper } from "./idb_helper";
+import { SGCSPlayer } from "./sg_cs_player";
+import { SGCSState } from "./sg_cs_state";
 
 const cookies = new Cookies();
 const SET_PLAYER_NAME_REQUEST = "set_player_name"
@@ -112,6 +114,10 @@ const NotifyEmoji_RESPONSE = "NotifyEmoji"
 const CutCardShoeCards_RESPONSE = "CutCardShoeCards"
 const NotifyReplayState_RESPONSE = "NotifyReplayState"
 const NotifyPing_RESPONSE = "NotifyPing"
+const NotifySgcsPlayerUpdated_RESPONSE = "NotifySgcsPlayerUpdated"
+const NotifyCreateCollectStar_RESPONSE = "NotifyCreateCollectStar"
+const NotifyEndCollectStar_RESPONSE = "NotifyEndCollectStar"
+const NotifyGrabStar_RESPONSE = "NotifyGrabStar"
 
 const dummyValue = "dummyValue"
 const IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
@@ -484,11 +490,40 @@ export class GameScene extends Phaser.Scene {
             this.handleNotifyReplayState(objList);
         } else if (messageType === NotifyPing_RESPONSE) {
             this.handleNotifyPing_RESPONSE();
+        } else if (messageType === NotifySgcsPlayerUpdated_RESPONSE) {
+            this.handleNotifySgcsPlayerUpdated_RESPONSE(objList);
+        } else if (messageType === NotifyCreateCollectStar_RESPONSE) {
+            this.handleNotifyCreateCollectStar_RESPONSE(objList);
+        } else if (messageType === NotifyEndCollectStar_RESPONSE) {
+            this.handleNotifyEndCollectStar(objList);
+        } else if (messageType === NotifyGrabStar_RESPONSE) {
+            this.handleNotifyGrabStar_RESPONSE(objList);
         }
         // } catch (e) {
         //     // alert("error")
         //     document.body.innerHTML = `<div>!!! onmessage Error: ${e}</div>`
         // }
+    }
+
+    private handleNotifyGrabStar_RESPONSE(objList) {
+        let playerIndex: number = objList[0];
+        let starIndex: number = objList[1];
+        this.mainForm.sgDrawingHelper.NotifyGrabStar(playerIndex, starIndex);
+    }
+
+    private handleNotifyCreateCollectStar_RESPONSE(objList) {
+        var result: SGCSState = objList[0];
+        this.mainForm.sgDrawingHelper.NotifyCreateCollectStar(result);
+    }
+
+    private handleNotifyEndCollectStar(objList) {
+        var result: SGCSState = objList[0];
+        this.mainForm.sgDrawingHelper.NotifyEndCollectStar(result);
+    }
+
+    private handleNotifySgcsPlayerUpdated_RESPONSE(objList) {
+        var result: SGCSPlayer = JSON.parse(objList[0])
+        this.mainForm.sgDrawingHelper.NotifySgcsPlayerUpdated(result);
     }
 
     private handleNotifyPing_RESPONSE() {

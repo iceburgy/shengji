@@ -22,6 +22,9 @@ import { ReplayEntity } from './replay_entity';
 import { GameReplayScene } from './game_replay_scene';
 import { FileHelper } from './file_helper';
 import Cookies from 'universal-cookie';
+import { SGCSPlayer } from './sg_cs_player';
+import { SGDrawingHelper } from './sg_drawing_helper';
+import { SGCSState } from './sg_cs_state';
 
 const ReadyToStart_REQUEST = "ReadyToStart"
 const ToggleIsRobot_REQUEST = "ToggleIsRobot"
@@ -60,6 +63,7 @@ export class MainForm {
 
     public enableSound: boolean
     public drawingFormHelper: DrawingFormHelper
+    public sgDrawingHelper: SGDrawingHelper
     public IsDebug: boolean
     public timerIntervalID: any[]
     public timerCountDown: number
@@ -68,12 +72,14 @@ export class MainForm {
     public firstWinNormal = 1;
     public firstWinBySha = 3;
     public chatForm: any
-    public IsPlayingGame: boolean = false;
+    public sgcsPlayer: SGCSPlayer;
 
     constructor(gs: GameScene) {
         this.gameScene = gs
         this.tractorPlayer = new TractorPlayer(this)
         this.drawingFormHelper = new DrawingFormHelper(this)
+        this.sgDrawingHelper = new SGDrawingHelper(this)
+        this.sgcsPlayer = new SGCSPlayer(this.tractorPlayer.MyOwnId)
         this.PlayerPosition = {}
         this.PositionPlayer = {}
         this.myCardIsReady = []
@@ -320,6 +326,9 @@ export class MainForm {
             this.init();
         }
 
+        this.sgDrawingHelper.myPlayerIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.MyOwnId);
+        this.sgcsPlayer.PlayerIndex = this.sgDrawingHelper.myPlayerIndex;
+
         this.roomNameText.setVisible(true)
         this.roomOwnerText.setVisible(true)
 
@@ -407,8 +416,9 @@ export class MainForm {
         this.gameScene.roomUIControls.texts.forEach(text => {
             text.setVisible(false)
         })
-        if (this.IsPlayingGame) {
-            this.drawingFormHelper.destroyGame(0);
+        if (this.sgDrawingHelper.IsPlayingGame) {
+            this.sgDrawingHelper.hitBomb(this.sgDrawingHelper.players.children.entries[this.sgDrawingHelper.myPlayerIndex], undefined);
+            this.sgDrawingHelper.destroyGame(0);
         }
     }
 
@@ -923,30 +933,44 @@ export class MainForm {
     }
 
     private shortcutKeyDownEventhandler(event: KeyboardEvent) {
-        if (!event || !event.key || !this.IsPlayingGame) return;
+        if (!event || !event.key || !this.sgDrawingHelper.IsPlayingGame) return;
+        if (!this.sgDrawingHelper.sgcsState.Dudes[this.sgDrawingHelper.myPlayerIndex].Enabled) return;
         let ekey: string = event.key.toLowerCase();
         if (!['arrowup', 'arrowleft', 'arrowright'].includes(ekey)) return;
 
+        let isUpdated = false;
         switch (ekey) {
             case 'arrowup':
-                this.drawingFormHelper.playerJump();
-                return;
+                this.sgcsPlayer.PressUpKey();
+                isUpdated = true;
+                break;
             case 'arrowleft':
-                this.drawingFormHelper.moveLeft();
-                return;
+                this.sgcsPlayer.PressLeftKey();
+                isUpdated = true;
+                break;
             case 'arrowright':
-                this.drawingFormHelper.moveRight();
-                return;
+                this.sgcsPlayer.PressRightKey();
+                isUpdated = true;
+                break;
             default:
                 break;
+        }
+        if (isUpdated && this.sgcsPlayer.PlayerId === this.tractorPlayer.MyOwnId) {
+            this.gameScene.sendMessageToServer(SGCSPlayer.SgcsPlayerUpdated_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.sgcsPlayer));
         }
     }
 
     private shortcutKeyUpEventhandler(event: KeyboardEvent) {
         if (!event || !event.key) return;
         let ekey: string = event.key.toLowerCase();
-        if (this.IsPlayingGame) {
-            if (['arrowleft', 'arrowright'].includes(ekey)) this.drawingFormHelper.playerStop();
+        if (this.sgDrawingHelper.IsPlayingGame) {
+            if (['arrowleft', 'arrowright'].includes(ekey)) {
+                if (this.sgcsPlayer.PlayerId === this.tractorPlayer.MyOwnId && this.sgDrawingHelper.sgcsState.Dudes[this.sgDrawingHelper.myPlayerIndex].Enabled) {
+                    this.sgcsPlayer.ReleaseLeftOrRightKey();
+                    this.gameScene.sendMessageToServer(SGCSPlayer.SgcsPlayerUpdated_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.sgcsPlayer));
+                }
+                return;
+            }
         }
         if (this.gameScene.isReplayMode) {
             if (this.modalForm) return;
@@ -969,7 +993,10 @@ export class MainForm {
             }
         } else {
             if (ekey === 'escape') {
-                if (this.IsPlayingGame) this.drawingFormHelper.destroyGame(2);
+                if (this.sgDrawingHelper.IsPlayingGame) {
+                    this.sgDrawingHelper.hitBomb(this.sgDrawingHelper.players.children.entries[this.sgDrawingHelper.myPlayerIndex], undefined);
+                    this.sgDrawingHelper.destroyGame(2);
+                }
                 this.resetGameRoomUI();
                 return;
             }
@@ -993,14 +1020,14 @@ export class MainForm {
                     if (this.modalForm || this.tractorPlayer.isObserver) return;
                     this.btnRobot_Click();
                     return;
-                case 'c':
-                    if (this.modalForm || this.tractorPlayer.isObserver || !this.IsPlayingGame || !this.drawingFormHelper.gameOver) return;
-                    this.drawingFormHelper.restartGame();
-                    return;
-                case 'p':
-                    if (this.modalForm || this.tractorPlayer.isObserver || !this.IsPlayingGame || this.drawingFormHelper.gameOver) return;
-                    this.drawingFormHelper.pauseGame();
-                    return;
+                // case 'c':
+                //     if (this.modalForm || this.tractorPlayer.isObserver || !this.sgDrawingHelper.IsPlayingGame || !this.sgDrawingHelper.gameOver) return;
+                //     this.sgDrawingHelper.restartGame();
+                //     return;
+                // case 'p':
+                //     if (this.modalForm || this.tractorPlayer.isObserver || !this.sgDrawingHelper.IsPlayingGame || this.sgDrawingHelper.gameOver) return;
+                //     this.sgDrawingHelper.pauseGame();
+                //     return;
                 default:
                     break;
             }
@@ -1016,16 +1043,18 @@ export class MainForm {
     }
 
     private sendEmojiWithCheck(args: (string | number)[]) {
-        if ((this.drawingFormHelper.hiddenEffects[args[2]] || this.drawingFormHelper.hiddenGames[args[2]]) &&
+        if ((this.sgDrawingHelper.hiddenEffects[args[2]] || this.sgDrawingHelper.hiddenGames[args[2]]) &&
             CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) &&
             (SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing)) {
             this.appendChatMsg("游戏中途不允许发隐藏技扰乱视听");
-        } else if (this.drawingFormHelper.hiddenEffectImages &&
-            this.drawingFormHelper.hiddenEffectImages.length > 0 &&
-            this.drawingFormHelper.hiddenEffectImages[0].visible ||
-            this.drawingFormHelper.hiddenGamesImages &&
-            this.drawingFormHelper.hiddenGamesImages.length > 0 &&
-            this.drawingFormHelper.hiddenGamesImages[0].visible) {
+        } else if (this.tractorPlayer.isObserver) {
+            this.appendChatMsg("旁观玩家不能发动隐藏技");
+        } else if (this.sgDrawingHelper.hiddenEffectImages &&
+            this.sgDrawingHelper.hiddenEffectImages.length > 0 &&
+            this.sgDrawingHelper.hiddenEffectImages[0].visible ||
+            this.sgDrawingHelper.hiddenGamesImages &&
+            this.sgDrawingHelper.hiddenGamesImages.length > 0 &&
+            this.sgDrawingHelper.hiddenGamesImages[0].visible) {
             this.appendChatMsg(CommonMethods.hiddenEffectsWarningMsg);
         } else if (!this.isSendEmojiEnabled) {
             this.appendChatMsg(CommonMethods.emojiWarningMsg);
@@ -1578,20 +1607,18 @@ export class MainForm {
         }
         if (isCenter) return;
         let finalMsg = "";
-        if (!isPlayerInGameHall && this.drawingFormHelper.hiddenEffects[msgString]) {
-            if (!(this.drawingFormHelper.hiddenGamesImages &&
-                this.drawingFormHelper.hiddenGamesImages.length > 0 &&
-                this.drawingFormHelper.hiddenGamesImages[0].visible)) {
-                this.drawingFormHelper.hiddenEffects[msgString].apply(this.drawingFormHelper);
+        if (!isPlayerInGameHall && this.sgDrawingHelper.hiddenEffects[msgString]) {
+            if (!(this.sgDrawingHelper.hiddenGamesImages &&
+                this.sgDrawingHelper.hiddenGamesImages.length > 0 &&
+                this.sgDrawingHelper.hiddenGamesImages[0].visible)) {
+                this.sgDrawingHelper.hiddenEffects[msgString].apply(this.sgDrawingHelper);
                 finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】`;
             } else {
                 finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】，因为游戏中已屏蔽`;
             }
-        } else if (!isPlayerInGameHall && this.drawingFormHelper.hiddenGames[msgString]) {
+        } else if (!isPlayerInGameHall && this.sgDrawingHelper.hiddenGames[msgString]) {
             finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】`;
-            if (playerID === this.tractorPlayer.MyOwnId) {
-                this.drawingFormHelper.hiddenGames[msgString].apply(this.drawingFormHelper);
-            }
+            if (this.tractorPlayer.MyOwnId === playerID) this.sgDrawingHelper.hiddenGames[msgString].apply(this.sgDrawingHelper, [true, playerID]);
         } else {
             finalMsg = `【${playerID}】说：${msgString}`;
         }
