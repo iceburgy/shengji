@@ -1046,28 +1046,35 @@ export class MainForm {
     }
 
     private sendEmojiWithCheck(args: (string | number)[]) {
-        if ((this.sgDrawingHelper.hiddenEffects[args[2]] || this.sgDrawingHelper.hiddenGames[args[2]]) &&
-            CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) &&
-            (SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing)) {
-            this.appendChatMsg("游戏中途不允许发隐藏技扰乱视听");
-        } else if (this.tractorPlayer.isObserver) {
-            this.appendChatMsg("旁观玩家不能发动隐藏技");
-        } else if (this.sgDrawingHelper.hiddenEffectImages &&
-            this.sgDrawingHelper.hiddenEffectImages.length > 0 &&
-            this.sgDrawingHelper.hiddenEffectImages[0].visible ||
-            this.sgDrawingHelper.hiddenGamesImages &&
-            this.sgDrawingHelper.hiddenGamesImages.length > 0 &&
-            this.sgDrawingHelper.hiddenGamesImages[0].visible) {
-            this.appendChatMsg(CommonMethods.hiddenEffectsWarningMsg);
-        } else if (!this.isSendEmojiEnabled) {
-            this.appendChatMsg(CommonMethods.emojiWarningMsg);
-        } else {
-            this.isSendEmojiEnabled = false;
-            setTimeout(() => {
-                this.isSendEmojiEnabled = true;
-            }, 5000);
-            this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
+        if ((this.sgDrawingHelper.hiddenEffects[args[2]] || this.sgDrawingHelper.hiddenGames[args[2]])) {
+            if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) &&
+                (SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing)) {
+                this.appendChatMsg("游戏中途不允许发隐藏技扰乱视听");
+                return;
+            }
+            if (this.tractorPlayer.isObserver) {
+                this.appendChatMsg("旁观玩家不能发动隐藏技");
+                return;
+            }
+            if (this.sgDrawingHelper.hiddenEffectImages &&
+                this.sgDrawingHelper.hiddenEffectImages.length > 0 &&
+                this.sgDrawingHelper.hiddenEffectImages[0].visible ||
+                this.sgDrawingHelper.hiddenGamesImages &&
+                this.sgDrawingHelper.hiddenGamesImages.length > 0 &&
+                this.sgDrawingHelper.hiddenGamesImages[0].visible) {
+                this.appendChatMsg(CommonMethods.hiddenEffectsWarningMsg);
+                return;
+            }
         }
+        if (!this.isSendEmojiEnabled) {
+            this.appendChatMsg(CommonMethods.emojiWarningMsg);
+            return;
+        }
+        this.isSendEmojiEnabled = false;
+        setTimeout(() => {
+            this.isSendEmojiEnabled = true;
+        }, 5000);
+        this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
     }
 
     private lblNickName_Click() {
@@ -1611,22 +1618,30 @@ export class MainForm {
         if (isCenter) return;
         let finalMsg = "";
         if (!isPlayerInGameHall && this.sgDrawingHelper.hiddenEffects[msgString]) {
-            if (!(this.sgDrawingHelper.hiddenGamesImages &&
-                this.sgDrawingHelper.hiddenGamesImages.length > 0 &&
-                this.sgDrawingHelper.hiddenGamesImages[0].visible)) {
+            if (this.isInHiddenGames()) {
+                finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】，因为游戏中已屏蔽`;
+            } else {
                 this.sgDrawingHelper.hiddenEffects[msgString].apply(this.sgDrawingHelper);
                 finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】`;
-            } else {
-                finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】，因为游戏中已屏蔽`;
             }
         } else if (!isPlayerInGameHall && this.sgDrawingHelper.hiddenGames[msgString]) {
-            finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】`;
-            if (this.tractorPlayer.MyOwnId === playerID) this.sgDrawingHelper.hiddenGames[msgString].apply(this.sgDrawingHelper, [true, playerID]);
+            if (this.isInHiddenGames()) {
+                finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】，因为游戏中已屏蔽`;
+            } else {
+                finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】`;
+                if (this.tractorPlayer.MyOwnId === playerID) this.sgDrawingHelper.hiddenGames[msgString].apply(this.sgDrawingHelper, [true, playerID]);
+            }
         } else {
             finalMsg = `【${playerID}】说：${msgString}`;
         }
         if (!isPlayerInGameHall) this.drawingFormHelper.DrawDanmu(finalMsg);
         this.appendChatMsg(finalMsg);
+    }
+
+    public isInHiddenGames(): boolean {
+        return this.sgDrawingHelper.hiddenGamesImages &&
+            this.sgDrawingHelper.hiddenGamesImages.length > 0 &&
+            this.sgDrawingHelper.hiddenGamesImages[0].visible
     }
 
     public appendChatMsg(finalMsg: string) {
