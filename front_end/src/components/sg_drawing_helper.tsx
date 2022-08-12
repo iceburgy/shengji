@@ -99,7 +99,7 @@ export class SGDrawingHelper {
         if (state.Stage > 1 && !this.IsPlayingGame) return;
         this.sgcsState = state;
         if (this.sgcsState.Stage > 1) {
-            this.usageText.setText(`stage: ${this.sgcsState.Stage}\nmove: ← and →\njump: ↑\npause: p\nrestart: c\nquit: esc`);
+            this.usageText.setText(`stage: ${this.sgcsState.Stage}\nmove: ← and →\njump: ↑\nquit: esc`);
             //  A new batch of stars to collect
             for (let i = 0; i < this.stars.children.entries.length; i++) {
                 let child = this.stars.children.entries[i];
