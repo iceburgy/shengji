@@ -260,17 +260,6 @@ export class SGDrawingHelper {
         //  Add and update the score
         this.sgcsState.Dudes[playerIndex].Score += 10;
         this.scoreTexts.children.entries[playerIndex].setText(`${this.sgcsState.Dudes[playerIndex].PlayerId}\nScore: ${this.sgcsState.Dudes[playerIndex].Score}`);
-
-        if (this.stars.countActive(true) === 0 && this.mainForm.tractorPlayer.MyOwnId === this.sgcsState.PlayerId) {
-            // this.sgcsState.Dude.X = Math.floor(this.player.x - (this.mainForm.gameScene.coordinates.centerX - 400));
-            // this.sgcsState.Dude.Y = Math.floor(this.player.y - (this.mainForm.gameScene.coordinates.centerY - 300));
-            // for (let i = 0; i < this.bombs.children.entries.length; i++) {
-            //     let bomb = this.bombs.children.entries[i];
-            //     this.sgcsState.Bombs[i].X = Math.floor(bomb.x - (this.mainForm.gameScene.coordinates.centerX - 400));
-            //     this.sgcsState.Bombs[i].Y = Math.floor(bomb.y - (this.mainForm.gameScene.coordinates.centerY - 300));
-            // }
-            this.CreateCollectStar();
-        }
     }
 
     public createBomb() {
