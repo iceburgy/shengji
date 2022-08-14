@@ -678,8 +678,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     public isInGameRoom() {
-        return this.mainForm.btnReady && this.mainForm.btnReady.visible ||
-            this.mainForm.btnObserveNext && this.mainForm.btnObserveNext.visible
+        return this.mainForm.roomNameText && this.mainForm.roomNameText.visible
     }
 
     public drawSgsAni(effectName: string, effectNature: string, wid: number, hei: number) {

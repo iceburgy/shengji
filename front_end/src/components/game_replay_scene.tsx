@@ -77,7 +77,6 @@ export class GameReplayScene extends Phaser.Scene {
     public btnPreviousTrick: Phaser.GameObjects.Text
     public btnNextTrick: Phaser.GameObjects.Text
     public btnLastTrick: Phaser.GameObjects.Text
-    public btnReplayAngle: Phaser.GameObjects.Text
     public coordinates: Coordinates
 
     constructor() {
@@ -283,23 +282,6 @@ export class GameReplayScene extends Phaser.Scene {
             })
         this.btnLastTrick.displayWidth = this.coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnLastTrick)
-
-        this.btnReplayAngle = this.add.text(this.coordinates.btnObserveNextPosition.x, this.coordinates.btnObserveNextPosition.y, '切换视角')
-            .setColor('white')
-            .setFontSize(30)
-            .setPadding(10)
-            .setShadow(2, 2, "#333333", 2, true, true)
-            .setStyle({ backgroundColor: 'gray' })
-            .setVisible(false)
-            .setInteractive({ useHandCursor: true })
-            .on('pointerup', () => this.btnReplayAngle_Click())
-            .on('pointerover', () => {
-                this.btnReplayAngle.setStyle({ backgroundColor: 'lightblue' })
-            })
-            .on('pointerout', () => {
-                this.btnReplayAngle.setStyle({ backgroundColor: 'gray' })
-            })
-        this.roomUIControls.texts.push(this.btnReplayAngle)
     }
     private loadReplayForm() {
         let replayForm = this.add.dom(this.coordinates.replayBarPosition.x, this.coordinates.replayBarPosition.y).setOrigin(0).createFromCache('replayForm');
@@ -319,7 +301,26 @@ export class GameReplayScene extends Phaser.Scene {
             this.btnPreviousTrick.setVisible(true);
             this.btnNextTrick.setVisible(true);
             this.btnLastTrick.setVisible(true);
-            this.btnReplayAngle.setVisible(true);
+
+            // 切换视角
+            for (let i = 1; i < 4; i++) {
+                let lblNickName = this.mainForm.lblNickNames[i];
+                lblNickName.setInteractive({ useHandCursor: true })
+                    .on('pointerup', () => {
+                        lblNickName.setColor('white')
+                            .setFontSize(30)
+                        let pos = i + 1;
+                        this.replayAngleByPosition(pos);
+                    })
+                    .on('pointerover', () => {
+                        lblNickName.setColor('yellow')
+                            .setFontSize(40)
+                    })
+                    .on('pointerout', () => {
+                        lblNickName.setColor('white')
+                            .setFontSize(30)
+                    })
+            }
         }
     }
 
@@ -619,11 +620,13 @@ export class GameReplayScene extends Phaser.Scene {
         }
     }
 
-    private btnReplayAngle_Click() {
-        this.mainForm.tractorPlayer.replayAngle = (this.mainForm.tractorPlayer.replayAngle + 1) % 4;
-        this.mainForm.tractorPlayer.replayEntity.Players = CommonMethods.RotateArray(this.mainForm.tractorPlayer.replayEntity.Players, 1);
+    // pos is 1-based
+    public replayAngleByPosition(pos: number) {
+        let angleOffset = pos - 1;
+        this.mainForm.tractorPlayer.replayAngle = (this.mainForm.tractorPlayer.replayAngle + angleOffset) % 4;
+        this.mainForm.tractorPlayer.replayEntity.Players = CommonMethods.RotateArray(this.mainForm.tractorPlayer.replayEntity.Players, angleOffset);
         if (this.mainForm.tractorPlayer.replayEntity.PlayerRanks != null) {
-            this.mainForm.tractorPlayer.replayEntity.PlayerRanks = CommonMethods.RotateArray(this.mainForm.tractorPlayer.replayEntity.PlayerRanks, 1);
+            this.mainForm.tractorPlayer.replayEntity.PlayerRanks = CommonMethods.RotateArray(this.mainForm.tractorPlayer.replayEntity.PlayerRanks, angleOffset);
         }
         this.StartReplay(true);
     }
@@ -704,8 +707,7 @@ export class GameReplayScene extends Phaser.Scene {
     }
 
     public isInGameRoom() {
-        return this.mainForm.btnReady && this.mainForm.btnReady.visible ||
-            this.mainForm.btnObserveNext && this.mainForm.btnObserveNext.visible
+        return this.mainForm.roomNameText && this.mainForm.roomNameText.visible
     }
 
     public removeOptions(selectElement) {

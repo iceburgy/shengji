@@ -45,7 +45,6 @@ export class MainForm {
     public tractorPlayer: TractorPlayer
     public btnReady: Phaser.GameObjects.Text
     public btnRobot: Phaser.GameObjects.Text
-    public btnObserveNext: Phaser.GameObjects.Text
     public btnExitRoom: Phaser.GameObjects.Text
     public isSendEmojiEnabled: boolean
     public btnPig: Phaser.GameObjects.Text
@@ -132,24 +131,6 @@ export class MainForm {
                 this.btnRobot.setStyle({ backgroundColor: 'gray' })
             })
         this.gameScene.roomUIControls.texts.push(this.btnRobot)
-
-        // 旁观下家
-        this.btnObserveNext = this.gameScene.add.text(this.gameScene.coordinates.btnObserveNextPosition.x, this.gameScene.coordinates.btnObserveNextPosition.y, '旁观下家')
-            .setColor('white')
-            .setFontSize(30)
-            .setPadding(10)
-            .setShadow(2, 2, "#333333", 2, true, true)
-            .setStyle({ backgroundColor: 'gray' })
-            .setVisible(false)
-            .setInteractive({ useHandCursor: true })
-            .on('pointerup', () => this.btnObserveNext_Click())
-            .on('pointerover', () => {
-                this.btnObserveNext.setStyle({ backgroundColor: 'lightblue' })
-            })
-            .on('pointerout', () => {
-                this.btnObserveNext.setStyle({ backgroundColor: 'gray' })
-            })
-        this.gameScene.roomUIControls.texts.push(this.btnObserveNext)
 
         // 退出按钮
         this.btnExitRoom = this.gameScene.add.text(this.gameScene.coordinates.btnExitRoomPosition.x, this.gameScene.coordinates.btnExitRoomPosition.y, '退出')
@@ -338,7 +319,25 @@ export class MainForm {
             this.btnRobot.setVisible(true)
         }
         else {
-            this.btnObserveNext.setVisible(true)
+            // 切换视角
+            for (let i = 1; i < 4; i++) {
+                let lblNickName = this.lblNickNames[i];
+                lblNickName.setInteractive({ useHandCursor: true })
+                    .on('pointerup', () => {
+                        lblNickName.setColor('white')
+                            .setFontSize(30)
+                        let pos = i + 1;
+                        this.observeByPosition(pos);
+                    })
+                    .on('pointerover', () => {
+                        lblNickName.setColor('yellow')
+                            .setFontSize(40)
+                    })
+                    .on('pointerout', () => {
+                        lblNickName.setColor('white')
+                            .setFontSize(30)
+                    })
+            }
         }
 
         var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)
@@ -857,9 +856,10 @@ export class MainForm {
         this.gameScene.sendMessageToServer(ToggleIsRobot_REQUEST, this.tractorPlayer.PlayerId, "")
     }
 
-    private btnObserveNext_Click() {
+    // pos is 1-based
+    private observeByPosition(pos: number) {
         if (this.tractorPlayer.isObserver) {
-            this.gameScene.sendMessageToServer(ObserveNext_REQUEST, this.tractorPlayer.MyOwnId, this.PositionPlayer[2])
+            this.gameScene.sendMessageToServer(ObserveNext_REQUEST, this.tractorPlayer.MyOwnId, this.PositionPlayer[pos])
         }
     }
 

@@ -95,6 +95,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                 </CardContent>
                 <LoginNoticeScreen />
                 <VersionInfo />
+                {gotNewVersion ? alert(`检测到新版本：${(packageJson.versioninfo as any)[packageJson.version]}`) : ""}
             </CardContent>
         </Card>
     )
