@@ -1073,7 +1073,7 @@ export class MainForm {
         this.isSendEmojiEnabled = false;
         setTimeout(() => {
             this.isSendEmojiEnabled = true;
-        }, 5000);
+        }, 1000 * CommonMethods.emojiWarningIntervalInSec);
         this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
     }
 
