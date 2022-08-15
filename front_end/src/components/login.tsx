@@ -48,7 +48,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                     }}
                 />
                 <TextField
-                    label="昵称-不超过10个字符"
+                    label="用户名-不超过10个字符"
                     color="error"
                     margin='normal'
                     value={playerName}
@@ -60,7 +60,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                     }}
                 />
                 <TextField
-                    label="昵称验证码,仅在找回昵称时需要"
+                    label="密码"
                     color="error"
                     margin='normal'
                     value={nickNameOverridePass}
@@ -81,6 +81,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                         setIsSetName(true);
                         cookies.set('hostName', hostName, { path: '/', expires: CommonMethods.GetCookieExpires() });
                         cookies.set('playerName', playerName, { path: '/', expires: CommonMethods.GetCookieExpires() });
+                        cookies.set('NickNameOverridePass', nickNameOverridePass, { path: '/', expires: CommonMethods.GetCookieExpires() });
                     }}>进入大厅</Button>
                 </CardContent>
                 <CardContent
