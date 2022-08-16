@@ -74,7 +74,7 @@ export class TractorPlayer {
         if (msgs == null || msgs.length == 0) {
             return
         }
-        else if (msgs.length > 1 && msgs[1].includes("括号内是您的昵称验证码")) {
+        else if (msgs.length > 1 && msgs[1].includes("括号内是您的登录密码")) {
             alert(msgs);
             this.mainForm.gameScene.saveNickNameOverridePass(msgs[0].replace(/(【|】)/gm, ""));
             return;

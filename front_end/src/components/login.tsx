@@ -77,7 +77,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                         textAlign: "center",
                     }}
                 >
-                    <Button disabled={!(hostName !== undefined && hostName.trim() && playerName !== undefined && playerName.trim() && playerName.trim().length <= 10)} variant="contained" color="success" size="large" onClick={() => {
+                    <Button disabled={!(nickNameOverridePass !== undefined && nickNameOverridePass.trim() && hostName !== undefined && hostName.trim() && playerName !== undefined && playerName.trim() && playerName.trim().length <= 10)} variant="contained" color="success" size="large" onClick={() => {
                         setIsSetName(true);
                         cookies.set('hostName', hostName, { path: '/', expires: CommonMethods.GetCookieExpires() });
                         cookies.set('playerName', playerName, { path: '/', expires: CommonMethods.GetCookieExpires() });
