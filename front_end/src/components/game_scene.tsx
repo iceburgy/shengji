@@ -156,6 +156,7 @@ export class GameScene extends Phaser.Scene {
     public btnJoinAudio: Phaser.GameObjects.Text
     public joinAudioUrl: string
     public nickNameOverridePass: string
+    public playerEmail: string
     public clientMessages: Phaser.GameObjects.Text[]
     public danmuMessages: any[]
     public roomUIControls: { images: Phaser.GameObjects.Image[], texts: Phaser.GameObjects.Text[] }
@@ -174,7 +175,7 @@ export class GameScene extends Phaser.Scene {
     public coordinates: Coordinates
     public wsprotocal: string = "wss"
 
-    constructor(hostName, playerName, nickNameOverridePass: string) {
+    constructor(hostName, playerName, nickNameOverridePass, playerEmail: string) {
         super("GameScene")
         this.isReplayMode = false;
         this.appVersion = packageJson.version
@@ -228,6 +229,7 @@ export class GameScene extends Phaser.Scene {
         this.joinAudioUrl = cookies.get("joinAudioUrl") ? cookies.get("joinAudioUrl") : "";
         IDBHelper.maxReplays = cookies.get("maxReplays") ? parseInt(cookies.get("maxReplays")) : IDBHelper.maxReplays;
         this.nickNameOverridePass = nickNameOverridePass;
+        this.playerEmail = playerEmail;
 
         this.coordinates = new Coordinates(this.isReplayMode);
     }
@@ -418,7 +420,11 @@ export class GameScene extends Phaser.Scene {
         console.log("连接成功")
         cookies.set('showNotice', 'none', { path: '/', expires: CommonMethods.GetCookieExpires() });
 
-        this.sendMessageToServer(PLAYER_ENTER_HALL_REQUEST, this.playerName, this.nickNameOverridePass);
+        // empty password means recover password
+        if (!this.nickNameOverridePass) {
+            this.nickNameOverridePass = CommonMethods.recoverLoginPassFlag;
+        }
+        this.sendMessageToServer(PLAYER_ENTER_HALL_REQUEST, this.playerName, JSON.stringify([this.nickNameOverridePass, this.playerEmail]));
         this.mainForm = new MainForm(this)
         this.loadAudioFiles()
         this.input.mouse.disableContextMenu();
@@ -662,9 +668,11 @@ export class GameScene extends Phaser.Scene {
         cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
     }
 
-    public saveNickNameOverridePass(nnorp: string) {
-        this.nickNameOverridePass = nnorp;
-        cookies.set('NickNameOverridePass', nnorp, { path: '/', expires: CommonMethods.GetCookieExpires() });
+    // [flag, pass, email]
+    public savePlayerLoginInfo(loginInfo: string[]) {
+        this.nickNameOverridePass = loginInfo[1];
+        cookies.set('NickNameOverridePass', loginInfo[1], { path: '/', expires: CommonMethods.GetCookieExpires() });
+        cookies.set('playerEmail', loginInfo[2], { path: '/', expires: CommonMethods.GetCookieExpires() });
     }
 
     public sendMessageToServer(messageType: string, playerID: string, content: string) {

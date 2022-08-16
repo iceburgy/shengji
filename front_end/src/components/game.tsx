@@ -6,13 +6,14 @@ interface GameScreenProps {
     hostName: string
     playerName: string
     nickNameOverridePass: string
+    playerEmail: string
 }
 
-export const GameScreen = ({ hostName, playerName, nickNameOverridePass }: GameScreenProps) => {
+export const GameScreen = ({ hostName, playerName, nickNameOverridePass, playerEmail }: GameScreenProps) => {
     useEffect(() => {
         const screenWidth = document.documentElement.clientWidth;
         const screenHeight = document.documentElement.clientHeight;
-        const gameScence = new GameScene(hostName, playerName, nickNameOverridePass)
+        const gameScence = new GameScene(hostName, playerName, nickNameOverridePass, playerEmail)
         const config = {
             type: Phaser.AUTO,
             width: screenWidth,

@@ -15,7 +15,7 @@ import { CommonMethods } from "./common_methods";
 const cookies = new Cookies();
 const gotNewVersion = packageJson.version !== cookies.get('appVersion')
 
-export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, nickNameOverridePass, setNickNameOverridePass, setIsSetName, showNotice, setIsGameReplay }: any) => {
+export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, nickNameOverridePass, setNickNameOverridePass, playerEmail, setPlayerEmail, setIsSetName, showNotice, setIsGameReplay }: any) => {
     if (gotNewVersion) {
         cookies.set('appVersion', packageJson.version, { path: '/', expires: CommonMethods.GetCookieExpires() })
     }
@@ -63,9 +63,22 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                     label="密码"
                     color="error"
                     margin='normal'
+                    type="password"
                     value={nickNameOverridePass}
                     onChange={e => {
                         setNickNameOverridePass(e.target.value.trim())
+                    }}
+                    sx={{
+                        fontSize: "40"
+                    }}
+                />
+                <TextField
+                    label="邮箱-仅注册或绑定时填"
+                    color="error"
+                    margin='normal'
+                    value={playerEmail}
+                    onChange={e => {
+                        setPlayerEmail(e.target.value.trim())
                     }}
                     sx={{
                         fontSize: "40"
@@ -77,12 +90,18 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                         textAlign: "center",
                     }}
                 >
-                    <Button disabled={!(nickNameOverridePass !== undefined && nickNameOverridePass.trim() && hostName !== undefined && hostName.trim() && playerName !== undefined && playerName.trim() && playerName.trim().length <= 10)} variant="contained" color="success" size="large" onClick={() => {
-                        setIsSetName(true);
-                        cookies.set('hostName', hostName, { path: '/', expires: CommonMethods.GetCookieExpires() });
-                        cookies.set('playerName', playerName, { path: '/', expires: CommonMethods.GetCookieExpires() });
-                        cookies.set('NickNameOverridePass', nickNameOverridePass, { path: '/', expires: CommonMethods.GetCookieExpires() });
-                    }}>进入大厅</Button>
+                    <Button disabled={!(hostName !== undefined && hostName.trim() && playerName !== undefined &&
+                        playerName.trim() && playerName.trim().length <= 10 &&
+                        (nickNameOverridePass !== undefined && nickNameOverridePass.trim() || playerEmail !== undefined && playerEmail.trim()))} variant="contained" color="success" size="large" onClick={() => {
+                            setIsSetName(true);
+                            cookies.set('hostName', hostName, { path: '/', expires: CommonMethods.GetCookieExpires() });
+                            cookies.set('playerName', playerName, { path: '/', expires: CommonMethods.GetCookieExpires() });
+                            cookies.set('NickNameOverridePass', nickNameOverridePass, { path: '/', expires: CommonMethods.GetCookieExpires() });
+                        }}>{hostName !== undefined && hostName.trim() && playerName !== undefined && playerName.trim() && !(nickNameOverridePass !== undefined && nickNameOverridePass.trim()) && playerEmail !== undefined && playerEmail.trim() ?
+                            "找回密码" :
+                            hostName !== undefined && hostName.trim() && playerName !== undefined && playerName.trim() && nickNameOverridePass !== undefined && nickNameOverridePass.trim() && playerEmail !== undefined && playerEmail.trim() ?
+                                "注册或者绑定" :
+                                "进入大厅"}</Button>
                 </CardContent>
                 <CardContent
                     sx={{

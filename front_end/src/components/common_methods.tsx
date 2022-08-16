@@ -29,6 +29,8 @@ export class CommonMethods {
     public static hiddenEffectsWarningMsg = "隐藏技正在进行中，请稍后再试"
     public static nickNameOverridePassLength = 5
     public static cookieExpireInDays = 3650;
+    public static recoverLoginPassFlag = "RecoverLoginPass";
+    public static loginSuccessFlag = "LoginSuccess";
 
     constructor() {
     }

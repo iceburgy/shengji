@@ -91,8 +91,16 @@ export class MainForm {
         this.isSendEmojiEnabled = true;
 
         // 房间信息
-        this.roomNameText = this.gameScene.add.text(this.gameScene.coordinates.roomNameTextPosition.x, this.gameScene.coordinates.roomNameTextPosition.y, "").setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
-        this.roomOwnerText = this.gameScene.add.text(this.gameScene.coordinates.roomOwnerTextPosition.x, this.gameScene.coordinates.roomOwnerTextPosition.y, "").setColor("orange").setFontSize(20).setShadow(2, 2, "#333333", 2, true, true);
+        this.roomNameText = this.gameScene.add.text(this.gameScene.coordinates.roomNameTextPosition.x, this.gameScene.coordinates.roomNameTextPosition.y, "")
+            .setVisible(false)
+            .setColor("orange")
+            .setFontSize(20)
+            .setShadow(2, 2, "#333333", 2, true, true);
+        this.roomOwnerText = this.gameScene.add.text(this.gameScene.coordinates.roomOwnerTextPosition.x, this.gameScene.coordinates.roomOwnerTextPosition.y, "")
+            .setVisible(false)
+            .setColor("orange")
+            .setFontSize(20)
+            .setShadow(2, 2, "#333333", 2, true, true);
         this.gameScene.roomUIControls.texts.push(this.roomNameText)
         this.gameScene.roomUIControls.texts.push(this.roomOwnerText)
 
@@ -1102,8 +1110,8 @@ export class MainForm {
             this.gameScene.joinAudioUrl = txtJoinAudioUrl.value
         }
 
-        let txtNickNameOverridePass = this.modalForm.getChildByID("txtNickNameOverridePass")
-        txtNickNameOverridePass.value = cookies.get("NickNameOverridePass") ? cookies.get("NickNameOverridePass") : "";
+        let txtPlayerEmail = this.modalForm.getChildByID("txtPlayerEmail")
+        txtPlayerEmail.value = cookies.get("playerEmail") ? cookies.get("playerEmail") : "";
 
         let txtMaxReplays = this.modalForm.getChildByID("txtMaxReplays")
         txtMaxReplays.value = IDBHelper.maxReplays

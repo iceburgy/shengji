@@ -747,5 +747,5 @@ export class GameReplayScene extends Phaser.Scene {
     public sendMessageToServer(messageType: string, playerID: string, content: string) { }
     public loadAudioFiles() { }
     public drawSgsAni(effectName: string, effectNature: string, wid: number, hei: number) { }
-    public saveNickNameOverridePass(nnorp: string) { }
+    public savePlayerLoginInfo(nnorp: string[]) { }
 }
