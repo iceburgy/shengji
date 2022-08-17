@@ -13,9 +13,9 @@ import packageJson from '../../package.json';
 import { CommonMethods } from "./common_methods";
 
 const cookies = new Cookies();
-const gotNewVersion = packageJson.version !== cookies.get('appVersion')
 
 export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, nickNameOverridePass, setNickNameOverridePass, playerEmail, setPlayerEmail, setIsSetName, showNotice, setIsGameReplay }: any) => {
+    let gotNewVersion = packageJson.version !== cookies.get('appVersion')
     if (gotNewVersion) {
         cookies.set('appVersion', packageJson.version, { path: '/', expires: CommonMethods.GetCookieExpires() })
     }
@@ -73,7 +73,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                     }}
                 />
                 <TextField
-                    label="邮箱-仅注册或绑定时填"
+                    label="邮箱-仅注册、绑定、找回密码时填"
                     color="error"
                     margin='normal'
                     value={playerEmail}
@@ -100,7 +100,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                         }}>{hostName !== undefined && hostName.trim() && playerName !== undefined && playerName.trim() && !(nickNameOverridePass !== undefined && nickNameOverridePass.trim()) && playerEmail !== undefined && playerEmail.trim() ?
                             "找回密码" :
                             hostName !== undefined && hostName.trim() && playerName !== undefined && playerName.trim() && nickNameOverridePass !== undefined && nickNameOverridePass.trim() && playerEmail !== undefined && playerEmail.trim() ?
-                                "注册或者绑定" :
+                                "注册/绑定" :
                                 "进入大厅"}</Button>
                 </CardContent>
                 <CardContent
