@@ -383,6 +383,8 @@ export class MainForm {
     public ReenterOrResumeEvent() {
         this.drawingFormHelper.DrawSidebarFull();
         this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick = CommonMethods.deepCopy<any>(this.tractorPlayer.CurrentTrickState.ShowedCards);
+        this.tractorPlayer.playerLocalCache.WinnderID = TractorRules.GetWinner(this.tractorPlayer.CurrentTrickState);
+        this.tractorPlayer.playerLocalCache.WinResult = this.IsWinningWithTrump(this.tractorPlayer.CurrentTrickState, this.tractorPlayer.playerLocalCache.WinnderID);
         this.PlayerCurrentTrickShowedCards();
         this.drawingFormHelper.ResortMyHandCards();
         this.DrawDiscardedCardsCaller();
@@ -1642,7 +1644,7 @@ export class MainForm {
         } else {
             finalMsg = `【${playerID}】说：${msgString}`;
         }
-        if (!isPlayerInGameHall) this.drawingFormHelper.DrawDanmu(finalMsg);
+        this.drawingFormHelper.DrawDanmu(finalMsg);
         this.appendChatMsg(finalMsg);
     }
 

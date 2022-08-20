@@ -29,6 +29,7 @@ export class TractorPlayer {
     public isObserver: boolean
     public isObserverChanged: boolean
     public IsTryingReenter: boolean
+    public IsOtherTryingReenter: boolean
     public IsTryingResumeGame: boolean
     public ShowLastTrickCards: boolean
 
@@ -51,6 +52,7 @@ export class TractorPlayer {
         this.isObserver = false
         this.isObserverChanged = false
         this.IsTryingReenter = false
+        this.IsOtherTryingReenter = false
         this.IsTryingResumeGame = false
         this.ShowLastTrickCards = false
         this.CurrentGameState = new GameState()
@@ -100,11 +102,13 @@ export class TractorPlayer {
                     this.mainForm.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.MyOwnId, JSON.stringify(args))
                 }
             }
-            else if (m == CommonMethods.reenterRoomSignal) {
-                if (!this.isObserver) {
+            else if (m.includes(CommonMethods.reenterRoomSignal)) {
+                if (m.includes(`【${this.MyOwnId}】`)) {
                     this.IsTryingReenter = true;
                     // this.btnEnterHall.Hide();
                     // this.btnReplay.Hide();
+                } else {
+                    this.IsOtherTryingReenter = true;
                 }
             }
             else if (m == CommonMethods.resumeGameSignal) {
@@ -236,6 +240,9 @@ export class TractorPlayer {
             this.IsTryingReenter = false;
             this.IsTryingResumeGame = false;
         }
+        if (this.IsOtherTryingReenter) {
+            this.IsOtherTryingReenter = false;
+        }
     }
     public NotifyCurrentHandState(currentHandState: CurrentHandState) {
 
@@ -323,7 +330,7 @@ export class TractorPlayer {
     public NotifyCurrentTrickState(currentTrickState: CurrentTrickState) {
 
         this.CurrentTrickState.CloneFrom(currentTrickState);
-        if (this.IsTryingReenter || this.IsTryingResumeGame) return;
+        if (this.IsOtherTryingReenter || this.IsTryingReenter || this.IsTryingResumeGame) return;
 
         if (this.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Ending || this.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.SpecialEnding) {
             return;
