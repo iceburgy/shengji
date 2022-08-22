@@ -255,6 +255,10 @@ export class TractorPlayer {
 
         this.CurrentHandState.CloneFrom(currentHandState);
 
+        if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards && currentHandState.Last8Holder == this.MyOwnId) {
+            this.mainForm.btnPig.setVisible(true);
+        }
+
         //断线重连后重画手牌
         if (this.IsTryingReenter || this.IsTryingResumeGame) {
             this.CurrentPoker.CloneFrom(this.CurrentHandState.PlayerHoldingCards[this.MyOwnId] as CurrentPoker)
@@ -262,6 +266,9 @@ export class TractorPlayer {
             this.CurrentPoker.Trump = this.CurrentHandState.Trump;
             this.mainForm.AllCardsGot();
 
+            if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8CardsFinished) {
+                this.mainForm.Last8Discarded()
+            }
             return;
         }
 
@@ -330,6 +337,11 @@ export class TractorPlayer {
     public NotifyCurrentTrickState(currentTrickState: CurrentTrickState) {
 
         this.CurrentTrickState.CloneFrom(currentTrickState);
+        // 显示确定按钮，提示当前回合玩家出牌
+        let isMeNextPlayer = this.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing && this.CurrentTrickState.NextPlayer() == this.MyOwnId;
+        if (!this.isObserver && isMeNextPlayer) {
+            this.mainForm.btnPig.setVisible(true);
+        }
         if (this.IsOtherTryingReenter || this.IsTryingReenter || this.IsTryingResumeGame) return;
 
         if (this.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Ending || this.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.SpecialEnding) {

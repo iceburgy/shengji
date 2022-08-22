@@ -158,13 +158,13 @@ export class MainForm {
 
         // 确定按钮
         this.btnPig = this.gameScene.add.text(this.gameScene.coordinates.btnPigPosition.x, this.gameScene.coordinates.btnPigPosition.y, '确定')
-            .setColor('white')
+            .setColor('gray')
             .setFontSize(30)
             .setPadding(10)
             .setShadow(2, 2, "#333333", 2, true, true)
             .setStyle({ backgroundColor: 'gray' })
             .setVisible(false)
-            .setInteractive({ useHandCursor: true })
+            .disableInteractive()
             .on('pointerup', () => this.btnPig_Click())
             .on('pointerover', () => {
                 this.btnPig.setStyle({ backgroundColor: 'lightblue' })
@@ -325,6 +325,7 @@ export class MainForm {
         if (!this.tractorPlayer.isObserver) {
             this.btnReady.setVisible(true)
             this.btnRobot.setVisible(true)
+            if (!this.tractorPlayer.IsTryingReenter) this.btnPig.setVisible(false);
         }
         else {
             // 切换视角
@@ -383,8 +384,10 @@ export class MainForm {
     public ReenterOrResumeEvent() {
         this.drawingFormHelper.DrawSidebarFull();
         this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick = CommonMethods.deepCopy<any>(this.tractorPlayer.CurrentTrickState.ShowedCards);
-        this.tractorPlayer.playerLocalCache.WinnderID = TractorRules.GetWinner(this.tractorPlayer.CurrentTrickState);
-        this.tractorPlayer.playerLocalCache.WinResult = this.IsWinningWithTrump(this.tractorPlayer.CurrentTrickState, this.tractorPlayer.playerLocalCache.WinnderID);
+        if (this.tractorPlayer.CurrentTrickState.ShowedCards && Object.keys(this.tractorPlayer.CurrentTrickState.ShowedCards).length == 4) {
+            this.tractorPlayer.playerLocalCache.WinnderID = TractorRules.GetWinner(this.tractorPlayer.CurrentTrickState);
+            this.tractorPlayer.playerLocalCache.WinResult = this.IsWinningWithTrump(this.tractorPlayer.CurrentTrickState, this.tractorPlayer.playerLocalCache.WinnderID);
+        }
         this.PlayerCurrentTrickShowedCards();
         this.drawingFormHelper.ResortMyHandCards();
         this.DrawDiscardedCardsCaller();
@@ -1219,7 +1222,7 @@ export class MainForm {
     }
 
     private btnPig_Click() {
-        if (!this.btnPig || !this.btnPig.input.enabled) return;
+        if (!this.btnPig || !this.btnPig.visible) return;
         this.ToDiscard8Cards();
         this.ToShowCards();
     }
@@ -1231,6 +1234,9 @@ export class MainForm {
             if (this.SelectedCards.length == 8) {
                 //扣牌,所以擦去小猪
                 this.btnPig.setVisible(false);
+                this.btnPig.disableInteractive()
+                this.btnPig.setColor('gray')
+                this.btnPig.setStyle({ backgroundColor: 'gray' })
 
                 this.SelectedCards.forEach(card => {
                     this.tractorPlayer.CurrentPoker.RemoveCard(card);
@@ -1248,6 +1254,9 @@ export class MainForm {
             if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid) {
                 //擦去小猪
                 this.btnPig.setVisible(false);
+                this.btnPig.disableInteractive()
+                this.btnPig.setColor('gray')
+                this.btnPig.setStyle({ backgroundColor: 'gray' })
 
                 this.SelectedCards.forEach(card => {
                     this.tractorPlayer.CurrentPoker.RemoveCard(card);
@@ -1260,6 +1269,9 @@ export class MainForm {
             else if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.TryToDump) {
                 //擦去小猪
                 this.btnPig.setVisible(false);
+                this.btnPig.disableInteractive()
+                this.btnPig.setColor('gray')
+                this.btnPig.setStyle({ backgroundColor: 'gray' })
                 this.gameScene.sendMessageToServer(ValidateDumpingCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards))
             }
         }
@@ -1311,8 +1323,6 @@ export class MainForm {
             //暂时关闭托管功能，以免甩牌失败后立即点托管，会出别的牌
             this.btnRobot.disableInteractive()
             this.btnRobot.setColor('gray')
-            this.btnPig.disableInteractive()
-            this.btnPig.setColor('gray')
 
             setTimeout(() => {
                 result.MustShowCardsForDumpingFail.forEach(card => {
@@ -1324,8 +1334,6 @@ export class MainForm {
                 this.SelectedCards = []
                 this.btnRobot.setInteractive({ useHandCursor: true })
                 this.btnRobot.setColor('white')
-                this.btnPig.setInteractive({ useHandCursor: true })
-                this.btnPig.setColor('white')
             }, 3000);
         }
     }

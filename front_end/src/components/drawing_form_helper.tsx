@@ -66,17 +66,24 @@ export class DrawingFormHelper {
                 &&
                 (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid ||
                     selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.TryToDump)) {
-                if (this.mainForm.btnPig && this.mainForm.btnPig.input.enabled) this.mainForm.btnPig.setVisible(true);
+                if (this.mainForm.btnPig && this.mainForm.btnPig.visible) {
+                    this.mainForm.btnPig.setInteractive({ useHandCursor: true })
+                    this.mainForm.btnPig.setColor('white')
+                }
             }
             else if ((this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing
                 && this.mainForm.tractorPlayer.CurrentTrickState.NextPlayer() == this.mainForm.tractorPlayer.PlayerId)) {
-                this.mainForm.btnPig.setVisible(false);
+                this.mainForm.btnPig.disableInteractive()
+                this.mainForm.btnPig.setColor('gray')
+                this.mainForm.btnPig.setStyle({ backgroundColor: 'gray' })
             }
 
         }
         else if ((this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing
             && this.mainForm.tractorPlayer.CurrentTrickState.NextPlayer() == this.mainForm.tractorPlayer.PlayerId)) {
-            this.mainForm.btnPig.setVisible(false);
+            this.mainForm.btnPig.disableInteractive()
+            this.mainForm.btnPig.setColor('gray')
+            this.mainForm.btnPig.setStyle({ backgroundColor: 'gray' })
         }
 
 
@@ -95,10 +102,13 @@ export class DrawingFormHelper {
                 }
             }
             if (total == 8) {
-                this.mainForm.btnPig.setVisible(true);
+                this.mainForm.btnPig.setInteractive({ useHandCursor: true })
+                this.mainForm.btnPig.setColor('white')
             }
             else {
-                this.mainForm.btnPig.setVisible(false);
+                this.mainForm.btnPig.disableInteractive()
+                this.mainForm.btnPig.setColor('gray')
+                this.mainForm.btnPig.setStyle({ backgroundColor: 'gray' })
             }
         }
     }
