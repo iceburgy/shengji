@@ -489,6 +489,10 @@ export class TractorPlayer {
         this.mainForm.NotifyGameHallEventHandler(roomStateList, playerList)
     }
 
+    public NotifyOnlinePlayerList(onlinePlayerList: string[]) {
+        this.mainForm.NotifyOnlinePlayerListEventHandler(onlinePlayerList)
+    }
+
     public NotifyEmoji(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string) {
         this.mainForm.NotifyEmojiEventHandler(playerID, emojiType, emojiIndex, isCenter, msgString)
     }

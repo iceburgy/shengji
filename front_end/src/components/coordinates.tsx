@@ -15,6 +15,7 @@ export class Coordinates {
     public centerY
     public hiddenWidth
     public chatWid
+    public chatHeightRatio
 
     // progress bar
     public progressBarWidth
@@ -119,6 +120,7 @@ export class Coordinates {
         this.centerY = screenHeight * 0.5
         this.hiddenWidth = 20
         this.chatWid = chatWidth
+        this.chatHeightRatio = 0.7;
 
         // progress bar
         this.progressBarWidth = 300

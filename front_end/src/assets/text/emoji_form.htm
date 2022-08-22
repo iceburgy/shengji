@@ -1,5 +1,5 @@
 <style>
-    #divChatHistory {
+    .chattextdiv {
         padding-left: 5px;
         padding-right: 5px;
         color: #c0cad1dd;
@@ -21,11 +21,17 @@
         border-radius: 3px;
         display: block;
     }
+
+    #divChatHistory {
+        margin-top: 5px;
+    }
 </style>
 <div id="input-form" class="emoji-formroot">
-    <div id="divChatHistory"></div>
+    <div id="divOnlinePlayerList" class="chattextdiv"></div>
 
     <div id="divfooter">
+        <div id="divChatHistory" class="chattextdiv"></div>
+
         <p id="pPresetMsgs">
             <select id="selectPresetMsgs">
                 <option value="这波操作，666！">1-这波操作，666！</option>

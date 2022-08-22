@@ -906,8 +906,15 @@ export class MainForm {
             divfooter.style.bottom = "-4px";
         }
 
+        let fullTextDivHeight = this.gameScene.coordinates.screenHei - divfooter.offsetHeight - 10;
+        let divOnlinePlayerListHeight = fullTextDivHeight * (1 - this.gameScene.coordinates.chatHeightRatio);
+        let divChatHeight = fullTextDivHeight * this.gameScene.coordinates.chatHeightRatio - 5;
+
+        let divOnlinePlayerList = this.chatForm.getChildByID("divOnlinePlayerList")
+        divOnlinePlayerList.style.height = `${divOnlinePlayerListHeight}px`;
+
         let divChatHistory = this.chatForm.getChildByID("divChatHistory")
-        divChatHistory.style.height = `${this.gameScene.coordinates.screenHei - divfooter.offsetHeight - 10}px`;
+        divChatHistory.style.height = `${divChatHeight}px`;
 
         let selectPresetMsgs = this.chatForm.getChildByID("selectPresetMsgs")
         selectPresetMsgs.style.width = `${chatFormWid}px`;
@@ -1668,6 +1675,25 @@ export class MainForm {
         let divChatHistory = this.chatForm.getChildByID("divChatHistory");
         divChatHistory.appendChild(p);
         divChatHistory.scrollTop = divChatHistory.scrollHeight;
+    }
+
+
+
+    public NotifyOnlinePlayerListEventHandler(onlinePlayerList: string[]) {
+        if (!this.gameScene.isInGameRoom) return;
+        let divOnlinePlayerList = this.chatForm.getChildByID("divOnlinePlayerList");
+        divOnlinePlayerList.innerHTML = '';
+        let header = document.createElement("p");
+        header.innerText = "在线玩家";
+        header.style.fontWeight = 'bold';
+        divOnlinePlayerList.appendChild(header);
+
+        for (let i = 0; i < onlinePlayerList.length; i++) {
+            let d = document.createElement("div");
+            d.innerText = `【${onlinePlayerList[i]}】`;
+            divOnlinePlayerList.appendChild(d);
+        }
+        divOnlinePlayerList.scrollTop = divOnlinePlayerList.scrollHeight;
     }
 
     public CutCardShoeCardsEventHandler() {
