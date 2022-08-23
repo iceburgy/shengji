@@ -255,8 +255,12 @@ export class TractorPlayer {
 
         this.CurrentHandState.CloneFrom(currentHandState);
 
-        if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards && currentHandState.Last8Holder == this.MyOwnId) {
-            this.mainForm.btnPig.setVisible(true);
+        //埋底中
+        if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
+            if (currentHandState.Last8Holder == this.MyOwnId) {
+                this.mainForm.btnPig.setVisible(true);
+            }
+            this.mainForm.setStartLabels();
         }
 
         //断线重连后重画手牌
@@ -338,9 +342,15 @@ export class TractorPlayer {
 
         this.CurrentTrickState.CloneFrom(currentTrickState);
         // 显示确定按钮，提示当前回合玩家出牌
-        let isMeNextPlayer = this.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing && this.CurrentTrickState.NextPlayer() == this.MyOwnId;
+        let isMeNextPlayer = this.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing &&
+            Object.keys(this.CurrentTrickState.ShowedCards).length > 0 &&
+            this.CurrentTrickState.NextPlayer() == this.MyOwnId;
         if (!this.isObserver && isMeNextPlayer) {
             this.mainForm.btnPig.setVisible(true);
+        }
+        // 出牌中
+        if (this.CurrentHandState.CurrentHandStep >= SuitEnums.HandStep.Playing) {
+            this.mainForm.setStartLabels();
         }
         if (this.IsOtherTryingReenter || this.IsTryingReenter || this.IsTryingResumeGame) return;
 

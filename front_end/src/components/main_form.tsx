@@ -827,10 +827,22 @@ export class MainForm {
         this.drawingFormHelper.DrawSidebarFull();
     }
 
-    private setStartLabels() {
+    public setStartLabels() {
+        let onesTurnPlayerID: string = "";
+        let isShowCards: boolean = false;
+        if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
+            onesTurnPlayerID = this.tractorPlayer.CurrentHandState.Last8Holder;
+            isShowCards = false;
+        } else if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing &&
+            Object.keys(this.tractorPlayer.CurrentTrickState.ShowedCards).length > 0) {
+            onesTurnPlayerID = this.tractorPlayer.CurrentTrickState.NextPlayer();
+            isShowCards = true;
+        }
         var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)
+        if (curIndex < 0) return;
         for (let i = 0; i < 4; i++) {
             this.lblStarters[i].setVisible(true)
+            this.lblStarters[i].setColor("orange")
 
             var curPlayer = this.tractorPlayer.CurrentGameState.Players[curIndex];
             if (curPlayer && curPlayer.IsOffline) {
@@ -845,11 +857,17 @@ export class MainForm {
             else if (curPlayer && !curPlayer.IsReadyToStart) {
                 this.lblStarters[i].setText("思索中")
             }
-            else if (curPlayer && this.tractorPlayer.CurrentHandState.Starter && curPlayer.PlayerId == this.tractorPlayer.CurrentHandState.Starter) {
-                this.lblStarters[i].setText("庄家")
-            }
             else {
-                this.lblStarters[i].setText(`${curIndex + 1}`)
+                if (curPlayer && onesTurnPlayerID && curPlayer.PlayerId === onesTurnPlayerID) {
+                    this.lblStarters[i]
+                        .setText(isShowCards ? "出牌中" : "埋底中")
+                        .setColor("yellow")
+                } else if (curPlayer && this.tractorPlayer.CurrentHandState.Starter && curPlayer.PlayerId == this.tractorPlayer.CurrentHandState.Starter) {
+                    this.lblStarters[i].setText("庄家")
+                }
+                else {
+                    this.lblStarters[i].setText(`${curIndex + 1}`)
+                }
             }
             curIndex = (curIndex + 1) % 4
         }
