@@ -470,7 +470,7 @@ export class GameScene extends Phaser.Scene {
         if (messageType === NotifyGameHall_RESPONSE) {
             this.handleNotifyGameHall(objList);
         } else if (messageType === NotifyOnlinePlayerList_RESPONSE) {
-            this.handleNotifyOnlinePlayerList(objList);
+            this.handleNotifyOnlinePlayerList(playerID, objList);
         } else if (messageType === NotifyMessage_RESPONSE) {
             this.handleNotifyMessage(objList);
         } else if (messageType === NotifyRoomSetting_RESPONSE) {
@@ -583,9 +583,10 @@ export class GameScene extends Phaser.Scene {
         this.mainForm.tractorPlayer.NotifyGameHall(roomStateList, playerList)
     }
 
-    private handleNotifyOnlinePlayerList(objList: []) {
-        var onlinePlayerList: string[] = objList[0];
-        this.mainForm.tractorPlayer.NotifyOnlinePlayerList(onlinePlayerList)
+    private handleNotifyOnlinePlayerList(playerID: string, objList: []) {
+        var isJoining: boolean = objList[0];
+        var onlinePlayerList: string[] = objList[1];
+        this.mainForm.tractorPlayer.NotifyOnlinePlayerList(playerID, isJoining, onlinePlayerList)
     }
 
     private handleNotifyMessage(objList: []) {

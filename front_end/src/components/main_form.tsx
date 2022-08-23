@@ -1677,9 +1677,11 @@ export class MainForm {
         divChatHistory.scrollTop = divChatHistory.scrollHeight;
     }
 
+    public NotifyOnlinePlayerListEventHandler(playerID: string, isJoining: boolean, onlinePlayerList: string[]) {
+        let isJoingingStr = isJoining ? "加入" : "退出";
+        let chatMsg = `【${playerID}】${isJoingingStr}了游戏`;
+        this.appendChatMsg(chatMsg);
 
-
-    public NotifyOnlinePlayerListEventHandler(onlinePlayerList: string[]) {
         if (!this.gameScene.isInGameRoom) return;
         let divOnlinePlayerList = this.chatForm.getChildByID("divOnlinePlayerList");
         divOnlinePlayerList.innerHTML = '';
