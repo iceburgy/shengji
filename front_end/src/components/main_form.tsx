@@ -325,7 +325,6 @@ export class MainForm {
         if (!this.tractorPlayer.isObserver) {
             this.btnReady.setVisible(true)
             this.btnRobot.setVisible(true)
-            if (!this.tractorPlayer.IsTryingReenter) this.btnPig.setVisible(false);
         }
         else {
             // 切换视角
@@ -538,6 +537,7 @@ export class MainForm {
         // this.btnRiot.Visible = false;
         this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards = {}
         this.timerCountDown = 0;
+        this.btnPig.setVisible(false);
 
         this.init();
     }
