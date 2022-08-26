@@ -43,6 +43,7 @@ const cookies = new Cookies();
 export class MainForm {
     public gameScene: GameScene | GameReplayScene
     public tractorPlayer: TractorPlayer
+    public btnShowLastTrick: Phaser.GameObjects.Text
     public btnReady: Phaser.GameObjects.Text
     public btnRobot: Phaser.GameObjects.Text
     public btnExitRoom: Phaser.GameObjects.Text
@@ -103,6 +104,24 @@ export class MainForm {
             .setShadow(2, 2, "#333333", 2, true, true);
         this.gameScene.roomUIControls.texts.push(this.roomNameText)
         this.gameScene.roomUIControls.texts.push(this.roomOwnerText)
+
+        // 回看上轮按钮
+        this.btnShowLastTrick = this.gameScene.add.text(this.gameScene.coordinates.btnShowLastTrickPosition.x, this.gameScene.coordinates.btnShowLastTrickPosition.y, '上轮')
+            .setColor('white')
+            .setFontSize(30)
+            .setPadding(10)
+            .setShadow(2, 2, "#333333", 2, true, true)
+            .setStyle({ backgroundColor: 'gray' })
+            .setVisible(false)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerup', () => this.HandleRightClickEmptyArea())
+            .on('pointerover', () => {
+                this.btnShowLastTrick.setStyle({ backgroundColor: 'lightblue' })
+            })
+            .on('pointerout', () => {
+                this.btnShowLastTrick.setStyle({ backgroundColor: 'gray' })
+            })
+        this.gameScene.roomUIControls.texts.push(this.btnShowLastTrick)
 
         // 就绪按钮
         this.btnReady = this.gameScene.add.text(this.gameScene.coordinates.btnReadyPosition.x, this.gameScene.coordinates.btnReadyPosition.y, '就绪')
@@ -236,27 +255,7 @@ export class MainForm {
         this.gameScene.input.on('pointerdown', (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
             // 右键点空白区
             if ((!currentlyOver || currentlyOver.length == 0) && pointer.rightButtonDown()) {
-                if (this.tractorPlayer.mainForm.gameScene.isReplayMode) return;
-                if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing ||
-                    this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
-                    this.tractorPlayer.ShowLastTrickCards = !this.tractorPlayer.ShowLastTrickCards;
-                    if (this.tractorPlayer.ShowLastTrickCards) {
-                        this.ShowLastTrickAndTumpMade();
-                    }
-                    else {
-                        this.PlayerCurrentTrickShowedCards();
-                    }
-                }
-                //一局结束时右键查看最后一轮各家所出的牌，缩小至一半，放在左下角
-                else if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Ending) {
-                    this.tractorPlayer.ShowLastTrickCards = !this.tractorPlayer.ShowLastTrickCards;
-                    if (this.tractorPlayer.ShowLastTrickCards) {
-                        this.ShowLastTrickAndTumpMade();
-                    }
-                    else {
-                        this.drawingFormHelper.DrawFinishedSendedCards()
-                    }
-                }
+                this.HandleRightClickEmptyArea();
             }
             // 任意键
             this.resetGameRoomUI();
@@ -265,6 +264,31 @@ export class MainForm {
         // 快捷键
         this.gameScene.input.keyboard.on('keydown', this.shortcutKeyDownEventhandler, this)
         this.gameScene.input.keyboard.on('keyup', this.shortcutKeyUpEventhandler, this)
+    }
+
+    public HandleRightClickEmptyArea() {
+        if (this.tractorPlayer.mainForm.gameScene.isReplayMode) return;
+        if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing ||
+            this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
+            this.tractorPlayer.ShowLastTrickCards = !this.tractorPlayer.ShowLastTrickCards;
+            if (this.tractorPlayer.ShowLastTrickCards) {
+                this.ShowLastTrickAndTumpMade();
+            }
+            else {
+                this.PlayerCurrentTrickShowedCards();
+            }
+        }
+        //一局结束时右键查看最后一轮各家所出的牌，缩小至一半，放在左下角
+        else if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Ending) {
+            this.tractorPlayer.ShowLastTrickCards = !this.tractorPlayer.ShowLastTrickCards;
+            if (this.tractorPlayer.ShowLastTrickCards) {
+                this.ShowLastTrickAndTumpMade();
+            }
+            else {
+                this.drawingFormHelper.DrawFinishedSendedCards()
+            }
+        }
+        this.btnShowLastTrick.setText(this.tractorPlayer.ShowLastTrickCards ? "还原" : "上轮");
     }
 
     public NewPlayerReadyToStart(readyToStart: boolean) {
@@ -322,6 +346,7 @@ export class MainForm {
         this.roomOwnerText.setVisible(true)
 
         this.btnExitRoom.setVisible(true)
+        this.btnShowLastTrick.setVisible(true)
         if (!this.tractorPlayer.isObserver) {
             this.btnReady.setVisible(true)
             this.btnRobot.setVisible(true)
