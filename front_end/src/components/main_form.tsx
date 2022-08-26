@@ -713,8 +713,7 @@ export class MainForm {
 
         //如果正在回看并且自己刚刚出了牌，则重置回看，重新画牌
         if (this.tractorPlayer.ShowLastTrickCards && latestPlayer == this.tractorPlayer.PlayerId) {
-            this.tractorPlayer.ShowLastTrickCards = false;
-            this.PlayerCurrentTrickShowedCards();
+            this.HandleRightClickEmptyArea();
         }
 
         //即时更新旁观手牌
