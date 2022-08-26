@@ -5,6 +5,14 @@ export class FileHelper {
     constructor() {
     }
 
+    public static ImportJsonFile(fileBlob: any, callbackUpstream: any) {
+        var fr: any = new FileReader();
+        fr.onload = function () {
+            IDBHelper.SaveReplayEntity(JSON.parse(fr.result), callbackUpstream);
+        }
+        fr.readAsText(fileBlob);
+    }
+
     public static ImportZipFile(fileBlob: any, callback: any) {
         var JSZip = require("jszip");
         JSZip.loadAsync(fileBlob).then((zip: any) => {

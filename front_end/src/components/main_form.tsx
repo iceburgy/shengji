@@ -1198,16 +1198,29 @@ export class MainForm {
             this.DesotroyModalForm();
         }
 
-        let inputZipFile = this.modalForm.getChildByID("inputZipFile")
-        inputZipFile.onchange = () => {
-            if (!inputZipFile || !inputZipFile.files || inputZipFile.files.length <= 0) {
+        let inputRecordingFile = this.modalForm.getChildByID("inputRecordingFile")
+        inputRecordingFile.onchange = () => {
+            let fileName = inputRecordingFile.value;
+            let extension = fileName.split('.').pop();
+            if (!["json", "zip"].includes(extension.toLowerCase())) {
+                alert("unsupported file type!");
+                return;
+            }
+            if (!inputRecordingFile || !inputRecordingFile.files || inputRecordingFile.files.length <= 0) {
                 alert("No file has been selected!");
                 return;
             }
-            FileHelper.ImportZipFile(inputZipFile.files[0], () => {
-                this.ReinitReplayEntities(this);
-                if (this.gameScene.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
-            });
+            if (extension.toLowerCase() === "json") {
+                FileHelper.ImportJsonFile(inputRecordingFile.files[0], () => {
+                    this.ReinitReplayEntities(this);
+                    if (this.gameScene.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
+                });
+            } else {
+                FileHelper.ImportZipFile(inputRecordingFile.files[0], () => {
+                    this.ReinitReplayEntities(this);
+                    if (this.gameScene.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
+                });
+            }
             this.DesotroyModalForm();
         }
 
