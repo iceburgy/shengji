@@ -305,6 +305,8 @@ export class GameReplayScene extends Phaser.Scene {
             // 切换视角
             for (let i = 1; i < 4; i++) {
                 let lblNickName = this.mainForm.lblNickNames[i];
+                // have to clear all listeners, otherwise multiple ones will be added and triggered multiple times
+                lblNickName.removeAllListeners();
                 lblNickName.setInteractive({ useHandCursor: true })
                     .on('pointerup', () => {
                         lblNickName.setColor('white')
