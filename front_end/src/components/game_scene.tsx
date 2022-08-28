@@ -183,7 +183,7 @@ export class GameScene extends Phaser.Scene {
         this.hostName = hostName.trim()
         this.hostNameOriginal = this.hostName
         this.playerName = playerName.trim()
-        if (CommonMethods.IsNumber(this.playerName)) {
+        if (this.playerName && CommonMethods.IsNumber(this.playerName)) {
             document.body.innerHTML = `<div>!!! 昵称不能以数字开头结尾：${this.playerName}</div>`
             this.hostName = "";
             return;
@@ -421,9 +421,12 @@ export class GameScene extends Phaser.Scene {
         console.log("连接成功")
         cookies.set('showNotice', 'none', { path: '/', expires: CommonMethods.GetCookieExpires() });
 
-        // empty password means recover password
+        // empty password means recover password or playerName
         if (!this.nickNameOverridePass) {
             this.nickNameOverridePass = CommonMethods.recoverLoginPassFlag;
+            if (!this.playerName) {
+                this.playerName = "";
+            }
         }
         this.sendMessageToServer(PLAYER_ENTER_HALL_REQUEST, this.playerName, JSON.stringify([this.nickNameOverridePass, this.playerEmail]));
         this.mainForm = new MainForm(this)

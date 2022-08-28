@@ -73,7 +73,7 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                     }}
                 />
                 <TextField
-                    label="邮箱-仅注册、绑定、找回密码时填"
+                    label="邮箱-正常登录时无需填写"
                     color="error"
                     margin='normal'
                     value={playerEmail}
@@ -90,18 +90,23 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                         textAlign: "center",
                     }}
                 >
-                    <Button disabled={!(hostName !== undefined && hostName.trim() && playerName !== undefined &&
-                        playerName.trim() && playerName.trim().length <= 10 &&
-                        (nickNameOverridePass !== undefined && nickNameOverridePass.trim() || playerEmail !== undefined && playerEmail.trim()))} variant="contained" color="success" size="large" onClick={() => {
+                    <Button disabled={!(hostName !== undefined && hostName.trim() &&
+                        (!(playerName !== undefined && playerName.trim()) && !(nickNameOverridePass !== undefined && nickNameOverridePass.trim()) && playerEmail !== undefined && playerEmail.trim() ||
+                            playerName !== undefined && playerName.trim() && !(nickNameOverridePass !== undefined && nickNameOverridePass.trim()) && playerEmail !== undefined && playerEmail.trim() ||
+                            playerName !== undefined && playerName.trim() && nickNameOverridePass !== undefined && nickNameOverridePass.trim() && playerEmail !== undefined && playerEmail.trim() ||
+                            playerName !== undefined && playerName.trim() && nickNameOverridePass !== undefined && nickNameOverridePass.trim() && !(playerEmail !== undefined && playerEmail.trim())
+                        ))} variant="contained" color="success" size="large" onClick={() => {
                             setIsSetName(true);
                             cookies.set('hostName', hostName, { path: '/', expires: CommonMethods.GetCookieExpires() });
                             cookies.set('playerName', playerName, { path: '/', expires: CommonMethods.GetCookieExpires() });
                             cookies.set('NickNameOverridePass', nickNameOverridePass, { path: '/', expires: CommonMethods.GetCookieExpires() });
-                        }}>{hostName !== undefined && hostName.trim() && playerName !== undefined && playerName.trim() && !(nickNameOverridePass !== undefined && nickNameOverridePass.trim()) && playerEmail !== undefined && playerEmail.trim() ?
-                            "找回密码" :
-                            hostName !== undefined && hostName.trim() && playerName !== undefined && playerName.trim() && nickNameOverridePass !== undefined && nickNameOverridePass.trim() && playerEmail !== undefined && playerEmail.trim() ?
-                                "注册/绑定" :
-                                "进入大厅"}</Button>
+                        }}>{hostName !== undefined && hostName.trim() && !(playerName !== undefined && playerName.trim()) && !(nickNameOverridePass !== undefined && nickNameOverridePass.trim()) && playerEmail !== undefined && playerEmail.trim() ?
+                            "找回用户名" :
+                            hostName !== undefined && hostName.trim() && playerName !== undefined && playerName.trim() && !(nickNameOverridePass !== undefined && nickNameOverridePass.trim()) && playerEmail !== undefined && playerEmail.trim() ?
+                                "找回密码" :
+                                hostName !== undefined && hostName.trim() && playerName !== undefined && playerName.trim() && nickNameOverridePass !== undefined && nickNameOverridePass.trim() && playerEmail !== undefined && playerEmail.trim() ?
+                                    "注册新用户" :
+                                    "进入大厅"}</Button>
                 </CardContent>
                 <CardContent
                     sx={{
