@@ -454,6 +454,10 @@ export class MainForm {
         this.gameScene.roomUIControls.texts.forEach(text => {
             text.setVisible(false)
         })
+        for (let i = 1; i < 4; i++) {
+            this.lblNickNames[i].removeAllListeners();
+            this.lblNickNames[i].disableInteractive();
+        }
         if (this.sgDrawingHelper.IsPlayingGame) {
             this.sgDrawingHelper.hitBomb(this.sgDrawingHelper.players.children.entries[this.sgDrawingHelper.myPlayerIndex], undefined);
             this.sgDrawingHelper.destroyGame(0);
