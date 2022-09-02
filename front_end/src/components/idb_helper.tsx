@@ -76,7 +76,7 @@ export class IDBHelper {
         req.onsuccess = function () {
             let numToRemove: number = req.result - IDBHelper.maxReplays + 1;
             if (-2 <= numToRemove && numToRemove <= 0) {
-                alert(`录像文件存储数即将饱和，已存储录像数：${req.result}，最多录像个数上限（可在设置界面中更改）：${IDBHelper.maxReplays}。请在设置界面中清理录像文件，否则系统将自动覆盖最旧的文件`);
+                alert(`录像文件存储数即将饱和，已存储录像数：${req.result}，最多录像个数上限（可在设置界面中更改）：${IDBHelper.maxReplays}。临时处理方法：在设置界面中增加录像个数上限。建议处理方法：在设置界面中先导出所有录像至本地文件，然后清空所有录像。否则系统将自动覆盖最旧的录像`);
             }
             if (numToRemove > 0) {
                 let index = store.index(IDBHelper.Key_datetime);
