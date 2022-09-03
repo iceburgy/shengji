@@ -1290,7 +1290,7 @@ export class MainForm {
     }
 
     private btnPig_Click() {
-        if (!this.btnPig || !this.btnPig.visible) return;
+        if (!this.btnPig || !this.btnPig.visible || !this.btnPig.input.enabled) return;
         this.ToDiscard8Cards();
         this.ToShowCards();
     }
