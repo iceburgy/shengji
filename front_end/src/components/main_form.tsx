@@ -73,6 +73,7 @@ export class MainForm {
     public firstWinBySha = 3;
     public chatForm: any
     public sgcsPlayer: SGCSPlayer;
+    public rightSideButtonDepth = 1;
 
     constructor(gs: GameScene) {
         this.gameScene = gs
@@ -107,6 +108,7 @@ export class MainForm {
 
         // 回看上轮按钮
         this.btnShowLastTrick = this.gameScene.add.text(this.gameScene.coordinates.btnShowLastTrickPosition.x, this.gameScene.coordinates.btnShowLastTrickPosition.y, '上轮')
+            .setDepth(this.rightSideButtonDepth)
             .setColor('white')
             .setFontSize(30)
             .setPadding(10)
@@ -125,6 +127,7 @@ export class MainForm {
 
         // 就绪按钮
         this.btnReady = this.gameScene.add.text(this.gameScene.coordinates.btnReadyPosition.x, this.gameScene.coordinates.btnReadyPosition.y, '就绪')
+            .setDepth(this.rightSideButtonDepth)
             .setColor('white')
             .setFontSize(30)
             .setPadding(10)
@@ -143,6 +146,7 @@ export class MainForm {
 
         // 托管按钮
         this.btnRobot = this.gameScene.add.text(this.gameScene.coordinates.btnRobotPosition.x, this.gameScene.coordinates.btnRobotPosition.y, '托管')
+            .setDepth(this.rightSideButtonDepth)
             .setColor('white')
             .setFontSize(30)
             .setPadding(10)
@@ -206,13 +210,13 @@ export class MainForm {
                 lblNickName.setText(this.gameScene.playerName)
                     .setVisible(true)
                     .setShadow(2, 2, "#333333", 2, true, true)
-                    .setStyle({ backgroundColor: 'gray' })
+                    .setStyle({ backgroundColor: 'rgb(105,105,105)' })
                     .setInteractive({ useHandCursor: true })
                     .on('pointerover', () => {
                         this.lblNickNames[i].setStyle({ backgroundColor: 'lightblue' })
                     })
                     .on('pointerout', () => {
-                        this.lblNickNames[i].setStyle({ backgroundColor: 'gray' })
+                        this.lblNickNames[i].setStyle({ backgroundColor: 'rgb(105,105,105)' })
                     })
                     .on('pointerup', () => this.lblNickName_Click())
             }
@@ -1639,7 +1643,7 @@ export class MainForm {
                     this.gameScene.pokerTableChairImg[i].tableImg.y += 5
                     this.gameScene.pokerTableChairNames[i].tableName.y += 5
                 })
-            this.gameScene.pokerTableChairNames[i].tableName = this.gameScene.add.text(thisTableX + this.gameScene.coordinates.pokerTableLabelOffsets.x, thisTableY + this.gameScene.coordinates.pokerTableLabelOffsets.y, roomStateList[i].roomSetting.RoomName)
+            this.gameScene.pokerTableChairNames[i].tableName = this.gameScene.add.text(thisTableX + this.gameScene.coordinates.pokerTableLabelOffsets.x, thisTableY + this.gameScene.coordinates.pokerTableLabelOffsets.y, "加入旁观")
                 .setColor('white')
                 .setFontSize(20)
                 .setShadow(2, 2, "#333333", 2, true, true)
