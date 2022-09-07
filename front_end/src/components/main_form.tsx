@@ -376,6 +376,8 @@ export class MainForm {
         }
 
         var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)
+        this.PlayerPosition = {};
+        this.PositionPlayer = {};
         for (let i = 0; i < 4; i++) {
             this.lblNickNames[i].setVisible(true)
             var p = this.tractorPlayer.CurrentGameState.Players[curIndex]
@@ -919,7 +921,7 @@ export class MainForm {
 
     // pos is 1-based
     private observeByPosition(pos: number) {
-        if (this.tractorPlayer.isObserver) {
+        if (this.tractorPlayer.isObserver && this.PositionPlayer[pos]) {
             this.gameScene.sendMessageToServer(ObserveNext_REQUEST, this.tractorPlayer.MyOwnId, this.PositionPlayer[pos])
         }
     }
