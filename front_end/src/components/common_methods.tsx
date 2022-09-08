@@ -31,6 +31,8 @@ export class CommonMethods {
     public static cookieExpireInDays = 3650;
     public static recoverLoginPassFlag = "RecoverLoginPass";
     public static loginSuccessFlag = "LoginSuccess";
+    public static kongwei = "空位"
+    public static zuoxia = "坐下"
 
     constructor() {
     }
@@ -95,6 +97,11 @@ export class CommonMethods {
             }
         }
         return -1
+    }
+
+    public static GetPlayerIndexByPos(a: PlayerEntity[], playerID: string, pos: number): number {
+        let selfIndex = CommonMethods.GetPlayerIndexByID(a, playerID);
+        return (selfIndex + (pos - 1)) % 4;
     }
 
     public static GetNextPlayerAfterThePlayer(a: PlayerEntity[], playerId: string): PlayerEntity {

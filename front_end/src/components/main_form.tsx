@@ -38,6 +38,8 @@ const ResumeGameFromFile_REQUEST = "ResumeGameFromFile"
 const RandomSeat_REQUEST = "RandomSeat"
 const SwapSeat_REQUEST = "SwapSeat"
 const PLAYER_ENTER_ROOM_REQUEST = "PlayerEnterRoom"
+const PLAYER_EXIT_AND_ENTER_ROOM_REQUEST = "ExitAndEnterRoom"
+const PLAYER_EXIT_AND_OBSERVE_REQUEST = "ExitAndObserve"
 const cookies = new Cookies();
 
 export class MainForm {
@@ -47,6 +49,7 @@ export class MainForm {
     public btnReady: Phaser.GameObjects.Text
     public btnRobot: Phaser.GameObjects.Text
     public btnExitRoom: Phaser.GameObjects.Text
+    public btnExitAndObserve: Phaser.GameObjects.Text
     public isSendEmojiEnabled: boolean
     public btnPig: Phaser.GameObjects.Text
 
@@ -179,6 +182,23 @@ export class MainForm {
                 this.btnExitRoom.setStyle({ backgroundColor: 'gray' })
             })
 
+        // 上树按钮
+        this.btnExitAndObserve = this.gameScene.add.text(this.gameScene.coordinates.btnExitAndObservePosition.x, this.gameScene.coordinates.btnExitAndObservePosition.y, '上树')
+            .setColor('white')
+            .setFontSize(30)
+            .setPadding(10)
+            .setShadow(2, 2, "#333333", 2, true, true)
+            .setStyle({ backgroundColor: 'gray' })
+            .setInteractive({ useHandCursor: true })
+            .on('pointerup', () => this.ExitAndObserve())
+            .on('pointerover', () => {
+                this.btnExitAndObserve.setStyle({ backgroundColor: 'lightblue' })
+            })
+            .on('pointerout', () => {
+                this.btnExitAndObserve.setStyle({ backgroundColor: 'gray' })
+            })
+        this.gameScene.roomUIControls.texts.push(this.btnExitAndObserve)
+
         // 确定按钮
         this.btnPig = this.gameScene.add.text(this.gameScene.coordinates.btnPigPosition.x, this.gameScene.coordinates.btnPigPosition.y, '确定')
             .setColor('gray')
@@ -299,9 +319,13 @@ export class MainForm {
         if (CommonMethods.GetReadyCount(this.tractorPlayer.CurrentGameState.Players) < 4) {
             this.btnReady.setInteractive({ useHandCursor: true })
             this.btnReady.setColor('white')
+            this.btnExitAndObserve.setInteractive({ useHandCursor: true })
+            this.btnExitAndObserve.setColor('white')
         } else {
             this.btnReady.disableInteractive()
             this.btnReady.setColor('gray')
+            this.btnExitAndObserve.disableInteractive()
+            this.btnExitAndObserve.setColor('gray')
         }
         this.btnReady.setText(readyToStart ? "取消" : "就绪")
         this.setStartLabels()
@@ -351,14 +375,19 @@ export class MainForm {
 
         this.btnExitRoom.setVisible(true)
         this.btnShowLastTrick.setVisible(true)
-        if (!this.tractorPlayer.isObserver) {
-            this.btnReady.setVisible(true)
-            this.btnRobot.setVisible(true)
-        }
-        else {
-            // 切换视角
-            for (let i = 1; i < 4; i++) {
-                let lblNickName = this.lblNickNames[i];
+        this.btnReady.setVisible(!this.tractorPlayer.isObserver)
+        this.btnExitAndObserve.setVisible(!this.tractorPlayer.isObserver)
+        this.btnRobot.setVisible(!this.tractorPlayer.isObserver)
+
+        var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)
+        this.PlayerPosition = {};
+        this.PositionPlayer = {};
+        for (let i = 0; i < 4; i++) {
+            let lblNickName = this.lblNickNames[i];
+            let p = this.tractorPlayer.CurrentGameState.Players[curIndex];
+            let isEmptySeat = !p;
+            if (this.tractorPlayer.isObserver && i !== 0) {
+                // 切换视角
                 // have to clear all listeners, otherwise multiple ones will be added and triggered multiple times
                 lblNickName.removeAllListeners();
                 lblNickName.setInteractive({ useHandCursor: true })
@@ -366,25 +395,30 @@ export class MainForm {
                         lblNickName.setColor('white')
                             .setFontSize(30)
                         let pos = i + 1;
-                        this.observeByPosition(pos);
+                        if (isEmptySeat) {
+                            let playerIndex = CommonMethods.GetPlayerIndexByPos(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId, pos);
+                            this.ExitRoomAndEnter(playerIndex);
+                        } else {
+                            this.observeByPosition(pos);
+                        }
                     })
                     .on('pointerover', () => {
                         lblNickName.setColor('yellow')
                             .setFontSize(40)
+                        if (isEmptySeat) {
+                            lblNickName.setText(CommonMethods.zuoxia);
+                        }
                     })
                     .on('pointerout', () => {
                         lblNickName.setColor('white')
                             .setFontSize(30)
+                        if (isEmptySeat) {
+                            lblNickName.setText(CommonMethods.kongwei);
+                        }
                     })
             }
-        }
 
-        var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)
-        this.PlayerPosition = {};
-        this.PositionPlayer = {};
-        for (let i = 0; i < 4; i++) {
-            this.lblNickNames[i].setVisible(true)
-            var p = this.tractorPlayer.CurrentGameState.Players[curIndex]
+            lblNickName.setVisible(true)
             if (p) {
                 //set player position
                 this.PlayerPosition[p.PlayerId] = i + 1;
@@ -396,9 +430,9 @@ export class MainForm {
                     nickNameText += `${newLine}【${ob}】`
 
                 })
-                this.lblNickNames[i].setText(nickNameText)
+                lblNickName.setText(nickNameText)
             } else {
-                this.lblNickNames[i].setText("")
+                lblNickName.setText(CommonMethods.kongwei);
             }
             curIndex = (curIndex + 1) % 4
         }
@@ -411,6 +445,22 @@ export class MainForm {
                 this.ToolStripMenuItemUserManual.PerformClick();
             }
         */
+    }
+
+    public ExitRoomAndEnter(posID: number) {
+        this.destroyGameRoom();
+        this.gameScene.sendMessageToServer(PLAYER_EXIT_AND_ENTER_ROOM_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify({
+            roomID: -1,
+            posID: posID,
+        }))
+    }
+
+    public ExitAndObserve() {
+        if (!this.btnExitAndObserve || !this.btnExitAndObserve.input.enabled) return;
+        this.btnExitAndObserve.disableInteractive()
+        this.btnExitAndObserve.setColor('gray')
+        this.destroyGameRoom();
+        this.gameScene.sendMessageToServer(PLAYER_EXIT_AND_OBSERVE_REQUEST, this.tractorPlayer.MyOwnId, "");
     }
 
     public ReenterOrResumeEvent() {
