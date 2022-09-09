@@ -387,12 +387,14 @@ export class DrawingFormHelper {
             else break;
         }
 
-        let isLeader = this.mainForm.tractorPlayer.CurrentTrickState.Learder == this.mainForm.tractorPlayer.PlayerId;
+        let isFollowing = this.mainForm.tractorPlayer.CurrentTrickState.IsStarted() &&
+            this.mainForm.tractorPlayer.CurrentTrickState.ShowedCards[this.mainForm.tractorPlayer.MyOwnId].length == 0 &&
+            this.mainForm.tractorPlayer.CurrentTrickState.Learder !== this.mainForm.tractorPlayer.MyOwnId;
         if (this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
             //2. 埋底牌
             selectMoreCount = Math.min(selectMoreCount, 8 - 1 - readyCount);
         }
-        else if (this.mainForm.tractorPlayer.CurrentTrickState != undefined && this.mainForm.tractorPlayer.CurrentTrickState.LeadingCards().length > 0) {
+        else if (isFollowing) {
             //3. 跟出
             selectMoreCount = Math.min(selectMoreCount, this.mainForm.tractorPlayer.CurrentTrickState.LeadingCards().length - 1 - readyCount);
         }
@@ -403,7 +405,7 @@ export class DrawingFormHelper {
 
             let maxCard = showingCardsCp.Rank == 12 ? 11 : 12;
             let selectTopToDump = !isClickedTrump && clickedCardNumber % 13 == maxCard || isClickedTrump && clickedCardNumber == 53; //如果右键点的A或者大王，且满足甩多张的条件，则向左选中所有本门合理可甩的牌
-            if (isLeader && selectTopToDump) {
+            if (!isFollowing && selectTopToDump) {
                 let singleCardFound = false;
                 for (let j = 1; j <= selectMoreCount; j++) {
                     let toAddImage = (this.mainForm.gameScene.cardImages[i - j] as Phaser.GameObjects.Sprite)
@@ -494,7 +496,7 @@ export class DrawingFormHelper {
                     //如果候选牌是同一花色: 1. neither is trump, same suit; 2. both are trump
                     if (!PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && !isClickedTrump && PokerHelper.GetSuit(toAddCardNumber) == PokerHelper.GetSuit(clickedCardNumber) ||
                         PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && isClickedTrump) {
-                        if (isLeader) {
+                        if (!isFollowing) {
                             //第一个出，候选牌为对子，拖拉机
                             if (!selectAll) {
                                 showingCardsCp.AddCard(toAddCardNumberOnRight);

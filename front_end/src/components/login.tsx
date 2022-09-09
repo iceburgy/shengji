@@ -92,9 +92,9 @@ export const LoginScreen = ({ hostName, setHostName, playerName, setPlayerName, 
                 >
                     <Button disabled={!(hostName !== undefined && hostName.trim() &&
                         (!(playerName !== undefined && playerName.trim()) && !(nickNameOverridePass !== undefined && nickNameOverridePass.trim()) && playerEmail !== undefined && playerEmail.trim() ||
-                            playerName !== undefined && playerName.trim() && playerName.trim().length <= 10 && ![CommonMethods.kongwei, CommonMethods.zuoxia].includes(playerName.trim()) && !(nickNameOverridePass !== undefined && nickNameOverridePass.trim()) && playerEmail !== undefined && playerEmail.trim() ||
-                            playerName !== undefined && playerName.trim() && playerName.trim().length <= 10 && ![CommonMethods.kongwei, CommonMethods.zuoxia].includes(playerName.trim()) && nickNameOverridePass !== undefined && nickNameOverridePass.trim() && playerEmail !== undefined && playerEmail.trim() ||
-                            playerName !== undefined && playerName.trim() && playerName.trim().length <= 10 && ![CommonMethods.kongwei, CommonMethods.zuoxia].includes(playerName.trim()) && nickNameOverridePass !== undefined && nickNameOverridePass.trim() && !(playerEmail !== undefined && playerEmail.trim())
+                            playerName !== undefined && playerName.trim() && playerName.trim().length <= 10 && !CommonMethods.reservedKeyWords.includes(playerName.trim()) && !(nickNameOverridePass !== undefined && nickNameOverridePass.trim()) && playerEmail !== undefined && playerEmail.trim() ||
+                            playerName !== undefined && playerName.trim() && playerName.trim().length <= 10 && !CommonMethods.reservedKeyWords.includes(playerName.trim()) && nickNameOverridePass !== undefined && nickNameOverridePass.trim() && playerEmail !== undefined && playerEmail.trim() ||
+                            playerName !== undefined && playerName.trim() && playerName.trim().length <= 10 && !CommonMethods.reservedKeyWords.includes(playerName.trim()) && nickNameOverridePass !== undefined && nickNameOverridePass.trim() && !(playerEmail !== undefined && playerEmail.trim())
                         ))} variant="contained" color="success" size="large" onClick={() => {
                             setIsSetName(true);
                             cookies.set('hostName', hostName, { path: '/', expires: CommonMethods.GetCookieExpires() });

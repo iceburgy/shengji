@@ -387,6 +387,7 @@ export class MainForm {
             let lblNickName = this.lblNickNames[i];
             let p = this.tractorPlayer.CurrentGameState.Players[curIndex];
             let isEmptySeat = !p;
+            let emptySeatString = this.tractorPlayer.isObserver ? CommonMethods.dianwo : CommonMethods.kongwei;
             if (this.tractorPlayer.isObserver && i !== 0) {
                 // 切换视角
                 // have to clear all listeners, otherwise multiple ones will be added and triggered multiple times
@@ -414,7 +415,7 @@ export class MainForm {
                         lblNickName.setColor('white')
                             .setFontSize(30)
                         if (isEmptySeat) {
-                            lblNickName.setText(CommonMethods.kongwei);
+                            lblNickName.setText(emptySeatString);
                         }
                     })
             }
@@ -433,7 +434,7 @@ export class MainForm {
                 })
                 lblNickName.setText(nickNameText)
             } else {
-                lblNickName.setText(CommonMethods.kongwei);
+                lblNickName.setText(emptySeatString);
             }
             curIndex = (curIndex + 1) % 4
         }
