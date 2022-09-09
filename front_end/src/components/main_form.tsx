@@ -383,45 +383,34 @@ export class MainForm {
         var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)
         this.PlayerPosition = {};
         this.PositionPlayer = {};
+        this.destroyImagesChair();
         for (let i = 0; i < 4; i++) {
             let lblNickName = this.lblNickNames[i];
+            lblNickName.setVisible(true)
             let p = this.tractorPlayer.CurrentGameState.Players[curIndex];
             let isEmptySeat = !p;
-            let emptySeatString = this.tractorPlayer.isObserver ? CommonMethods.dianwo : CommonMethods.kongwei;
-            if (this.tractorPlayer.isObserver && i !== 0) {
-                // 切换视角
-                // have to clear all listeners, otherwise multiple ones will be added and triggered multiple times
-                lblNickName.removeAllListeners();
-                lblNickName.setInteractive({ useHandCursor: true })
-                    .on('pointerup', () => {
-                        lblNickName.setColor('white')
-                            .setFontSize(30)
-                        let pos = i + 1;
-                        if (isEmptySeat) {
+            if (isEmptySeat) {
+                let chairImage = this.gameScene.add.image(this.gameScene.coordinates.playerTextPositions[i].x + (i == 1 ? 240 : 0), this.gameScene.coordinates.playerTextPositions[i].y, 'pokerChair')
+                    .setOrigin(0, 0)
+                    .setDisplaySize(60, 60)
+
+                // 旁观：切换视角，坐下
+                if (this.tractorPlayer.isObserver) {
+                    chairImage.setInteractive({ useHandCursor: true })
+                        .on('pointerup', () => {
+                            let pos = i + 1;
                             let playerIndex = CommonMethods.GetPlayerIndexByPos(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId, pos);
                             this.ExitRoomAndEnter(playerIndex);
-                        } else {
-                            this.observeByPosition(pos);
-                        }
-                    })
-                    .on('pointerover', () => {
-                        lblNickName.setColor('yellow')
-                            .setFontSize(40)
-                        if (isEmptySeat) {
-                            lblNickName.setText(CommonMethods.zuoxia);
-                        }
-                    })
-                    .on('pointerout', () => {
-                        lblNickName.setColor('white')
-                            .setFontSize(30)
-                        if (isEmptySeat) {
-                            lblNickName.setText(emptySeatString);
-                        }
-                    })
-            }
-
-            lblNickName.setVisible(true)
-            if (p) {
+                        })
+                        .on('pointerover', () => {
+                            chairImage.y -= 3
+                        })
+                        .on('pointerout', () => {
+                            chairImage.y += 3
+                        })
+                }
+                this.gameScene.roomUIControls.imagesChair.push(chairImage)
+            } else {
                 //set player position
                 this.PlayerPosition[p.PlayerId] = i + 1;
                 this.PositionPlayer[i + 1] = p.PlayerId;
@@ -433,9 +422,29 @@ export class MainForm {
 
                 })
                 lblNickName.setText(nickNameText)
-            } else {
-                lblNickName.setText(emptySeatString);
+
+                if (this.tractorPlayer.isObserver && i !== 0) {
+                    // have to clear all listeners, otherwise multiple ones will be added and triggered multiple times
+                    lblNickName.removeAllListeners();
+                    lblNickName.setInteractive({ useHandCursor: true })
+                        .on('pointerup', () => {
+                            lblNickName.setColor('white')
+                                .setFontSize(30)
+                            let pos = i + 1;
+                            this.destroyImagesChair();
+                            this.observeByPosition(pos);
+                        })
+                        .on('pointerover', () => {
+                            lblNickName.setColor('yellow')
+                                .setFontSize(40)
+                        })
+                        .on('pointerout', () => {
+                            lblNickName.setColor('white')
+                                .setFontSize(30)
+                        })
+                }
             }
+
             curIndex = (curIndex + 1) % 4
         }
         this.loadEmojiForm();
@@ -509,6 +518,7 @@ export class MainForm {
         this.gameScene.roomUIControls.images.forEach(image => {
             image.setVisible(false)
         })
+        this.destroyImagesChair();
         this.gameScene.roomUIControls.texts.forEach(text => {
             text.setVisible(false)
         })
@@ -519,6 +529,14 @@ export class MainForm {
         if (this.sgDrawingHelper.IsPlayingGame) {
             this.sgDrawingHelper.hitBomb(this.sgDrawingHelper.players.children.entries[this.sgDrawingHelper.myPlayerIndex], undefined);
             this.sgDrawingHelper.destroyGame(0);
+        }
+    }
+
+    public destroyImagesChair() {
+        if (this.gameScene.roomUIControls.imagesChair) {
+            this.gameScene.roomUIControls.imagesChair.forEach(image => {
+                image.destroy();
+            })
         }
     }
 

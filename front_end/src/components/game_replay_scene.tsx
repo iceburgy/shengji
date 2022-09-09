@@ -57,7 +57,7 @@ export class GameReplayScene extends Phaser.Scene {
     public nickNameOverridePass: string
     public clientMessages: Phaser.GameObjects.Text[]
     public danmuMessages: any[]
-    public roomUIControls: { images: Phaser.GameObjects.Image[], texts: Phaser.GameObjects.Text[] }
+    public roomUIControls: { images: Phaser.GameObjects.Image[], texts: Phaser.GameObjects.Text[], imagesChair: Phaser.GameObjects.Image[] }
     public soundbiyue1: Phaser.Sound.BaseSound;
     public soundRecoverhp: Phaser.Sound.BaseSound;
     public sounddraw: Phaser.Sound.BaseSound;
@@ -92,7 +92,7 @@ export class GameReplayScene extends Phaser.Scene {
         this.last8CardsImages = [];
         this.showedCardImages = [];
         this.clientMessages = [];
-        this.roomUIControls = { images: [], texts: [] };
+        this.roomUIControls = { images: [], texts: [], imagesChair: [] };
         this.soundVolume = cookies.get("soundVolume");
         if (this.soundVolume === undefined) this.soundVolume = 0.5
         this.noDanmu = cookies.get("noDanmu");

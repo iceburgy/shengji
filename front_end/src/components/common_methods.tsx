@@ -31,10 +31,6 @@ export class CommonMethods {
     public static cookieExpireInDays = 3650;
     public static recoverLoginPassFlag = "RecoverLoginPass";
     public static loginSuccessFlag = "LoginSuccess";
-    public static kongwei = "空位";
-    public static dianwo = "点我";
-    public static zuoxia = "坐下";
-    public static reservedKeyWords: string[] = [CommonMethods.kongwei, CommonMethods.dianwo, CommonMethods.zuoxia];
 
     constructor() {
     }
