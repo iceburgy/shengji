@@ -187,6 +187,7 @@ export class MainForm {
             .setColor('white')
             .setFontSize(30)
             .setPadding(10)
+            .setVisible(false)
             .setShadow(2, 2, "#333333", 2, true, true)
             .setStyle({ backgroundColor: 'gray' })
             .setInteractive({ useHandCursor: true })
