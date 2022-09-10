@@ -390,6 +390,7 @@ export class MainForm {
             let p = this.tractorPlayer.CurrentGameState.Players[curIndex];
             let isEmptySeat = !p;
             if (isEmptySeat) {
+                lblNickName.setText("");
                 let chairImage = this.gameScene.add.image(this.gameScene.coordinates.playerTextPositions[i].x + (i == 1 ? 240 : 0), this.gameScene.coordinates.playerTextPositions[i].y, 'pokerChair')
                     .setOrigin(0, 0)
                     .setDisplaySize(60, 60)
