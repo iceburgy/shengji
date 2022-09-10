@@ -1027,7 +1027,7 @@ export class MainForm {
         inputForm.style.height = `${this.btnExitRoom.getBottomRight().y}px`;
 
         let divfooter = this.chatForm.getChildByID("divfooter")
-        divfooter.style.bottom = "-2px";
+        divfooter.style.bottom = "-1px";
         if (CommonMethods.isMobile()) {
             divfooter.style.bottom = "-3px";
         }
