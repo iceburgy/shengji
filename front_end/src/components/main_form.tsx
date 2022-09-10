@@ -1027,8 +1027,9 @@ export class MainForm {
         inputForm.style.height = `${this.btnExitRoom.getBottomRight().y}px`;
 
         let divfooter = this.chatForm.getChildByID("divfooter")
+        divfooter.style.bottom = "-2px";
         if (CommonMethods.isMobile()) {
-            divfooter.style.bottom = "-4px";
+            divfooter.style.bottom = "-3px";
         }
 
         let fullTextDivHeight = this.gameScene.coordinates.screenHei - divfooter.offsetHeight - 10;
