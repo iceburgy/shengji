@@ -112,9 +112,7 @@ export class TractorPlayer {
                 }
             }
             else if (m == CommonMethods.resumeGameSignal) {
-                if (!this.isObserver) {
-                    this.IsTryingResumeGame = true;
-                }
+                this.IsTryingResumeGame = true;
             }
             else if (m.includes("新游戏即将开始")) {
                 //新游戏开始前播放提示音，告诉玩家要抢庄
@@ -265,7 +263,7 @@ export class TractorPlayer {
 
         //断线重连后重画手牌
         if (this.IsTryingReenter || this.IsTryingResumeGame) {
-            this.CurrentPoker.CloneFrom(this.CurrentHandState.PlayerHoldingCards[this.MyOwnId] as CurrentPoker)
+            this.CurrentPoker.CloneFrom(this.CurrentHandState.PlayerHoldingCards[this.PlayerId] as CurrentPoker)
             this.CurrentPoker.Rank = this.CurrentHandState.Rank;
             this.CurrentPoker.Trump = this.CurrentHandState.Trump;
             this.mainForm.AllCardsGot();
