@@ -217,7 +217,7 @@ export class GameReplayScene extends Phaser.Scene {
         this.btnFirstTrick.displayWidth = this.coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnFirstTrick)
 
-        this.btnPreviousTrick = this.add.text(this.coordinates.btnFirstTrickPosition.x + this.coordinates.replayControlButtonOffset + this.coordinates.replayControlButtonWidth, this.coordinates.btnFirstTrickPosition.y, '←')
+        this.btnPreviousTrick = this.add.text(this.coordinates.btnFirstTrickPosition.x + this.coordinates.controlButtonOffset + this.coordinates.replayControlButtonWidth, this.coordinates.btnFirstTrickPosition.y, '←')
             .setColor('white')
             .setFontSize(20)
             .setPadding(10)
@@ -239,7 +239,7 @@ export class GameReplayScene extends Phaser.Scene {
         this.btnPreviousTrick.displayWidth = this.coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnPreviousTrick)
 
-        this.btnNextTrick = this.add.text(this.coordinates.btnFirstTrickPosition.x + (this.coordinates.replayControlButtonOffset + this.coordinates.replayControlButtonWidth) * 2, this.coordinates.btnFirstTrickPosition.y, '→')
+        this.btnNextTrick = this.add.text(this.coordinates.btnFirstTrickPosition.x + (this.coordinates.controlButtonOffset + this.coordinates.replayControlButtonWidth) * 2, this.coordinates.btnFirstTrickPosition.y, '→')
             .setColor('white')
             .setFontSize(20)
             .setPadding(10)
@@ -261,7 +261,7 @@ export class GameReplayScene extends Phaser.Scene {
         this.btnNextTrick.displayWidth = this.coordinates.replayControlButtonWidth;
         this.roomUIControls.texts.push(this.btnNextTrick)
 
-        this.btnLastTrick = this.add.text(this.coordinates.btnFirstTrickPosition.x + (this.coordinates.replayControlButtonOffset + this.coordinates.replayControlButtonWidth) * 3, this.coordinates.btnFirstTrickPosition.y, '→|')
+        this.btnLastTrick = this.add.text(this.coordinates.btnFirstTrickPosition.x + (this.coordinates.controlButtonOffset + this.coordinates.replayControlButtonWidth) * 3, this.coordinates.btnFirstTrickPosition.y, '→|')
             .setColor('white')
             .setFontSize(20)
             .setPadding(10)

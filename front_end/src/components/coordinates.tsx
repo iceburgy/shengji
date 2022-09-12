@@ -54,6 +54,8 @@ export class Coordinates {
     public btnRobotPosition
     public btnFirstTrickPosition
 
+    public controlButtonOffset
+
     // players
     public playerTextPositions
 
@@ -74,7 +76,6 @@ export class Coordinates {
     // replay
     // account for maximum of five suites, with 4 gaps, shift to left by 2 gaps
     public replayControlButtonWidth
-    public replayControlButtonOffset
     public replayHandCardScale
     public handCardPositions
     public toolbarSize
@@ -148,6 +149,8 @@ export class Coordinates {
         this.danmuOffset = 40
 
         // room controls
+        this.controlButtonOffset = 10
+
         this.clientMessagePosition = { x: this.centerX - 200, y: this.centerY }
         this.lineOffsetY = 40
 
@@ -206,7 +209,6 @@ export class Coordinates {
         // replay
         // account for maximum of five suites, with 4 gaps, shift to left by 2 gaps
         this.replayControlButtonWidth = 60
-        this.replayControlButtonOffset = 10
         this.replayHandCardScale = 0.6
         this.handCardPositions = [
             { x: this.centerX - this.cardWidth / 2 - this.handCardOffset * 2, y: screenHeight - 200 },

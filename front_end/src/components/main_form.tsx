@@ -55,6 +55,7 @@ export class MainForm {
 
     public lblNickNames: Phaser.GameObjects.Text[]
     public lblStarters: Phaser.GameObjects.Text[]
+    public lblObservers: Phaser.GameObjects.Text
     public roomNameText: Phaser.GameObjects.Text;
     public roomOwnerText: Phaser.GameObjects.Text;
 
@@ -251,6 +252,17 @@ export class MainForm {
             }
         }
 
+        // 旁观玩家昵称
+        let ox = this.gameScene.coordinates.playerTextPositions[0].x + this.lblNickNames[0].width + this.gameScene.coordinates.controlButtonOffset;
+        let oy = this.gameScene.coordinates.playerTextPositions[0].y + this.lblNickNames[0].height / 2;
+        this.lblObservers = this.gameScene.add.text(ox, oy, "")
+            .setColor('white')
+            .setFontSize(15)
+            .setPadding(10)
+            .setShadow(2, 2, "#333333", 2, true, true)
+            .setVisible(false)
+        this.gameScene.roomUIControls.texts.push(this.lblObservers)
+
         // 状态
         this.lblStarters = []
         for (let i = 0; i < 4; i++) {
@@ -416,13 +428,30 @@ export class MainForm {
                 this.PlayerPosition[p.PlayerId] = i + 1;
                 this.PositionPlayer[i + 1] = p.PlayerId;
 
-                var nickNameText = p.PlayerId
-                p.Observers.forEach(ob => {
-                    var newLine = i == 0 ? "" : "\n";
-                    nickNameText += `${newLine}【${ob}】`
+                var nickNameText = p.PlayerId;
+                lblNickName.setText(`${nickNameText}`);
 
-                })
-                lblNickName.setText(nickNameText)
+                if (p.Observers && p.Observers.length > 0) {
+                    var obNameText = "";
+                    p.Observers.forEach(ob => {
+                        var newLine = i == 0 ? "" : "\n";
+                        obNameText += `${newLine}【${ob}】`
+                    });
+
+                    if (i === 0) {
+                        let ox = this.gameScene.coordinates.playerTextPositions[0].x + this.lblNickNames[0].width + this.gameScene.coordinates.controlButtonOffset;
+                        this.lblObservers.setText(`${obNameText}`)
+                            .setX(ox);
+                        this.lblObservers.setVisible(true)
+                    } else {
+                        lblNickName.setText(`${nickNameText}${obNameText}`);
+                    }
+                } else {
+                    if (i === 0) {
+                        this.lblObservers.setText("");
+                        this.lblObservers.setVisible(false);
+                    }
+                }
 
                 if (this.tractorPlayer.isObserver && i !== 0) {
                     // have to clear all listeners, otherwise multiple ones will be added and triggered multiple times
@@ -1002,6 +1031,10 @@ export class MainForm {
     }
 
     private btnExitRoom_Click() {
+        if (this.gameScene.isReplayMode) {
+            window.location.reload()
+            return
+        }
         if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DiscardingLast8Cards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
             var c = window.confirm("游戏进行中退出将会重启游戏，是否确定退出？");
             if (c == true) {
