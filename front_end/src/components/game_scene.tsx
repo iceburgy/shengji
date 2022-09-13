@@ -101,6 +101,7 @@ const EXISTS_PLAYERS_RESPONSE = "exists_players"
 const DEAL_POKER_RESPONSE = "deal_poker"
 const NotifyGameHall_RESPONSE = "NotifyGameHall"
 const NotifyOnlinePlayerList_RESPONSE = "NotifyOnlinePlayerList";
+const NotifyGameRoomPlayerList_RESPONSE = "NotifyGameRoomPlayerList";
 const NotifyMessage_RESPONSE = "NotifyMessage"
 const NotifyRoomSetting_RESPONSE = "NotifyRoomSetting"
 const NotifyGameState_RESPONSE = "NotifyGameState"
@@ -474,6 +475,8 @@ export class GameScene extends Phaser.Scene {
             this.handleNotifyGameHall(objList);
         } else if (messageType === NotifyOnlinePlayerList_RESPONSE) {
             this.handleNotifyOnlinePlayerList(playerID, objList);
+        } else if (messageType === NotifyGameRoomPlayerList_RESPONSE) {
+            this.handleNotifyGameRoomPlayerList(playerID, objList);
         } else if (messageType === NotifyMessage_RESPONSE) {
             this.handleNotifyMessage(objList);
         } else if (messageType === NotifyRoomSetting_RESPONSE) {
@@ -590,6 +593,12 @@ export class GameScene extends Phaser.Scene {
         var isJoining: boolean = objList[0];
         var onlinePlayerList: string[] = objList[1];
         this.mainForm.tractorPlayer.NotifyOnlinePlayerList(playerID, isJoining, onlinePlayerList)
+    }
+
+    private handleNotifyGameRoomPlayerList(playerID: string, objList: []) {
+        var isJoining: boolean = objList[0];
+        var roomName: string = objList[1];
+        this.mainForm.tractorPlayer.NotifyGameRoomPlayerList(playerID, isJoining, roomName)
     }
 
     private handleNotifyMessage(objList: []) {

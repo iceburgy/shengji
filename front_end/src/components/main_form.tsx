@@ -1870,6 +1870,13 @@ export class MainForm {
         divOnlinePlayerList.scrollTop = divOnlinePlayerList.scrollHeight;
     }
 
+    public NotifyGameRoomPlayerListEventHandler(playerID: string, isJoining: boolean, roomName: string) {
+        if (!roomName) return;
+        let isJoingingStr = isJoining ? "加入" : "退出";
+        let chatMsg = `【${playerID}】${isJoingingStr}了房间【${roomName}】`;
+        this.appendChatMsg(chatMsg);
+    }
+
     public CutCardShoeCardsEventHandler() {
         let cutInfo = ""
         let cutPoint = -1;
