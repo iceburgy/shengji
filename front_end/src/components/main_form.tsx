@@ -253,11 +253,11 @@ export class MainForm {
         }
 
         // 旁观玩家昵称
-        let ox = this.gameScene.coordinates.playerTextPositions[0].x + this.lblNickNames[0].width + this.gameScene.coordinates.controlButtonOffset;
-        let oy = this.gameScene.coordinates.playerTextPositions[0].y + this.lblNickNames[0].height / 2;
+        let ox = this.gameScene.coordinates.playerTextPositions[0].x + this.lblNickNames[0].width - this.gameScene.coordinates.controlButtonOffset;
+        let oy = this.gameScene.coordinates.playerTextPositions[0].y + 10;
         this.lblObservers = this.gameScene.add.text(ox, oy, "")
             .setColor('white')
-            .setFontSize(15)
+            .setFontSize(20)
             .setPadding(10)
             .setShadow(2, 2, "#333333", 2, true, true)
             .setVisible(false)
@@ -439,7 +439,7 @@ export class MainForm {
                     });
 
                     if (i === 0) {
-                        let ox = this.gameScene.coordinates.playerTextPositions[0].x + this.lblNickNames[0].width + this.gameScene.coordinates.controlButtonOffset;
+                        let ox = this.gameScene.coordinates.playerTextPositions[0].x + this.lblNickNames[0].width - this.gameScene.coordinates.controlButtonOffset;
                         this.lblObservers.setText(`${obNameText}`)
                             .setX(ox);
                         this.lblObservers.setVisible(true)
