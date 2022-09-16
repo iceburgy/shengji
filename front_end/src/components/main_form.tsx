@@ -407,21 +407,19 @@ export class MainForm {
                     .setOrigin(0, 0)
                     .setDisplaySize(60, 60)
 
-                // 旁观：切换视角，坐下
-                if (this.tractorPlayer.isObserver) {
-                    chairImage.setInteractive({ useHandCursor: true })
-                        .on('pointerup', () => {
-                            let pos = i + 1;
-                            let playerIndex = CommonMethods.GetPlayerIndexByPos(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId, pos);
-                            this.ExitRoomAndEnter(playerIndex);
-                        })
-                        .on('pointerover', () => {
-                            chairImage.y -= 3
-                        })
-                        .on('pointerout', () => {
-                            chairImage.y += 3
-                        })
-                }
+                // 旁观玩家/正常玩家：坐下
+                chairImage.setInteractive({ useHandCursor: true })
+                    .on('pointerup', () => {
+                        let pos = i + 1;
+                        let playerIndex = CommonMethods.GetPlayerIndexByPos(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId, pos);
+                        this.ExitRoomAndEnter(playerIndex);
+                    })
+                    .on('pointerover', () => {
+                        chairImage.y -= 3
+                    })
+                    .on('pointerout', () => {
+                        chairImage.y += 3
+                    })
                 this.gameScene.roomUIControls.imagesChair.push(chairImage)
             } else {
                 //set player position
