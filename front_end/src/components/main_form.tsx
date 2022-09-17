@@ -35,6 +35,7 @@ const PlayerShowCards_REQUEST = "PlayerShowCards"
 const ValidateDumpingCards_REQUEST = "ValidateDumpingCards"
 const CardsReady_REQUEST = "CardsReady"
 const ResumeGameFromFile_REQUEST = "ResumeGameFromFile"
+const SaveRoomSetting_REQUEST = "SaveRoomSetting"
 const RandomSeat_REQUEST = "RandomSeat"
 const SwapSeat_REQUEST = "SwapSeat"
 const PLAYER_ENTER_ROOM_REQUEST = "PlayerEnterRoom"
@@ -810,11 +811,13 @@ export class MainForm {
             }
 
             //播放出牌音效
-            let soundInex = winResult;
-            if (winResult > 0) soundInex = this.tractorPlayer.playerLocalCache.WinResult;
-            if (!this.tractorPlayer.playerLocalCache.isLastTrick &&
+            if (this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag) {
+                if (this.enableSound) this.gameScene.soundPlayersShowCard[0].play();
+            } else if (!this.tractorPlayer.playerLocalCache.isLastTrick &&
                 !this.IsDebug &&
                 !this.tractorPlayer.CurrentTrickState.serverLocalCache.muteSound) {
+                let soundInex = winResult;
+                if (winResult > 0) soundInex = this.tractorPlayer.playerLocalCache.WinResult;
                 if (this.enableSound) this.gameScene.soundPlayersShowCard[soundInex].play();
             }
 
@@ -1350,13 +1353,20 @@ export class MainForm {
             this.gameScene.noCutCards = cbxCutCards.checked.toString()
         }
 
-        if (this.gameScene.isReplayMode || this.gameScene.isInGameHall() || this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
-            let pResumeGame = this.modalForm.getChildByID("pResumeGame")
-            let pRandomSeat = this.modalForm.getChildByID("pRandomSeat")
-            let pSwapSeat = this.modalForm.getChildByID("pSwapSeat")
-            pResumeGame.remove()
-            pRandomSeat.remove()
-            pSwapSeat.remove()
+        let cbxNoOverridingFlag = this.modalForm.getChildByID("cbxNoOverridingFlag");
+        cbxNoOverridingFlag.checked = this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag;
+        cbxNoOverridingFlag.onchange = () => {
+            this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag = cbxNoOverridingFlag.checked;
+            this.gameScene.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
+        };
+
+        if (this.gameScene.isReplayMode || this.gameScene.isInGameHall()) {
+            let divRoomSettingsWrapper = this.modalForm.getChildByID("divRoomSettingsWrapper");
+            divRoomSettingsWrapper.remove();
+        } else if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
+            let divRoomSettings = this.modalForm.getChildByID("divRoomSettings");
+            divRoomSettings.remove();
+            cbxNoOverridingFlag.disabled = true;
         } else {
             let btnResumeGame = this.modalForm.getChildByID("btnResumeGame")
             btnResumeGame.onclick = () => {

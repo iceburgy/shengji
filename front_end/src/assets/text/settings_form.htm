@@ -19,18 +19,24 @@
     }
 </style>
 <div id="input-form" class="settingsroot">
-    <h2>游戏设置</h2>
-    <p id="pAppVersion"></p>
-    <p id="pResumeGame"><input type="button" id="btnResumeGame" value="继续上盘牌局" /></p>
-    <p id="pRandomSeat"><input type="button" id="btnRandomSeat" value="随机组队" /></p>
-    <p id="pSwapSeat">
-        <select id="selectSwapSeat">
-            <option value="1">下家</option>
-            <option value="2">对家</option>
-            <option value="3">上家</option>
-        </select>
-        <input type="button" id="btnSwapSeat" value="互换座位" />
-    </p>
+    <h1 id="pAppVersion"></h1>
+    <div id="divRoomSettingsWrapper">
+        <h2>房间设置</h2>
+        <div id="divRoomSettings">
+            <p><input type="button" id="btnResumeGame" value="继续上盘牌局" /></p>
+            <p><input type="button" id="btnRandomSeat" value="随机组队" /></p>
+            <p>
+                <select id="selectSwapSeat">
+                    <option value="1">下家</option>
+                    <option value="2">对家</option>
+                    <option value="3">上家</option>
+                </select>
+                <input type="button" id="btnSwapSeat" value="互换座位" />
+            </p>
+        </div>
+        <p><input type="checkbox" id="cbxNoOverridingFlag"><label for="cbxNoOverridingFlag">关闭大牌语音及画面提示</label></p>
+    </div>
+    <h2>本地设置</h2>
     <p>游戏音效：<input type="range" id="rangeAudioVolume" min="0" max="100" value="50"></p>
     <p><input type="checkbox" id="cbxNoDanmu"><label for="cbxNoDanmu">关闭弹幕</label></p>
     <p><input type="checkbox" id="cbxCutCards"><label for="cbxCutCards">关闭切牌</label></p>
@@ -42,16 +48,13 @@
     <p><label for="inputRecordingFile">导入本地录像文件（仅支持zip/json格式）：</label></p>
     <p><input type="file" id="inputRecordingFile" accept=".zip,.json" /></p>
 
-    <p>
-        游戏规则：<br />
+    <h2>游戏规则</h2>
     <ul>
         <li>如果无人亮主，则打无主</li>
         <li>甩牌失败，将会以每张10分进行罚分</li>
     </ul>
-    </p>
 
-    <p>
-        游戏操作：<br />
+    <h2>游戏操作</h2>
     <ul>
         <li>快捷键【Z】：就绪</li>
         <li>快捷键【R】：托管</li>
@@ -72,5 +75,4 @@
             </ul>
         </li>
     </ul>
-    </p>
 </div>

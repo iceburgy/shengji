@@ -12,6 +12,8 @@ export class RoomSetting {
     public IsFullDebug: boolean
     public secondsToWaitForReenter: number
     public DisplaySignalCardInfo: boolean
+    public HideOverridingFlag: boolean
+
     constructor() {
         this.RoomName = ""
         this.RoomOwner = ""
@@ -24,6 +26,7 @@ export class RoomSetting {
         this.IsFullDebug = false
         this.secondsToWaitForReenter = 60
         this.DisplaySignalCardInfo = false
+        this.HideOverridingFlag = false
     }
     public CloneFrom(from: RoomSetting) {
         this.RoomName = from.RoomName
@@ -37,5 +40,6 @@ export class RoomSetting {
         this.IsFullDebug = from.IsFullDebug
         this.secondsToWaitForReenter = from.secondsToWaitForReenter
         this.DisplaySignalCardInfo = from.DisplaySignalCardInfo
+        this.HideOverridingFlag = from.HideOverridingFlag
     }
 }

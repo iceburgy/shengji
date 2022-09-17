@@ -1007,6 +1007,8 @@ export class DrawingFormHelper {
     }
 
     public DrawOverridingFlag(cardsCount: number, position: number, winType: number, playAnimation: boolean) {
+        if (this.mainForm.tractorPlayer.CurrentRoomSetting.HideOverridingFlag) return;
+
         if (this.mainForm.gameScene.OverridingFlagImage) {
             this.mainForm.gameScene.OverridingFlagImage.destroy()
         }
