@@ -480,8 +480,8 @@ export class TractorPlayer {
         this.mainForm.NotifyGameHallEventHandler(roomStateList, playerList)
     }
 
-    public NotifyOnlinePlayerList(playerID: string, isJoining: boolean, onlinePlayerList: string[]) {
-        this.mainForm.NotifyOnlinePlayerListEventHandler(playerID, isJoining, onlinePlayerList)
+    public NotifyOnlinePlayerList(playerID: string, isJoining: boolean) {
+        this.mainForm.NotifyOnlinePlayerListEventHandler(playerID, isJoining)
     }
 
     public NotifyGameRoomPlayerList(playerID: string, isJoining: boolean, roomName: string) {

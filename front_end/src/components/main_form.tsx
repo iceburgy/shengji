@@ -1655,11 +1655,14 @@ export class MainForm {
     }
 
     public NotifyGameHallEventHandler(roomStateList: RoomState[], playerList: string[]) {
-        this.tractorPlayer.destroyAllClientMessages();
-        this.destroyGameRoom();
-        this.destroyGameHall();
-        this.drawGameHall(roomStateList, playerList);
         this.loadEmojiForm();
+        this.updateOnlineAndRoomPlayerList(roomStateList, playerList);
+        if (playerList.includes(this.tractorPlayer.MyOwnId)) {
+            this.tractorPlayer.destroyAllClientMessages();
+            this.destroyGameRoom();
+            this.destroyGameHall();
+            this.drawGameHall(roomStateList, playerList);
+        }
     }
 
     public destroyGameHall() {
@@ -1857,25 +1860,82 @@ export class MainForm {
         divChatHistory.scrollTop = divChatHistory.scrollHeight;
     }
 
-    public NotifyOnlinePlayerListEventHandler(playerID: string, isJoining: boolean, onlinePlayerList: string[]) {
+    public updateOnlineAndRoomPlayerList(roomStateList: RoomState[], playersInGameHall: string[]) {
+        // gather players with status
+        let playersInGameRoomPlaying: any = {};
+        let playersInGameRoomObserving: any = {};
+
+        for (let i = 0; i < roomStateList.length; i++) {
+            let rs: RoomState = roomStateList[i];
+            let roomName = rs.roomSetting.RoomName;
+            for (let j = 0; j < 4; j++) {
+                if (rs.CurrentGameState.Players[j] != null) {
+                    let player: PlayerEntity = rs.CurrentGameState.Players[j];
+                    if (!playersInGameRoomPlaying[roomName]) {
+                        playersInGameRoomPlaying[roomName] = [];
+                    }
+                    if (!playersInGameRoomObserving[roomName]) {
+                        playersInGameRoomObserving[roomName] = [];
+                    }
+                    playersInGameRoomPlaying[roomName].push(player.PlayerId);
+                    if (player.Observers && player.Observers.length > 0) {
+                        playersInGameRoomObserving[roomName] = playersInGameRoomObserving[roomName].concat(player.Observers);
+                    }
+                }
+            }
+        }
+
+        let divOnlinePlayerList = this.chatForm.getChildByID("divOnlinePlayerList");
+        divOnlinePlayerList.innerHTML = '';
+
+        // players in game hall
+        if (playersInGameHall && playersInGameHall.length > 0) {
+            let headerGameHall = document.createElement("p");
+            headerGameHall.innerText = "大厅";
+            headerGameHall.style.fontWeight = 'bold';
+            divOnlinePlayerList.appendChild(headerGameHall);
+
+            for (let i = 0; i < playersInGameHall.length; i++) {
+                let d = document.createElement("div");
+                d.innerText = `【${playersInGameHall[i]}】`;
+                divOnlinePlayerList.appendChild(d);
+            }
+        }
+
+        // players in game room playing or observing
+        for (const [key, value] of Object.entries(playersInGameRoomPlaying)) {
+            let players: string[] = value as string[];
+            let obs: string[] = playersInGameRoomObserving[key]
+
+            let headerGameRoomPlaying = document.createElement("p");
+            headerGameRoomPlaying.innerText = `房间【${key}】桌上`;
+            headerGameRoomPlaying.style.fontWeight = 'bold';
+            divOnlinePlayerList.appendChild(headerGameRoomPlaying);
+            for (let i = 0; i < players.length; i++) {
+                let d = document.createElement("div");
+                d.innerText = `【${players[i]}】`;
+                divOnlinePlayerList.appendChild(d);
+            }
+
+            if (obs && obs.length > 0) {
+                let headerGameRoomObserving = document.createElement("p");
+                headerGameRoomObserving.innerText = `房间【${key}】树上`;
+                headerGameRoomObserving.style.fontWeight = 'bold';
+                divOnlinePlayerList.appendChild(headerGameRoomObserving);
+                for (let i = 0; i < obs.length; i++) {
+                    let d = document.createElement("div");
+                    d.innerText = `【${obs[i]}】`;
+                    divOnlinePlayerList.appendChild(d);
+                }
+            }
+        }
+        divOnlinePlayerList.scrollTop = divOnlinePlayerList.scrollHeight;
+    }
+
+    public NotifyOnlinePlayerListEventHandler(playerID: string, isJoining: boolean) {
         let isJoingingStr = isJoining ? "加入" : "退出";
         let chatMsg = `【${playerID}】${isJoingingStr}了游戏`;
         this.appendChatMsg(chatMsg);
-
-        if (!this.gameScene.isInGameRoom) return;
-        let divOnlinePlayerList = this.chatForm.getChildByID("divOnlinePlayerList");
-        divOnlinePlayerList.innerHTML = '';
-        let header = document.createElement("p");
-        header.innerText = "在线玩家";
-        header.style.fontWeight = 'bold';
-        divOnlinePlayerList.appendChild(header);
-
-        for (let i = 0; i < onlinePlayerList.length; i++) {
-            let d = document.createElement("div");
-            d.innerText = `【${onlinePlayerList[i]}】`;
-            divOnlinePlayerList.appendChild(d);
-        }
-        divOnlinePlayerList.scrollTop = divOnlinePlayerList.scrollHeight;
     }
 
     public NotifyGameRoomPlayerListEventHandler(playerID: string, isJoining: boolean, roomName: string) {

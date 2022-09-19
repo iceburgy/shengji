@@ -591,8 +591,7 @@ export class GameScene extends Phaser.Scene {
 
     private handleNotifyOnlinePlayerList(playerID: string, objList: []) {
         var isJoining: boolean = objList[0];
-        var onlinePlayerList: string[] = objList[1];
-        this.mainForm.tractorPlayer.NotifyOnlinePlayerList(playerID, isJoining, onlinePlayerList)
+        this.mainForm.tractorPlayer.NotifyOnlinePlayerList(playerID, isJoining)
     }
 
     private handleNotifyGameRoomPlayerList(playerID: string, objList: []) {
