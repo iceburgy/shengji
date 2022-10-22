@@ -1370,7 +1370,7 @@ export class MainForm {
         } else {
             let btnResumeGame = this.modalForm.getChildByID("btnResumeGame")
             btnResumeGame.onclick = () => {
-                if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
+                if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
                     alert("游戏中途不允许继续牌局,请完成此盘游戏后重试")
                 } else {
                     this.gameScene.sendMessageToServer(ResumeGameFromFile_REQUEST, this.tractorPlayer.MyOwnId, "");
@@ -1380,7 +1380,7 @@ export class MainForm {
 
             let btnRandomSeat = this.modalForm.getChildByID("btnRandomSeat")
             btnRandomSeat.onclick = () => {
-                if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
+                if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
                     alert("游戏中途不允许随机组队,请完成此盘游戏后重试")
                 } else {
                     this.gameScene.sendMessageToServer(RandomSeat_REQUEST, this.tractorPlayer.MyOwnId, "");
@@ -1390,7 +1390,7 @@ export class MainForm {
 
             let btnSwapSeat = this.modalForm.getChildByID("btnSwapSeat")
             btnSwapSeat.onclick = () => {
-                if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
+                if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
                     alert("游戏中途不允许互换座位,请完成此盘游戏后重试")
                 } else {
                     let selectSwapSeat = this.modalForm.getChildByID("selectSwapSeat")
@@ -1617,14 +1617,14 @@ export class MainForm {
         this.drawingFormHelper.destroyAllShowedCards()
         this.tractorPlayer.destroyAllClientMessages()
 
-        this.tractorPlayer.NotifyMessage(["回看上轮出牌"]);
-
         //查看谁亮过什么牌
         //need to draw this first so that we have max count for trump made cards
         this.drawingFormHelper.TrumpMadeCardsShowFromLastTrick();
 
         //绘制上一轮各家所出的牌，缩小至一半，放在左下角，或者重画当前轮各家所出的牌
         this.PlayerLastTrickShowedCards();
+
+        this.tractorPlayer.NotifyMessage(["回看上轮出牌及亮牌信息"]);
     }
 
     //绘制上一轮各家所出的牌，缩小一半
@@ -1647,11 +1647,11 @@ export class MainForm {
             if (!cards || cards.length == 0) continue;
             let position = this.PlayerPosition[key];
             cardsCount = cards.length
-            this.drawingFormHelper.DrawShowedCardsByPositionFromLastTrick(cards, position)
+            this.drawingFormHelper.DrawShowedCardsByPosition(cards, position)
         }
         let winnerID = TractorRules.GetWinner(trickState);
         let tempIsWinByTrump = this.IsWinningWithTrump(trickState, winnerID);
-        this.drawingFormHelper.DrawOverridingFlagFromLastTrick(cardsCount, this.PlayerPosition[winnerID], tempIsWinByTrump - 1);
+        this.drawingFormHelper.DrawOverridingFlag(cardsCount, this.PlayerPosition[winnerID], tempIsWinByTrump - 1, false);
     }
 
     public NotifyGameHallEventHandler(roomStateList: RoomState[], playerList: string[]) {

@@ -69,6 +69,8 @@ export class Coordinates {
 
     // cards
     public showedCardsPositions
+    public trumpMadeCardsPositions
+    public trumpMadeCardsScale
 
     // last8cards
     public last8CardsForStarterPosition
@@ -201,6 +203,13 @@ export class Coordinates {
             { x: this.screenWid - 300, y: this.playerTextPositions[1].y - 100 },
             { x: this.centerX - this.cardWidth / 2, y: this.playerTextPositions[2].y + 100 },
             { x: this.playerTextPositions[3].x + 200, y: this.playerTextPositions[3].y - 100 },
+        ]
+        this.trumpMadeCardsScale = 2 / 3
+        this.trumpMadeCardsPositions = [
+            { x: this.btnExitAndObservePosition.x + this.btnLowerSize, y: screenHeight - this.cardHeigh * this.trumpMadeCardsScale - 10 },
+            { x: this.screenWid - this.cardWidth * this.trumpMadeCardsScale - 10, y: this.playerTextPositions[1].y + 60 },
+            { x: this.btnExitAndObservePosition.x + this.btnLowerSize, y: 10 },
+            { x: this.playerTextPositions[3].x, y: this.playerTextPositions[3].y + 60 },
         ]
 
         // last8cards

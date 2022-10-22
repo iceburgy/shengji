@@ -18,7 +18,6 @@ export class DrawingFormHelper {
     private startY: number = 0
     private handcardScale: number = 1
     private suitSequence: number
-    private maxCountTrumpMadeCards: number = 0
     public isDragging: any
 
     constructor(mf: MainForm) {
@@ -630,7 +629,6 @@ export class DrawingFormHelper {
     }
 
     public TrumpMadeCardsShowFromLastTrick() {
-        this.maxCountTrumpMadeCards = 0;
         let trumpDict: any = {}
         let lastTrumpStates: TrumpState[] = this.mainForm.tractorPlayer.CurrentHandState.LastTrumpStates
         lastTrumpStates.forEach(lastHandState => {
@@ -674,7 +672,6 @@ export class DrawingFormHelper {
                 }
             }
             this.DrawTrumpMadeCardsByPositionFromLastTrick(allTrumpCards, posIndex)
-            this.maxCountTrumpMadeCards = Math.max(this.maxCountTrumpMadeCards, allTrumpCards.length);
         }
     }
 
@@ -743,42 +740,18 @@ export class DrawingFormHelper {
         return { x: x, y: y }
     }
 
-    // drawing showed cards from last trick
-    public DrawShowedCardsByPositionFromLastTrick(cards: number[], pos: number) {
-        let coords = this.getShowedCardsCoordinatesByPositionFromLastTrick(pos, cards.length)
-        this.DrawShowedCards(cards, coords.x, coords.y, this.mainForm.gameScene.showedCardImages, 0.5)
-    }
-
     // drawing TrumpMade cards from last trick
     public DrawTrumpMadeCardsByPositionFromLastTrick(cards: number[], pos: number) {
-        this.DrawShowedCardsByPosition(cards, pos);
+        let coords = this.getTrumpMadeCardsCoordinatesByPosition(cards.length, pos)
+        this.DrawShowedCards(cards, coords.x, coords.y, this.mainForm.gameScene.showedCardImages, this.mainForm.gameScene.coordinates.trumpMadeCardsScale)
     }
 
-    private getShowedCardsCoordinatesByPositionFromLastTrick(pos: number, count: number): any {
+    private getTrumpMadeCardsCoordinatesByPosition(count: number, pos: number): any {
         let posInd = pos - 1
-        let x = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].x
-        let y = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].y
-        let trumpMadeCardsExtraOffsetWidth = (this.maxCountTrumpMadeCards - 1) * this.mainForm.gameScene.coordinates.handCardOffset
-        let trumpMadeCardsWidth = this.mainForm.gameScene.coordinates.cardWidth + trumpMadeCardsExtraOffsetWidth
-        switch (posInd) {
-            case 0:
-                x = x + this.mainForm.gameScene.coordinates.cardWidth / 4 - (count - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 4
-                y = y - this.mainForm.gameScene.coordinates.cardHeigh / 2
-                break;
-            case 1:
-                x = x - (count - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 2 - this.mainForm.gameScene.coordinates.cardWidth / 2 - trumpMadeCardsExtraOffsetWidth
-                y = y + this.mainForm.gameScene.coordinates.cardHeigh / 4
-                break;
-            case 2:
-                x = x + this.mainForm.gameScene.coordinates.cardWidth / 4 - (count - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 4
-                y = y + this.mainForm.gameScene.coordinates.cardHeigh
-                break;
-            case 3:
-                x = x + trumpMadeCardsWidth
-                y = y + this.mainForm.gameScene.coordinates.cardHeigh / 4
-                break;
-            default:
-                break;
+        let x = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[posInd].x
+        let y = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[posInd].y
+        if (posInd === 1) {
+            x = x - (count - 1) * this.mainForm.gameScene.coordinates.handCardOffset * this.mainForm.gameScene.coordinates.trumpMadeCardsScale
         }
         return { x: x, y: y }
     }
@@ -1044,19 +1017,6 @@ export class DrawingFormHelper {
             this.mainForm.gameScene.drawSgsAni(
                 this.mainForm.gameScene.overridingLabelAnims[winType][0], this.mainForm.gameScene.overridingLabelAnims[winType][1], this.mainForm.gameScene.coordinates.sgsAnimWidth, this.mainForm.gameScene.coordinates.sgsAnimHeight);
         }
-    }
-
-    public DrawOverridingFlagFromLastTrick(cardsCount: number, position: number, winType: number) {
-        if (this.mainForm.gameScene.OverridingFlagImage) {
-            this.mainForm.gameScene.OverridingFlagImage.destroy()
-        }
-        let coords = this.getShowedCardsCoordinatesByPositionFromLastTrick(position, cardsCount)
-        coords.y = coords.y + this.mainForm.gameScene.coordinates.cardHeigh / 2 - this.mainForm.gameScene.coordinates.overridingFlagHeight / 2
-        let image = this.mainForm.gameScene.add.image(coords.x, coords.y, this.mainForm.gameScene.overridingLabelImages[winType])
-            .setOrigin(0, 0)
-            .setDisplaySize(this.mainForm.gameScene.coordinates.overridingFlagWidth / 2, this.mainForm.gameScene.coordinates.overridingFlagHeight / 2)
-        this.mainForm.gameScene.OverridingFlagImage = image
-        this.mainForm.gameScene.showedCardImages.push(image);
     }
 
     public DrawEmojiByPosition(position: number, emojiType: number, emojiIndex: number, isCenter: boolean) {
