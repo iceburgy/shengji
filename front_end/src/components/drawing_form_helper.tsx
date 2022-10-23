@@ -750,8 +750,14 @@ export class DrawingFormHelper {
         let posInd = pos - 1
         let x = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[posInd].x
         let y = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[posInd].y
-        if (posInd === 1) {
-            x = x - (count - 1) * this.mainForm.gameScene.coordinates.handCardOffset * this.mainForm.gameScene.coordinates.trumpMadeCardsScale
+        switch (posInd) {
+            case 0:
+            case 1:
+            case 2:
+                x = x - (count - 1) * this.mainForm.gameScene.coordinates.handCardOffset * this.mainForm.gameScene.coordinates.trumpMadeCardsScale
+                break;
+            default:
+                break;
         }
         return { x: x, y: y }
     }

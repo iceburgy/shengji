@@ -206,9 +206,9 @@ export class Coordinates {
         ]
         this.trumpMadeCardsScale = 2 / 3
         this.trumpMadeCardsPositions = [
-            { x: this.btnExitAndObservePosition.x + this.btnLowerSize, y: screenHeight - this.cardHeigh * this.trumpMadeCardsScale - 10 },
+            { x: this.playerTextPositions[0].x - this.cardWidth * this.trumpMadeCardsScale - 120, y: screenHeight - this.cardHeigh * this.trumpMadeCardsScale - 10 },
             { x: this.screenWid - this.cardWidth * this.trumpMadeCardsScale - 10, y: this.playerTextPositions[1].y + 60 },
-            { x: this.btnExitAndObservePosition.x + this.btnLowerSize, y: 10 },
+            { x: this.playerTextPositions[2].x - this.cardWidth * this.trumpMadeCardsScale - 120, y: 10 },
             { x: this.playerTextPositions[3].x, y: this.playerTextPositions[3].y + 60 },
         ]
 
