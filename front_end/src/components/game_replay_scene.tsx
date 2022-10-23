@@ -428,8 +428,8 @@ export class GameReplayScene extends Phaser.Scene {
         this.mainForm.drawingFormHelper.DrawDiscardedCards();
 
         if (shouldDraw) {
-            this.mainForm.drawingFormHelper.TrumpMadeCardsShowFromLastTrick();
             this.drawAllPlayerHandCards();
+            this.mainForm.drawingFormHelper.TrumpMadeCardsShowFromLastTrick();
         }
     }
 
