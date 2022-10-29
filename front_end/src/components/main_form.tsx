@@ -80,6 +80,8 @@ export class MainForm {
     public sgcsPlayer: SGCSPlayer;
     public rightSideButtonDepth = 1;
 
+    public selectPresetMsgsIsOpen: boolean = false;
+
     constructor(gs: GameScene) {
         this.gameScene = gs
         this.tractorPlayer = new TractorPlayer(this)
@@ -452,6 +454,7 @@ export class MainForm {
                     }
                 }
 
+                // 旁观玩家切换视角
                 if (this.tractorPlayer.isObserver && i !== 0) {
                     // have to clear all listeners, otherwise multiple ones will be added and triggered multiple times
                     lblNickName.removeAllListeners();
@@ -462,6 +465,30 @@ export class MainForm {
                             let pos = i + 1;
                             this.destroyImagesChair();
                             this.observeByPosition(pos);
+                        })
+                        .on('pointerover', () => {
+                            lblNickName.setColor('yellow')
+                                .setFontSize(40)
+                        })
+                        .on('pointerout', () => {
+                            lblNickName.setColor('white')
+                                .setFontSize(30)
+                        })
+                }
+
+                // 房主将玩家请出房间
+                if (this.tractorPlayer.CurrentRoomSetting.RoomOwner === this.tractorPlayer.MyOwnId && i !== 0) {
+                    // have to clear all listeners, otherwise multiple ones will be added and triggered multiple times
+                    lblNickName.removeAllListeners();
+                    lblNickName.setInteractive({ useHandCursor: true })
+                        .on('pointerup', () => {
+                            lblNickName.setColor('white')
+                                .setFontSize(30)
+                            let pos = i + 1;
+                            var c = window.confirm("是否确定将此玩家请出房间？");
+                            if (c == true) {
+                                this.bootPlayerByPosition(pos);
+                            }
                         })
                         .on('pointerover', () => {
                             lblNickName.setColor('yellow')
@@ -1031,6 +1058,13 @@ export class MainForm {
         }
     }
 
+    // pos is 1-based
+    private bootPlayerByPosition(pos: number) {
+        if (this.PositionPlayer[pos]) {
+            this.gameScene.sendMessageToServer(ExitRoom_REQUEST, this.PositionPlayer[pos], "")
+        }
+    }
+
     private btnExitRoom_Click() {
         if (this.gameScene.isReplayMode) {
             window.location.reload()
@@ -1080,11 +1114,16 @@ export class MainForm {
         selectPresetMsgs.style.width = `${chatFormWid}px`;
         let textAreaMsg = this.chatForm.getChildByID("textAreaMsg")
         textAreaMsg.style.width = `${selectPresetMsgs.offsetWidth - 6}px`;
-        selectPresetMsgs.onchange = () => {
-            let selectedIndex = selectPresetMsgs.selectedIndex;
-            let selectedValue = selectPresetMsgs.value;
-            let args: (string | number)[] = [selectedIndex, CommonMethods.GetRandomInt(CommonMethods.winEmojiLength), selectedValue];
-            this.sendEmojiWithCheck(args)
+        selectPresetMsgs.onclick = () => {
+            if (this.selectPresetMsgsIsOpen) {
+                this.selectPresetMsgsIsOpen = false;
+                let selectedIndex = selectPresetMsgs.selectedIndex;
+                let selectedValue = selectPresetMsgs.value;
+                let args: (string | number)[] = [selectedIndex, CommonMethods.GetRandomInt(CommonMethods.winEmojiLength), selectedValue];
+                this.sendEmojiWithCheck(args)
+            } else {
+                this.selectPresetMsgsIsOpen = true;
+            }
         }
     }
 
@@ -1216,7 +1255,12 @@ export class MainForm {
             }
 
             if ('1' <= ekey && ekey <= CommonMethods.emojiMsgs.length.toString() && !this.modalForm) {
+                let selectPresetMsgs = this.chatForm.getChildByID("selectPresetMsgs");
+                let prevSelection = selectPresetMsgs.selectedIndex;
                 let emojiType = parseInt(ekey) - 1;
+                if (emojiType !== prevSelection) {
+                    selectPresetMsgs.selectedIndex = emojiType;
+                }
                 let emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
                 let msgString = CommonMethods.emojiMsgs[emojiType]
                 let args: (string | number)[] = [emojiType, emojiIndex, msgString];
