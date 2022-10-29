@@ -1117,16 +1117,27 @@ export class MainForm {
         selectPresetMsgs.style.width = `${chatFormWid}px`;
         let textAreaMsg = this.chatForm.getChildByID("textAreaMsg")
         textAreaMsg.style.width = `${selectPresetMsgs.offsetWidth - 6}px`;
-        selectPresetMsgs.onclick = () => {
-            if (this.selectPresetMsgsIsOpen) {
-                this.selectPresetMsgsIsOpen = false;
-                let selectedIndex = selectPresetMsgs.selectedIndex;
-                let selectedValue = selectPresetMsgs.value;
-                let args: (string | number)[] = [selectedIndex, CommonMethods.GetRandomInt(CommonMethods.winEmojiLength), selectedValue];
-                this.sendEmojiWithCheck(args)
-            } else {
+        if (CommonMethods.isMobile()) {
+            selectPresetMsgs.onchange = () => {
                 this.selectPresetMsgsIsOpen = true;
+                this.handleSelectPresetMsgsClick(selectPresetMsgs);
             }
+        } else {
+            selectPresetMsgs.onclick = () => {
+                this.handleSelectPresetMsgsClick(selectPresetMsgs);
+            }
+        }
+    }
+
+    private handleSelectPresetMsgsClick(selectPresetMsgs: any) {
+        if (this.selectPresetMsgsIsOpen) {
+            this.selectPresetMsgsIsOpen = false;
+            let selectedIndex = selectPresetMsgs.selectedIndex;
+            let selectedValue = selectPresetMsgs.value;
+            let args: (string | number)[] = [selectedIndex, CommonMethods.GetRandomInt(CommonMethods.winEmojiLength), selectedValue];
+            this.sendEmojiWithCheck(args)
+        } else {
+            this.selectPresetMsgsIsOpen = true;
         }
     }
 
