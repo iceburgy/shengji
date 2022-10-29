@@ -1061,7 +1061,10 @@ export class MainForm {
     // pos is 1-based
     private bootPlayerByPosition(pos: number) {
         if (this.PositionPlayer[pos]) {
-            this.gameScene.sendMessageToServer(ExitRoom_REQUEST, this.PositionPlayer[pos], "")
+            let playerID = this.PositionPlayer[pos];
+            let args: (string | number)[] = [-1, -1, `玩家【${playerID}】被房主请出房间`];
+            this.sendEmojiWithCheck(args)
+            this.gameScene.sendMessageToServer(ExitRoom_REQUEST, playerID, "")
         }
     }
 
