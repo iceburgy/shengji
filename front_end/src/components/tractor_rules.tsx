@@ -170,12 +170,12 @@ export class TractorRules {
         //甩牌 拖拉机
         if ((leadingTractor.length > 1) && (cp[0].Count() > leadingTractor.length * 2)) //甩拖拉机
         {
-            let maxCard = leadingTractor[0];
+            let maxCard = CommonMethods.GetMaxCard(leadingTractor, trump, rank);
             if (trickState.ShowedCards[nextPlayer1].length > 0) {
                 let tractor1 = cp[1].GetTractorBySuit(trump);
                 if (tractor1.length >= leadingTractor.length &&
                     (!cp[1].IsMixed() && cp[1].GetPairs().length >= cp[0].GetPairs().length)) {
-                    let tmpMax = tractor1[0];
+                    let tmpMax = CommonMethods.GetMaxCard(tractor1, trump, rank);
                     if (!CommonMethods.CompareTo(maxCard, tmpMax, trumpInt, rank, leadingSuit)) {
                         winderNumber = 1;
                         maxCard = tmpMax;
@@ -186,7 +186,7 @@ export class TractorRules {
                 let tractor2: number[] = cp[2].GetTractorBySuit(trump);
                 if (tractor2.length >= leadingTractor.length &&
                     (!cp[2].IsMixed() && cp[2].GetPairs().length >= cp[0].GetPairs().length)) {
-                    let tmpMax = tractor2[0];
+                    let tmpMax = CommonMethods.GetMaxCard(tractor2, trump, rank);
                     if (!CommonMethods.CompareTo(maxCard, tmpMax, trumpInt, rank, leadingSuit)) {
                         winderNumber = 2;
                         maxCard = tmpMax;
@@ -197,7 +197,7 @@ export class TractorRules {
                 let tractor3: number[] = cp[3].GetTractorBySuit(trump);
                 if (tractor3.length >= leadingTractor.length &&
                     (!cp[3].IsMixed() && cp[3].GetPairs().length >= cp[0].GetPairs().length)) {
-                    let tmpMax = tractor3[0];
+                    let tmpMax = CommonMethods.GetMaxCard(tractor3, trump, rank);
                     if (!CommonMethods.CompareTo(maxCard, tmpMax, trumpInt, rank, leadingSuit)) {
                         winderNumber = 3;
                     }
@@ -278,10 +278,10 @@ export class TractorRules {
             if (trickState.ShowedCards[nextPlayer1].length > 0) tractor1 = cp[1].GetTractorOfAnySuit();
             if (trickState.ShowedCards[nextPlayer2].length > 0) tractor2 = cp[2].GetTractorOfAnySuit();
             if (trickState.ShowedCards[nextPlayer3].length > 0) tractor3 = cp[3].GetTractorOfAnySuit();
-            let maxCard = tractor0[0];
+            let maxCard = CommonMethods.GetMaxCard(tractor0, trump, rank);
             if (trickState.ShowedCards[nextPlayer1].length > 0) {
                 if (tractor1.length >= tractor0.length) {
-                    let tmpMax = tractor1[0];
+                    let tmpMax = CommonMethods.GetMaxCard(tractor1, trump, rank);
                     if (!CommonMethods.CompareTo(maxCard, tmpMax, trumpInt, rank, leadingSuit)) {
                         winderNumber = 1;
                         maxCard = tmpMax;
@@ -290,7 +290,7 @@ export class TractorRules {
             }
             if (trickState.ShowedCards[nextPlayer2].length > 0) {
                 if (tractor2.length >= tractor0.length) {
-                    let tmpMax = tractor2[0];
+                    let tmpMax = CommonMethods.GetMaxCard(tractor2, trump, rank);
                     if (!CommonMethods.CompareTo(maxCard, tmpMax, trumpInt, rank, leadingSuit)) {
                         winderNumber = 2;
                         maxCard = tmpMax;
@@ -299,7 +299,7 @@ export class TractorRules {
             }
             if (trickState.ShowedCards[nextPlayer3].length > 0) {
                 if (tractor3.length >= tractor0.length) {
-                    let tmpMax = tractor3[0];
+                    let tmpMax = CommonMethods.GetMaxCard(tractor3, trump, rank);
                     if (!CommonMethods.CompareTo(maxCard, tmpMax, trumpInt, rank, leadingSuit)) {
                         winderNumber = 3;
                     }
