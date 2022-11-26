@@ -58,8 +58,10 @@ export class Coordinates {
 
     // players
     public playerTextPositions
+    public playerText1MaxWid
 
     public playerStarterPositions
+    public playerStarter1Wid
 
     public emojiSize
     public playerEmojiPositions
@@ -172,16 +174,18 @@ export class Coordinates {
         this.btnFirstTrickPosition = { x: this.screenWid - 300, y: this.btnExitRoomPosition.y }
 
         // players
+        this.playerText1MaxWid = 300;
         this.playerTextPositions = [
             { x: this.centerX, y: screenHeight - 60 },
-            { x: this.screenWid - 320, y: this.centerY },
+            { x: this.screenWid - 20, y: this.centerY },
             { x: this.centerX, y: 10 },
             { x: 5, y: this.centerY },
         ]
 
+        this.playerStarter1Wid = 120;
         this.playerStarterPositions = [
             { x: this.playerTextPositions[0].x - 205, y: this.playerTextPositions[0].y },
-            { x: this.playerTextPositions[1].x, y: this.playerTextPositions[1].y - 50 },
+            { x: this.playerTextPositions[1].x - this.playerStarter1Wid, y: this.playerTextPositions[1].y - 50 },
             { x: this.playerTextPositions[2].x - 205, y: this.playerTextPositions[2].y },
             { x: this.playerTextPositions[3].x, y: this.playerTextPositions[3].y - 50 },
         ]

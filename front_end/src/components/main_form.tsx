@@ -276,7 +276,7 @@ export class MainForm {
                 .setShadow(2, 2, "#333333", 2, true, true)
                 .setVisible(false)
             if (i == 1) {
-                lblStarter.setStyle({ fixedWidth: 300 })
+                lblStarter.setStyle({ fixedWidth: this.gameScene.coordinates.playerStarter1Wid })
                 lblStarter.setStyle({ align: 'right' })
             } else if (i == 0 || i == 2) {
                 lblStarter.setStyle({ fixedWidth: 200 })
@@ -406,7 +406,7 @@ export class MainForm {
             let isEmptySeat = !p;
             if (isEmptySeat) {
                 lblNickName.setText("");
-                let chairImage = this.gameScene.add.image(this.gameScene.coordinates.playerTextPositions[i].x + (i == 1 ? 240 : 0), this.gameScene.coordinates.playerTextPositions[i].y, 'pokerChair')
+                let chairImage = this.gameScene.add.image(this.gameScene.coordinates.playerTextPositions[i].x - (i == 1 ? 60 : 0), this.gameScene.coordinates.playerTextPositions[i].y, 'pokerChair')
                     .setOrigin(0, 0)
                     .setDisplaySize(60, 60)
 
@@ -431,13 +431,25 @@ export class MainForm {
 
                 var nickNameText = p.PlayerId;
                 lblNickName.setText(`${nickNameText}`);
+                if (i === 1) {
+                    let tempWid = this.gameScene.coordinates.playerText1MaxWid * nickNameText.length / 10;
+                    lblNickName.setStyle({ fixedWidth: tempWid })
+                    lblNickName.setX(this.gameScene.coordinates.playerTextPositions[i].x - tempWid)
+                }
 
                 if (p.Observers && p.Observers.length > 0) {
                     var obNameText = "";
+                    let tempLen = nickNameText.length;
                     p.Observers.forEach(ob => {
+                        tempLen = Math.max(tempLen, ob.length + 3);
                         var newLine = i == 0 ? "" : "\n";
                         obNameText += `${newLine}【${ob}】`
                     });
+                    if (i === 1) {
+                        let tempWid = this.gameScene.coordinates.playerText1MaxWid * tempLen / 10;
+                        lblNickName.setStyle({ fixedWidth: tempWid })
+                        lblNickName.setX(this.gameScene.coordinates.playerTextPositions[i].x - tempWid)
+                    }
 
                     if (i === 0) {
                         let ox = this.gameScene.coordinates.playerTextPositions[0].x + this.lblNickNames[0].width - this.gameScene.coordinates.controlButtonOffset;
@@ -481,7 +493,8 @@ export class MainForm {
                     // have to clear all listeners, otherwise multiple ones will be added and triggered multiple times
                     lblNickName.removeAllListeners();
                     lblNickName.setInteractive({ useHandCursor: true })
-                        .on('pointerup', () => {
+                        .on('pointerup', (pointer: Phaser.Input.Pointer) => {
+                            if (pointer.rightButtonReleased()) return;
                             lblNickName.setColor('white')
                                 .setFontSize(30)
                             let pos = i + 1;
@@ -502,6 +515,11 @@ export class MainForm {
             }
 
             curIndex = (curIndex + 1) % 4
+        }
+        if (this.tractorPlayer.isObserver &&
+            this.tractorPlayer.CurrentHandState.CurrentHandStep === SuitEnums.HandStep.Playing) {
+            if (this.tractorPlayer.CurrentHandState.Last8Holder === this.tractorPlayer.PlayerId) this.drawingFormHelper.DrawDiscardedCards();
+            else this.drawingFormHelper.destroyLast8Cards();
         }
         this.loadEmojiForm();
 
