@@ -372,6 +372,9 @@ export class GameReplayScene extends Phaser.Scene {
         this.mainForm.tractorPlayer.PlayerId = players[0];
         this.mainForm.lblNickNames[0].setText(players[0])
         this.mainForm.lblNickNames[1].setText(players[1])
+        let tempWid = this.coordinates.playerText1MaxWid * players[1].length / 10;
+        this.mainForm.lblNickNames[1].setStyle({ fixedWidth: tempWid })
+        this.mainForm.lblNickNames[1].setX(this.coordinates.playerTextPositions[1].x - tempWid)
         this.mainForm.lblNickNames[2].setText(players[2])
         this.mainForm.lblNickNames[3].setText(players[3])
         for (let i = 0; i < this.mainForm.lblNickNames.length; i++) {
