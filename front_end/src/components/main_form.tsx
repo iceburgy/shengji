@@ -56,7 +56,7 @@ export class MainForm {
 
     public lblNickNames: Phaser.GameObjects.Text[]
     public lblStarters: Phaser.GameObjects.Text[]
-    public lblObservers: Phaser.GameObjects.Text
+    public lblObservers: Phaser.GameObjects.Text[];
     public roomNameText: Phaser.GameObjects.Text;
     public roomOwnerText: Phaser.GameObjects.Text;
 
@@ -257,15 +257,24 @@ export class MainForm {
         }
 
         // 旁观玩家昵称
-        let ox = this.gameScene.coordinates.playerTextPositions[0].x + this.lblNickNames[0].width - this.gameScene.coordinates.controlButtonOffset;
-        let oy = this.gameScene.coordinates.playerTextPositions[0].y + 10;
-        this.lblObservers = this.gameScene.add.text(ox, oy, "")
-            .setColor('white')
-            .setFontSize(20)
-            .setPadding(10)
-            .setShadow(2, 2, "#333333", 2, true, true)
-            .setVisible(false)
-        this.gameScene.roomUIControls.texts.push(this.lblObservers)
+        this.lblObservers = [];
+        for (let i = 0; i < 4; i++) {
+            let ox = this.gameScene.coordinates.observerTextPositions[i].x + (i === 0 ? this.lblNickNames[i].width : 0);
+            let oy = this.gameScene.coordinates.observerTextPositions[i].y;
+            let lblObserver = this.gameScene.add.text(ox, oy, "")
+                .setColor('white')
+                .setFontSize(20)
+                .setPadding(10)
+                .setShadow(2, 2, "#333333", 2, true, true)
+                .setVisible(false);
+            if (i == 1) {
+                lblObserver.setStyle({ fixedWidth: 300 })
+                    .setStyle({ align: 'right' })
+                    .setPadding(0, 10, 0, 10);
+            }
+            this.lblObservers[i] = lblObserver;
+            this.gameScene.roomUIControls.texts.push(lblObserver);
+        }
 
         // 状态
         this.lblStarters = []
@@ -403,11 +412,13 @@ export class MainForm {
         this.destroyImagesChair();
         for (let i = 0; i < 4; i++) {
             let lblNickName = this.lblNickNames[i];
+            let lblObserver = this.lblObservers[i];
             lblNickName.setVisible(true)
             let p = this.tractorPlayer.CurrentGameState.Players[curIndex];
             let isEmptySeat = !p;
             if (isEmptySeat) {
                 lblNickName.setText("");
+                lblObserver.setText("");
                 let chairImage = this.gameScene.add.image(this.gameScene.coordinates.playerTextPositions[i].x - (i == 1 ? 60 : 0), this.gameScene.coordinates.playerTextPositions[i].y, 'pokerChair')
                     .setOrigin(0, 0)
                     .setDisplaySize(60, 60)
@@ -433,44 +444,38 @@ export class MainForm {
 
                 var nickNameText = p.PlayerId;
                 lblNickName.setText(`${nickNameText}`);
-                let tempWid = 0;
                 if (i === 1) {
                     let countofNonEng = (nickNameText.match(this.gameScene.coordinates.regexNonEnglishChar) || []).length;
-                    tempWid = this.gameScene.coordinates.player1TextWid * nickNameText.length + this.gameScene.coordinates.player1TextWidBigDelta * countofNonEng;
+                    let tempWid = this.gameScene.coordinates.player1TextWid * nickNameText.length + this.gameScene.coordinates.player1TextWidBigDelta * countofNonEng;
                     lblNickName.setStyle({ fixedWidth: tempWid })
                     lblNickName.setX(this.gameScene.coordinates.playerTextPositions[i].x - tempWid)
                 }
 
                 if (p.Observers && p.Observers.length > 0) {
                     var obNameText = "";
+                    let tempWidOb = 0;
                     p.Observers.forEach(ob => {
                         if (i === 1) {
                             let tempLenOb = ob.length + 2;
                             let tempLenDeltaOb = (ob.match(this.gameScene.coordinates.regexNonEnglishChar) || []).length;
                             let newWid = this.gameScene.coordinates.player1TextWid * tempLenOb + this.gameScene.coordinates.player1TextWidBigDelta * tempLenDeltaOb;
-                            tempWid = Math.max(tempWid, newWid);
+                            tempWidOb = Math.max(tempWidOb, newWid);
                         }
-                        var newLine = i == 0 ? "" : "\n";
+                        var newLine = i == 0 || obNameText.length === 0 ? "" : "\n";
                         obNameText += `${newLine}【${ob}】`
                     });
-                    if (i === 1) {
-                        lblNickName.setStyle({ fixedWidth: tempWid })
-                        lblNickName.setX(this.gameScene.coordinates.playerTextPositions[i].x - tempWid)
-                    }
 
-                    if (i === 0) {
-                        let ox = this.gameScene.coordinates.playerTextPositions[0].x + this.lblNickNames[0].width - this.gameScene.coordinates.controlButtonOffset;
-                        this.lblObservers.setText(`${obNameText}`)
-                            .setX(ox);
-                        this.lblObservers.setVisible(true)
-                    } else {
-                        lblNickName.setText(`${nickNameText}${obNameText}`);
+                    let ox = this.gameScene.coordinates.observerTextPositions[i].x + (i === 0 ? this.lblNickNames[0].width : 0);
+                    lblObserver.setText(`${obNameText}`)
+                        .setX(ox)
+                        .setVisible(true);
+                    if (i === 1) {
+                        lblObserver.setStyle({ fixedWidth: tempWidOb })
+                        lblObserver.setX(this.gameScene.coordinates.observerTextPositions[i].x - tempWidOb)
                     }
                 } else {
-                    if (i === 0) {
-                        this.lblObservers.setText("");
-                        this.lblObservers.setVisible(false);
-                    }
+                    lblObserver.setText("")
+                        .setVisible(false);
                 }
 
                 // 旁观玩家切换视角

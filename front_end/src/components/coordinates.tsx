@@ -58,6 +58,7 @@ export class Coordinates {
 
     // players
     public playerTextPositions
+    public observerTextPositions
     public player1TextWid
     public player1TextWidBigDelta
     public regexNonEnglishChar = /[^\u0000-\u007F]/g
@@ -183,6 +184,12 @@ export class Coordinates {
             { x: this.screenWid - 20, y: this.centerY },
             { x: this.centerX, y: 10 },
             { x: 5, y: this.centerY },
+        ]
+        this.observerTextPositions = [
+            { x: this.playerTextPositions[0].x - this.controlButtonOffset, y: this.playerTextPositions[0].y + 10 },
+            { x: this.playerTextPositions[1].x, y: this.playerTextPositions[1].y + 40 },
+            { x: this.playerTextPositions[2].x, y: this.playerTextPositions[2].y + 40 },
+            { x: this.playerTextPositions[3].x, y: this.playerTextPositions[3].y + 40 },
         ]
 
         this.player1StarterWid = 100;
