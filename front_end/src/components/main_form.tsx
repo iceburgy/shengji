@@ -247,7 +247,8 @@ export class MainForm {
             }
             if (i == 1) {
                 lblNickName.setStyle({ fixedWidth: 300 })
-                lblNickName.setStyle({ align: 'right' })
+                    .setStyle({ align: 'right' })
+                    .setPadding(0, 10, 0, 10)
             }
             this.lblNickNames[i] = lblNickName
             if (i != 0) {
@@ -276,8 +277,9 @@ export class MainForm {
                 .setShadow(2, 2, "#333333", 2, true, true)
                 .setVisible(false)
             if (i == 1) {
-                lblStarter.setStyle({ fixedWidth: this.gameScene.coordinates.playerStarter1Wid })
-                lblStarter.setStyle({ align: 'right' })
+                lblStarter.setStyle({ fixedWidth: this.gameScene.coordinates.player1StarterWid })
+                    .setStyle({ align: 'right' })
+                    .setPadding(0, 10, 0, 10)
             } else if (i == 0 || i == 2) {
                 lblStarter.setStyle({ fixedWidth: 200 })
                 lblStarter.setStyle({ align: 'right' })
@@ -431,22 +433,27 @@ export class MainForm {
 
                 var nickNameText = p.PlayerId;
                 lblNickName.setText(`${nickNameText}`);
+                let tempWid = 0;
                 if (i === 1) {
-                    let tempWid = this.gameScene.coordinates.playerText1MaxWid * nickNameText.length / 10;
+                    let countofNonEng = (nickNameText.match(this.gameScene.coordinates.regexNonEnglishChar) || []).length;
+                    tempWid = this.gameScene.coordinates.player1TextWid * nickNameText.length + this.gameScene.coordinates.player1TextWidBigDelta * countofNonEng;
                     lblNickName.setStyle({ fixedWidth: tempWid })
                     lblNickName.setX(this.gameScene.coordinates.playerTextPositions[i].x - tempWid)
                 }
 
                 if (p.Observers && p.Observers.length > 0) {
                     var obNameText = "";
-                    let tempLen = nickNameText.length;
                     p.Observers.forEach(ob => {
-                        tempLen = Math.max(tempLen, ob.length + 3);
+                        if (i === 1) {
+                            let tempLenOb = ob.length + 2;
+                            let tempLenDeltaOb = (ob.match(this.gameScene.coordinates.regexNonEnglishChar) || []).length;
+                            let newWid = this.gameScene.coordinates.player1TextWid * tempLenOb + this.gameScene.coordinates.player1TextWidBigDelta * tempLenDeltaOb;
+                            tempWid = Math.max(tempWid, newWid);
+                        }
                         var newLine = i == 0 ? "" : "\n";
                         obNameText += `${newLine}【${ob}】`
                     });
                     if (i === 1) {
-                        let tempWid = this.gameScene.coordinates.playerText1MaxWid * tempLen / 10;
                         lblNickName.setStyle({ fixedWidth: tempWid })
                         lblNickName.setX(this.gameScene.coordinates.playerTextPositions[i].x - tempWid)
                     }
