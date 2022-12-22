@@ -101,6 +101,7 @@ const EXISTS_PLAYERS_RESPONSE = "exists_players"
 const DEAL_POKER_RESPONSE = "deal_poker"
 const NotifyGameHall_RESPONSE = "NotifyGameHall"
 const NotifyOnlinePlayerList_RESPONSE = "NotifyOnlinePlayerList";
+const NotifyShengbi_RESPONSE = "NotifyShengbi";
 const NotifyGameRoomPlayerList_RESPONSE = "NotifyGameRoomPlayerList";
 const NotifyMessage_RESPONSE = "NotifyMessage"
 const NotifyRoomSetting_RESPONSE = "NotifyRoomSetting"
@@ -156,6 +157,7 @@ export class GameScene extends Phaser.Scene {
     public hallPlayerHeader: Phaser.GameObjects.Text
     public hallPlayerNames: Phaser.GameObjects.Text[]
     public btnJoinAudio: Phaser.GameObjects.Text
+    public btnQiandao: Phaser.GameObjects.Text
     public joinAudioUrl: string
     public nickNameOverridePass: string
     public playerEmail: string
@@ -173,6 +175,7 @@ export class GameScene extends Phaser.Scene {
     public soundVolume: number
     public noDanmu: string
     public noCutCards: string
+    public qiangliangMin: string
     public decadeUICanvas: HTMLElement
     public coordinates: Coordinates
     public wsprotocal: string = "wss"
@@ -216,6 +219,8 @@ export class GameScene extends Phaser.Scene {
         if (this.noDanmu === undefined) this.noDanmu = 'false'
         this.noCutCards = cookies.get("noCutCards");
         if (this.noCutCards === undefined) this.noCutCards = 'false'
+        this.qiangliangMin = cookies.get("qiangliangMin");
+        if (this.qiangliangMin === undefined) this.qiangliangMin = '5'
 
         let isIPPort = IPPort.test(this.hostName);
         if (isIPPort) {
@@ -513,11 +518,18 @@ export class GameScene extends Phaser.Scene {
             this.handleNotifyEndCollectStar(objList);
         } else if (messageType === NotifyGrabStar_RESPONSE) {
             this.handleNotifyGrabStar_RESPONSE(objList);
+        } else if (messageType === NotifyShengbi_RESPONSE) {
+            this.handleNotifyShengbi(objList);
         }
         // } catch (e) {
         //     // alert("error")
         //     document.body.innerHTML = `<div>!!! onmessage Error: ${e}</div>`
         // }
+    }
+
+    private handleNotifyShengbi(objList: []) {
+        var ptob: any = objList[0];
+        this.mainForm.tractorPlayer.NotifyShengbi(ptob)
     }
 
     private handleNotifyGrabStar_RESPONSE(objList) {
@@ -680,6 +692,7 @@ export class GameScene extends Phaser.Scene {
         cookies.set('soundVolume', this.soundVolume, { path: '/', expires: CommonMethods.GetCookieExpires() });
         cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
         cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        cookies.set('qiangliangMin', this.qiangliangMin, { path: '/', expires: CommonMethods.GetCookieExpires() });
 
         if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
             this.joinAudioUrl = 'http://' + this.joinAudioUrl;

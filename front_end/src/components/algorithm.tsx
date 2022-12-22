@@ -8,8 +8,8 @@ export class Algorithm {
     constructor() {
     }
 
-    private static exposeTrumpThreshold = 5;
-    private static exposeTrumpJokerThreshold = 4;
+    // 暂时取消自动亮无主
+    private static exposeTrumpJokerThreshold = 999;
     //跟出
     public static MustSelectedCards(selectedCards: number[], currentTrickState: CurrentTrickState, currentPoker: CurrentPoker) {
         let currentCards = new CurrentPoker()
@@ -315,7 +315,7 @@ export class Algorithm {
         }
     }
 
-    public static TryExposingTrump(availableTrump: number[], currentPoker: CurrentPoker, fullDebug: boolean): number {
+    public static TryExposingTrump(availableTrump: number[], qiangliangMin: number, isFirstHand: boolean, currentPoker: CurrentPoker, fullDebug: boolean): number {
         let nonJokerMaxCount = 0;
         let nonJoker = SuitEnums.Suit.None;
         let mayJoker = SuitEnums.Suit.None;
@@ -326,28 +326,28 @@ export class Algorithm {
             switch (st) {
                 case SuitEnums.Suit.Heart:
                     let heartCount = currentCards.HeartsNoRankTotal();
-                    if (heartCount >= Algorithm.exposeTrumpThreshold && heartCount > nonJokerMaxCount) {
+                    if ((isFirstHand || heartCount >= qiangliangMin) && heartCount > nonJokerMaxCount) {
                         nonJokerMaxCount = heartCount;
                         nonJoker = st;
                     }
                     break;
                 case SuitEnums.Suit.Spade:
                     let spadeCount = currentCards.SpadesNoRankTotal();
-                    if (spadeCount >= Algorithm.exposeTrumpThreshold && spadeCount > nonJokerMaxCount) {
+                    if ((isFirstHand || spadeCount >= qiangliangMin) && spadeCount > nonJokerMaxCount) {
                         nonJokerMaxCount = spadeCount;
                         nonJoker = st;
                     }
                     break;
                 case SuitEnums.Suit.Diamond:
                     let diamondCount = currentCards.DiamondsNoRankTotal();
-                    if (diamondCount >= Algorithm.exposeTrumpThreshold && diamondCount > nonJokerMaxCount) {
+                    if ((isFirstHand || diamondCount >= qiangliangMin) && diamondCount > nonJokerMaxCount) {
                         nonJokerMaxCount = diamondCount;
                         nonJoker = st;
                     }
                     break;
                 case SuitEnums.Suit.Club:
                     let clubCount = currentCards.ClubsNoRankTotal();
-                    if (clubCount >= Algorithm.exposeTrumpThreshold && clubCount > nonJokerMaxCount) {
+                    if ((isFirstHand || clubCount >= qiangliangMin) && clubCount > nonJokerMaxCount) {
                         nonJokerMaxCount = clubCount;
                         nonJoker = st;
                     }
@@ -362,6 +362,5 @@ export class Algorithm {
         })
         if (nonJokerMaxCount > 0) return nonJoker;
         else return mayJoker;
-
     }
 }

@@ -31,6 +31,7 @@ export class CommonMethods {
     public static cookieExpireInDays = 3650;
     public static recoverLoginPassFlag = "RecoverLoginPass";
     public static loginSuccessFlag = "LoginSuccess";
+    public static qiangliangkaCost = 1;
 
     constructor() {
     }

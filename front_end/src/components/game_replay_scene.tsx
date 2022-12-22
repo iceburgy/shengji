@@ -53,6 +53,7 @@ export class GameReplayScene extends Phaser.Scene {
     public hallPlayerHeader: Phaser.GameObjects.Text
     public hallPlayerNames: Phaser.GameObjects.Text[]
     public btnJoinAudio: Phaser.GameObjects.Text
+    public btnQiandao: Phaser.GameObjects.Text
     public joinAudioUrl: string
     public nickNameOverridePass: string
     public clientMessages: Phaser.GameObjects.Text[]
@@ -69,6 +70,7 @@ export class GameReplayScene extends Phaser.Scene {
     public soundVolume: number
     public noDanmu: string
     public noCutCards: string
+    public qiangliangMin: string
     public decadeUICanvas: HTMLElement
     public currentReplayEntities: any[]
     public selectDates: Element
@@ -99,6 +101,8 @@ export class GameReplayScene extends Phaser.Scene {
         if (this.noDanmu === undefined) this.noDanmu = 'false'
         this.noCutCards = cookies.get("noCutCards");
         if (this.noCutCards === undefined) this.noCutCards = 'false'
+        this.qiangliangMin = cookies.get("qiangliangMin");
+        if (this.qiangliangMin === undefined) this.qiangliangMin = '5'
 
         this.joinAudioUrl = cookies.get("joinAudioUrl") ? cookies.get("joinAudioUrl") : "";
         IDBHelper.maxReplays = cookies.get("maxReplays") ? parseInt(cookies.get("maxReplays")) : IDBHelper.maxReplays;
@@ -700,6 +704,7 @@ export class GameReplayScene extends Phaser.Scene {
         cookies.set('soundVolume', this.soundVolume, { path: '/', expires: CommonMethods.GetCookieExpires() });
         cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
         cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        cookies.set('qiangliangMin', this.qiangliangMin, { path: '/', expires: CommonMethods.GetCookieExpires() });
 
         if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
             this.joinAudioUrl = 'http://' + this.joinAudioUrl;

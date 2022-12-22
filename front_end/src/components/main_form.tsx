@@ -41,6 +41,7 @@ const SwapSeat_REQUEST = "SwapSeat"
 const PLAYER_ENTER_ROOM_REQUEST = "PlayerEnterRoom"
 const PLAYER_EXIT_AND_ENTER_ROOM_REQUEST = "ExitAndEnterRoom"
 const PLAYER_EXIT_AND_OBSERVE_REQUEST = "ExitAndObserve"
+const PLAYER_QIANDAO_REQUEST = "PlayerQiandao"
 const cookies = new Cookies();
 
 export class MainForm {
@@ -79,6 +80,7 @@ export class MainForm {
     public chatForm: any
     public sgcsPlayer: SGCSPlayer;
     public rightSideButtonDepth = 1;
+    public playerIDToShengbi: any;
 
     public selectPresetMsgsIsOpen: boolean = false;
 
@@ -98,6 +100,7 @@ export class MainForm {
         this.timerIntervalID = []
         this.timerCountDown = 0
         this.isSendEmojiEnabled = true;
+        this.playerIDToShengbi = {};
 
         // 房间信息
         this.roomNameText = this.gameScene.add.text(this.gameScene.coordinates.roomNameTextPosition.x, this.gameScene.coordinates.roomNameTextPosition.y, "")
@@ -636,9 +639,19 @@ export class MainForm {
         this.drawingFormHelper.IGetCard();
 
         //托管代打：亮牌
-        if (this.IsDebug && (this.tractorPlayer.CurrentRoomSetting.IsFullDebug || this.tractorPlayer.CurrentRoomSetting.AllowRobotMakeTrump) && !this.tractorPlayer.isObserver) {
+        let shengbi = 0
+        if (this.playerIDToShengbi[this.tractorPlayer.MyOwnId]) {
+            shengbi = parseInt(this.playerIDToShengbi[this.tractorPlayer.MyOwnId].Shengbi);
+        }
+        let isUsingQiangliangka = shengbi >= CommonMethods.qiangliangkaCost || this.tractorPlayer.CurrentHandState.TrumpMaker && this.tractorPlayer.CurrentHandState.TrumpMaker === this.tractorPlayer.MyOwnId;
+        if (this.IsDebug &&
+            (this.tractorPlayer.CurrentRoomSetting.IsFullDebug ||
+                this.tractorPlayer.CurrentRoomSetting.AllowRobotMakeTrump ||
+                isUsingQiangliangka) &&
+            !this.tractorPlayer.isObserver) {
             var availableTrump = this.tractorPlayer.AvailableTrumps();
-            let trumpToExpose: number = Algorithm.TryExposingTrump(availableTrump, this.tractorPlayer.CurrentPoker, this.tractorPlayer.CurrentRoomSetting.IsFullDebug);
+            let qiangliangMin = parseInt(this.gameScene.qiangliangMin);
+            let trumpToExpose: number = Algorithm.TryExposingTrump(availableTrump, qiangliangMin, this.tractorPlayer.CurrentHandState.IsFirstHand, this.tractorPlayer.CurrentPoker, this.tractorPlayer.CurrentRoomSetting.IsFullDebug);
             if (trumpToExpose == SuitEnums.Suit.None) return;
 
             var next = this.tractorPlayer.CurrentHandState.TrumpExposingPoker + 1;
@@ -648,7 +661,13 @@ export class MainForm {
                 else if (this.tractorPlayer.CurrentPoker.RedJoker() == 2)
                     next = SuitEnums.TrumpExposingPoker.PairRedJoker;
             }
+            // 之前自己抢亮，后来再双亮加持不消耗抢亮卡
+            let usedShengbi = false;
+            if (next === SuitEnums.TrumpExposingPoker.SingleRank || this.tractorPlayer.CurrentHandState.TrumpMaker !== this.tractorPlayer.MyOwnId) {
+                usedShengbi = true;
+            }
             this.tractorPlayer.ExposeTrump(next, trumpToExpose);
+            if (usedShengbi) this.tractorPlayer.UsedShengbi();
         }
     }
 
@@ -1047,6 +1066,14 @@ export class MainForm {
             }
             else if (curPlayer && curPlayer.IsRobot) {
                 this.lblStarters[i].setText("托管中")
+                if (this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.DistributingCards) {
+                    let shengbi = 0
+                    if (this.playerIDToShengbi[curPlayer.PlayerId]) {
+                        shengbi = parseInt(this.playerIDToShengbi[curPlayer.PlayerId].Shengbi);
+                    }
+                    let isUsingQiangliangka = shengbi >= CommonMethods.qiangliangkaCost;
+                    if (isUsingQiangliangka) this.lblStarters[i].setText("抢亮卡")
+                }
             }
             else if (curPlayer && !curPlayer.IsReadyToStart) {
                 this.lblStarters[i].setText("思索中")
@@ -1441,6 +1468,20 @@ export class MainForm {
             this.gameScene.noCutCards = cbxCutCards.checked.toString()
         }
 
+        // 游戏道具栏
+        let lblShengbi = this.modalForm.getChildByID("lblShengbi");
+        let shengbiNum = 0;
+        if (this.playerIDToShengbi[this.tractorPlayer.MyOwnId]) {
+            shengbiNum = this.playerIDToShengbi[this.tractorPlayer.MyOwnId].Shengbi;
+        }
+        lblShengbi.innerHTML = shengbiNum;
+
+        let selectQiangliangMin = this.modalForm.getChildByID("selectQiangliangMin")
+        selectQiangliangMin.value = this.gameScene.qiangliangMin;
+        selectQiangliangMin.onchange = () => {
+            this.gameScene.qiangliangMin = selectQiangliangMin.value;
+        }
+
         let cbxNoOverridingFlag = this.modalForm.getChildByID("cbxNoOverridingFlag");
         cbxNoOverridingFlag.checked = this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag;
         cbxNoOverridingFlag.onchange = () => {
@@ -1757,6 +1798,9 @@ export class MainForm {
         if (this.gameScene.btnJoinAudio != null) {
             this.gameScene.btnJoinAudio.destroy();
         }
+        if (this.gameScene.btnQiandao != null) {
+            this.gameScene.btnQiandao.destroy();
+        }
         if (this.gameScene.hallPlayerHeader != null) {
             this.gameScene.hallPlayerHeader.destroy();
         }
@@ -1808,6 +1852,27 @@ export class MainForm {
                     alert("语音链接尚未设置，请点击屏幕正下方的自己名字进入设置界面，设置语音链接");
                 }
             }, this)
+
+        let qiandaoText = "签到领福利";
+        this.gameScene.btnQiandao = this.gameScene.add.text(this.gameScene.coordinates.hallPlayerHeaderPosition.x, 80, qiandaoText)
+            .setColor('white')
+            .setFontSize(20)
+            .setPadding(10)
+            .setShadow(2, 2, "#333333", 2, true, true)
+            .setVisible(false)
+            .setStyle({ backgroundColor: 'gray' })
+            .setInteractive({ useHandCursor: true })
+            .on('pointerover', () => {
+                this.gameScene.btnQiandao.setStyle({ backgroundColor: 'lightblue' })
+            })
+            .on('pointerout', () => {
+                this.gameScene.btnQiandao.setStyle({ backgroundColor: 'gray' })
+            })
+            .on('pointerup', () => {
+                this.gameScene.sendMessageToServer(PLAYER_QIANDAO_REQUEST, this.tractorPlayer.MyOwnId, "")
+            }, this)
+        this.UpdateQiandaoStatus();
+        this.gameScene.btnQiandao.setVisible(true);
 
         this.gameScene.hallPlayerHeader = this.gameScene.add.text(this.gameScene.coordinates.hallPlayerHeaderPosition.x, this.gameScene.coordinates.hallPlayerHeaderPosition.y, "在线").setColor('white').setFontSize(30).setShadow(2, 2, "#333333", 2, true, true)
         for (let i = 0; i < playerList.length; i++) {
@@ -1903,6 +1968,29 @@ export class MainForm {
         }
     }
 
+    public UpdateQiandaoStatus() {
+        let qiandaoInfo: any = this.gameScene.mainForm.playerIDToShengbi[this.tractorPlayer.MyOwnId];
+        if (qiandaoInfo) {
+            let lastQiandao: Date = new Date(qiandaoInfo.lastQiandao);
+            let today = new Date();
+            lastQiandao.setHours(0);
+            lastQiandao.setMinutes(0);
+            lastQiandao.setSeconds(0, 0);
+            today.setHours(0);
+            today.setMinutes(0);
+            today.setSeconds(0, 0);
+            if (lastQiandao >= today) {
+                this.gameScene.btnQiandao.setText("今日已签到")
+                    .disableInteractive()
+                    .setColor('gray');
+            } else {
+                this.gameScene.btnQiandao.setText("签到领福利")
+                    .setInteractive({ useHandCursor: true })
+                    .setColor('white');
+            }
+        }
+    }
+
     public NotifyEmojiEventHandler(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string) {
         let isPlayerInGameHall = this.gameScene.isInGameHall();
         if (0 <= emojiType && emojiType < CommonMethods.winEmojiTypeLength && Object.keys(this.PlayerPosition).includes(playerID)) {
@@ -1928,7 +2016,11 @@ export class MainForm {
                 if (this.tractorPlayer.MyOwnId === playerID) this.sgDrawingHelper.hiddenGames[msgString].apply(this.sgDrawingHelper, [true, playerID]);
             }
         } else {
-            finalMsg = `【${playerID}】说：${msgString}`;
+            let prefix = "";
+            if (playerID) {
+                prefix = "【${playerID}】说：";
+            }
+            finalMsg = `${prefix}${msgString}`;
         }
         this.drawingFormHelper.DrawDanmu(finalMsg);
         this.appendChatMsg(finalMsg);
@@ -1985,7 +2077,8 @@ export class MainForm {
 
             for (let i = 0; i < playersInGameHall.length; i++) {
                 let d = document.createElement("div");
-                d.innerText = `【${playersInGameHall[i]}】`;
+                let pid = playersInGameHall[i];
+                d.innerText = `【${pid}】升币x${this.playerIDToShengbi[pid].Shengbi}`;
                 divOnlinePlayerList.appendChild(d);
             }
         }
@@ -2001,7 +2094,8 @@ export class MainForm {
             divOnlinePlayerList.appendChild(headerGameRoomPlaying);
             for (let i = 0; i < players.length; i++) {
                 let d = document.createElement("div");
-                d.innerText = `【${players[i]}】`;
+                let pid = players[i];
+                d.innerText = `【${pid}】升币x${this.playerIDToShengbi[pid].Shengbi}`;
                 divOnlinePlayerList.appendChild(d);
             }
 
@@ -2012,7 +2106,8 @@ export class MainForm {
                 divOnlinePlayerList.appendChild(headerGameRoomObserving);
                 for (let i = 0; i < obs.length; i++) {
                     let d = document.createElement("div");
-                    d.innerText = `【${obs[i]}】`;
+                    let oid = obs[i];
+                    d.innerText = `【${oid}】升币x${this.playerIDToShengbi[oid].Shengbi}`;
                     divOnlinePlayerList.appendChild(d);
                 }
             }

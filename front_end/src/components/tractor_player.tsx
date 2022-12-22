@@ -18,6 +18,8 @@ import { ReplayEntity } from './replay_entity';
 import { IDBHelper } from './idb_helper';
 
 const PlayerMakeTrump_REQUEST = "PlayerMakeTrump"
+const UsedShengbi_REQUEST = "UsedShengbi"
+const UsedShengbiType_Qiangliangka = "UsedShengbiType_Qiangliangka"
 const NotifyPong_REQUEST = "NotifyPong"
 
 export class TractorPlayer {
@@ -461,6 +463,9 @@ export class TractorPlayer {
         let params: number[] = [trumpExposingPoker, trump]
         this.mainForm.gameScene.sendMessageToServer(PlayerMakeTrump_REQUEST, this.PlayerId, JSON.stringify(params))
     }
+    public UsedShengbi() {
+        this.mainForm.gameScene.sendMessageToServer(UsedShengbi_REQUEST, this.PlayerId, UsedShengbiType_Qiangliangka)
+    }
 
     // handle failure
     public NotifyDumpingValidationResult(result: ShowingCardsValidationResult) {
@@ -515,5 +520,10 @@ export class TractorPlayer {
                 this.PingStatus = -1;
             }
         }, this.PingInterval + this.PingInterval / 2);
+    }
+
+    public NotifyShengbi(ptob: any) {
+        this.mainForm.playerIDToShengbi = ptob;
+        this.mainForm.UpdateQiandaoStatus();
     }
 }
