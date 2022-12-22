@@ -1970,23 +1970,16 @@ export class MainForm {
 
     public UpdateQiandaoStatus() {
         let qiandaoInfo: any = this.gameScene.mainForm.playerIDToShengbi[this.tractorPlayer.MyOwnId];
-        if (qiandaoInfo) {
-            let lastQiandao: Date = new Date(qiandaoInfo.lastQiandao);
-            let today = new Date();
-            lastQiandao.setHours(0);
-            lastQiandao.setMinutes(0);
-            lastQiandao.setSeconds(0, 0);
-            today.setHours(0);
-            today.setMinutes(0);
-            today.setSeconds(0, 0);
-            if (lastQiandao >= today) {
-                this.gameScene.btnQiandao.setText("今日已签到")
-                    .disableInteractive()
-                    .setColor('gray');
-            } else {
+        if (qiandaoInfo && this.gameScene.btnQiandao) {
+            let isRenewed: Boolean = qiandaoInfo.isRenewed;
+            if (isRenewed) {
                 this.gameScene.btnQiandao.setText("签到领福利")
                     .setInteractive({ useHandCursor: true })
                     .setColor('white');
+            } else {
+                this.gameScene.btnQiandao.setText("今日已签到")
+                    .disableInteractive()
+                    .setColor('gray');
             }
         }
     }
