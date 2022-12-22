@@ -2018,7 +2018,7 @@ export class MainForm {
         } else {
             let prefix = "";
             if (playerID) {
-                prefix = "【${playerID}】说：";
+                prefix = `【${playerID}】说：`;
             }
             finalMsg = `${prefix}${msgString}`;
         }
