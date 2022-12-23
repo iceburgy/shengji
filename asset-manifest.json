@@ -1,13 +1,15 @@
 {
   "files": {
     "main.css": "/shengjiweb/static/css/main.5ad0da08.css",
-    "main.js": "/shengjiweb/static/js/main.382b01ff.js",
+    "main.js": "/shengjiweb/static/js/main.5ee39fa8.js",
     "static/js/787.22edae46.chunk.js": "/shengjiweb/static/js/787.22edae46.chunk.js",
     "static/media/badjob.png": "/shengjiweb/static/media/badjob.42a9576209b8b6ef2382.png",
     "static/media/badjob2.png": "/shengjiweb/static/media/badjob2.69b0d76db1dea5a75369.png",
+    "static/media/dong_sunshangxiang.png": "/shengjiweb/static/media/dong_sunshangxiang.4ec80f8177e4e5e00f97.png",
     "static/media/happy2.png": "/shengjiweb/static/media/happy2.faa2515ff9559bcd94f2.png",
     "static/media/sad2.png": "/shengjiweb/static/media/sad2.28454d87273b7dca30e1.png",
     "static/media/badjob3.png": "/shengjiweb/static/media/badjob3.7a89a349ce81fed4b326.png",
+    "static/media/shenlvmeng.png": "/shengjiweb/static/media/shenlvmeng.4d9daf314fc28b815f9d.png",
     "static/media/sad4.png": "/shengjiweb/static/media/sad4.d0789a10ea17d37f8c09.png",
     "static/media/badjob4.png": "/shengjiweb/static/media/badjob4.3c33f5838cc30bf84b60.png",
     "static/media/hurryup4.png": "/shengjiweb/static/media/hurryup4.2ce8836dad101419eada.png",
@@ -19,7 +21,10 @@
     "static/media/sky.png": "/shengjiweb/static/media/sky.e813b11b9d36dd4b6365.png",
     "static/media/fireworks3.png": "/shengjiweb/static/media/fireworks3.4882d72cd6150fdbfc79.png",
     "static/media/goodjob.png": "/shengjiweb/static/media/goodjob.3a4f18e99cbb50d5770a.png",
+    "static/media/key_kotori.jpg": "/shengjiweb/static/media/key_kotori.33597d0f18b1fe863a83.jpg",
     "static/media/walker.png": "/shengjiweb/static/media/walker.95319db88a8266deb5fa.png",
+    "static/media/frame.png": "/shengjiweb/static/media/frame.f2b6cced287b5d594069.png",
+    "static/media/basicfemale.png": "/shengjiweb/static/media/basicfemale.d121c1d3d8972c462146.png",
     "static/media/goodjob4.png": "/shengjiweb/static/media/goodjob4.986ba5a31991ba065733.png",
     "static/media/fireworks.png": "/shengjiweb/static/media/fireworks.b2a497d713714348b653.png",
     "static/media/happy3.png": "/shengjiweb/static/media/happy3.fd48e55f2a1ab59e3f77.png",
@@ -28,10 +33,12 @@
     "static/media/fireworks2.png": "/shengjiweb/static/media/fireworks2.9bee1650b2a0bcad27b9.png",
     "static/media/movingtractor.png": "/shengjiweb/static/media/movingtractor.0339b5ba35086d562ae6.png",
     "static/media/happy.png": "/shengjiweb/static/media/happy.2f266c494178be532e36.png",
+    "static/media/questionmark.png": "/shengjiweb/static/media/questionmark.ac9e226f2861c7c6d006.png",
     "static/media/hurryup2.png": "/shengjiweb/static/media/hurryup2.b163ed944043d1ae9f50.png",
     "static/media/poker_table.png": "/shengjiweb/static/media/poker_table.1952f2d2d789e62f9c3b.png",
     "static/media/poker.png": "/shengjiweb/static/media/poker.5b0e60719fdc4847f45d.png",
     "static/media/sad3.png": "/shengjiweb/static/media/sad3.bedcb60204bab541f51d.png",
+    "static/media/pal_lixiaoyao.jpg": "/shengjiweb/static/media/pal_lixiaoyao.2030096581bae13b7f9d.jpg",
     "static/media/huosha.png": "/shengjiweb/static/media/huosha.a8eeab98a7a5e48f598d.png",
     "static/media/fireworks4.png": "/shengjiweb/static/media/fireworks4.0998641b2ef8e185b6af.png",
     "static/media/sha.png": "/shengjiweb/static/media/sha.ec9dbc887d77bd51cebb.png",
@@ -40,6 +47,7 @@
     "static/media/win.mp3": "/shengjiweb/static/media/win.8759621e2417066beb93.mp3",
     "static/media/goodjob2.png": "/shengjiweb/static/media/goodjob2.5cd4d31e6a173269e12a.png",
     "static/media/drawx.mp3": "/shengjiweb/static/media/drawx.fd97dcf527191b8ea1ee.mp3",
+    "static/media/basicmale.png": "/shengjiweb/static/media/basicmale.2b64b9d55f5441791f58.png",
     "static/media/zhugong.png": "/shengjiweb/static/media/zhugong.705b462404f921cce1aa.png",
     "static/media/prepare_ok.png": "/shengjiweb/static/media/prepare_ok.6ed541227af30488cbc7.png",
     "static/media/fankui2.mp3": "/shengjiweb/static/media/fankui2.687648dffd56d81cf335.mp3",
@@ -56,8 +64,8 @@
     "static/media/star.png": "/shengjiweb/static/media/star.f8bef5757a894e844d8a.png",
     "static/media/suits.png": "/shengjiweb/static/media/suits.6d604c8e5b6cc271340f.png",
     "static/media/recover.mp3": "/shengjiweb/static/media/recover.e5198c81ec4b04e17f3c.mp3",
+    "static/media/settings_form.htm": "/shengjiweb/static/media/settings_form.d1507d44b679f14828dd.htm",
     "static/media/biyue1.mp3": "/shengjiweb/static/media/biyue1.1522c92cde01bc5f3e9a.mp3",
-    "static/media/settings_form.htm": "/shengjiweb/static/media/settings_form.1871f4627d64a22ee7f0.htm",
     "static/media/sha_thunder.mp3": "/shengjiweb/static/media/sha_thunder.57fefa11fcd3da0f3772.mp3",
     "static/media/sha_fire.mp3": "/shengjiweb/static/media/sha_fire.f42822f3caa3aa6ff7b1.mp3",
     "static/media/sha.mp3": "/shengjiweb/static/media/sha.bf942d363b6f75795dde.mp3",
@@ -68,11 +76,11 @@
     "index.html": "/shengjiweb/index.html",
     "static/media/replay_form.htm": "/shengjiweb/static/media/replay_form.0072c5b6eb0c31dfce5a.htm",
     "main.5ad0da08.css.map": "/shengjiweb/static/css/main.5ad0da08.css.map",
-    "main.382b01ff.js.map": "/shengjiweb/static/js/main.382b01ff.js.map",
+    "main.5ee39fa8.js.map": "/shengjiweb/static/js/main.5ee39fa8.js.map",
     "787.22edae46.chunk.js.map": "/shengjiweb/static/js/787.22edae46.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5ad0da08.css",
-    "static/js/main.382b01ff.js"
+    "static/js/main.5ee39fa8.js"
   ]
 }
