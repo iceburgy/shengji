@@ -522,8 +522,10 @@ export class TractorPlayer {
         }, this.PingInterval + this.PingInterval / 2);
     }
 
-    public NotifyShengbi(ptob: any) {
-        this.mainForm.playerIDToShengbi = ptob;
+    public NotifyDaojuInfo(daojuInfo: any) {
+        this.mainForm.DaojuInfo = daojuInfo;
         this.mainForm.UpdateQiandaoStatus();
+        this.mainForm.gameScene.skinInUse = daojuInfo.daojuInfoByPlayer[this.MyOwnId] ? daojuInfo.daojuInfoByPlayer[this.MyOwnId].skinInUse : CommonMethods.defaultSkinInUse;
+        this.mainForm.UpdateSkinStatus();
     }
 }

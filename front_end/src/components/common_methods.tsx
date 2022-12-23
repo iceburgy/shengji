@@ -32,6 +32,7 @@ export class CommonMethods {
     public static recoverLoginPassFlag = "RecoverLoginPass";
     public static loginSuccessFlag = "LoginSuccess";
     public static qiangliangkaCost = 1;
+    public static defaultSkinInUse = "skin_questionmark";
 
     constructor() {
     }

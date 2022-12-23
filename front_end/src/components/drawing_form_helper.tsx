@@ -253,7 +253,7 @@ export class DrawingFormHelper {
             let image = this.mainForm.gameScene.add.sprite(x, y, 'poker', uiCardNumber)
                 .setOrigin(0, 0)
                 .setInteractive()
-                .setDisplaySize(this.mainForm.gameScene.coordinates.cardWidth * scale, this.mainForm.gameScene.coordinates.cardHeigh * scale)
+                .setDisplaySize(this.mainForm.gameScene.coordinates.cardWidth * scale, this.mainForm.gameScene.coordinates.cardHeight * scale)
             targetImages.push(image);
             x += this.mainForm.gameScene.coordinates.handCardOffset * scale
         }
@@ -897,7 +897,7 @@ export class DrawingFormHelper {
             this.mainForm.gameScene.scoreCardsImages.push(this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.sidebarScoreCards.x + i * (this.mainForm.gameScene.coordinates.handCardOffset / 2), this.mainForm.gameScene.coordinates.sidebarScoreCards.y, 'poker', uiCardNumber)
                 .setOrigin(0, 0)
                 .setInteractive()
-                .setDisplaySize(this.mainForm.gameScene.coordinates.cardWidth / 2, this.mainForm.gameScene.coordinates.cardHeigh / 2))
+                .setDisplaySize(this.mainForm.gameScene.coordinates.cardWidth / 2, this.mainForm.gameScene.coordinates.cardHeight / 2))
         }
     }
 
@@ -1010,7 +1010,7 @@ export class DrawingFormHelper {
             default:
                 break;
         }
-        y = y + this.mainForm.gameScene.coordinates.cardHeigh - this.mainForm.gameScene.coordinates.overridingFlagHeight
+        y = y + this.mainForm.gameScene.coordinates.cardHeight - this.mainForm.gameScene.coordinates.overridingFlagHeight
         let image = this.mainForm.gameScene.add.image(x, y, this.mainForm.gameScene.overridingLabelImages[winType])
             .setOrigin(0, 0)
             .setDisplaySize(this.mainForm.gameScene.coordinates.overridingFlagWidth, this.mainForm.gameScene.coordinates.overridingFlagHeight)
@@ -1046,9 +1046,9 @@ export class DrawingFormHelper {
 
     public DrawMovingTractorByPosition(cardsCount: number, position: number) {
         let posInd = position - 1
-        let height = this.mainForm.gameScene.coordinates.cardHeigh - 10;
+        let height = this.mainForm.gameScene.coordinates.cardHeight - 10;
         let x = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].x;
-        let y = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].y + this.mainForm.gameScene.coordinates.cardHeigh - height;
+        let y = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].y + this.mainForm.gameScene.coordinates.cardHeight - height;
         switch (posInd) {
             case 0:
                 x = x - (cardsCount - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 2

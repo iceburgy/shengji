@@ -14,6 +14,17 @@ import huosha from "../assets/huosha.png"
 import leisha from "../assets/leisha.png"
 import pusha from "../assets/sha.png"
 import zhugong from "../assets/zhugong.png"
+
+// skin
+import skin_frame from "../assets/skin/frame.png"
+import skin_questionmark from "../assets/skin/questionmark.png"
+import skin_basicmale from "../assets/skin/basicmale.png"
+import skin_basicfemale from "../assets/skin/basicfemale.png"
+import skin_pal_lixiaoyao from "../assets/skin/pal_lixiaoyao.jpg"
+import skin_key_kotori from "../assets/skin/key_kotori.jpg"
+import skin_shenlvmeng from "../assets/skin/shenlvmeng.png"
+import skin_dong_sunshangxiang from "../assets/skin/dong_sunshangxiang.png"
+
 import biyue1 from '../assets/music/biyue1.mp3';
 import draw from '../assets/music/draw.mp3';
 import drawx from '../assets/music/drawx.mp3';
@@ -101,7 +112,7 @@ const EXISTS_PLAYERS_RESPONSE = "exists_players"
 const DEAL_POKER_RESPONSE = "deal_poker"
 const NotifyGameHall_RESPONSE = "NotifyGameHall"
 const NotifyOnlinePlayerList_RESPONSE = "NotifyOnlinePlayerList";
-const NotifyShengbi_RESPONSE = "NotifyShengbi";
+const NotifyDaojuInfo_RESPONSE = "NotifyDaojuInfo";
 const NotifyGameRoomPlayerList_RESPONSE = "NotifyGameRoomPlayerList";
 const NotifyMessage_RESPONSE = "NotifyMessage"
 const NotifyRoomSetting_RESPONSE = "NotifyRoomSetting"
@@ -176,6 +187,7 @@ export class GameScene extends Phaser.Scene {
     public noDanmu: string
     public noCutCards: string
     public qiangliangMin: string
+    public skinInUse: string;
     public decadeUICanvas: HTMLElement
     public coordinates: Coordinates
     public wsprotocal: string = "wss"
@@ -298,6 +310,12 @@ export class GameScene extends Phaser.Scene {
         this.load.image("pokerTable", pokerTable)
         this.load.image("pokerChair", pokerChair)
         this.load.image("bagua", bagua)
+        this.load.image("skin_pal_lixiaoyao", skin_pal_lixiaoyao)
+        this.load.image("skin_key_kotori", skin_key_kotori)
+        this.load.image("skin_questionmark", skin_questionmark)
+        this.load.image("skin_basicmale", skin_basicmale)
+        this.load.image("skin_basicfemale", skin_basicfemale)
+        this.load.image("skin_frame", skin_frame)
         this.load.image("huosha", huosha)
         this.load.image("leisha", leisha)
         this.load.image("pusha", pusha)
@@ -318,7 +336,7 @@ export class GameScene extends Phaser.Scene {
         ]
         this.load.spritesheet('poker', pokerImage, {
             frameWidth: this.coordinates.cardWidth,
-            frameHeight: this.coordinates.cardHeigh
+            frameHeight: this.coordinates.cardHeight
         });
         this.load.spritesheet('suitsImage', suitsImage, {
             frameWidth: this.coordinates.toolbarSize,
@@ -372,6 +390,10 @@ export class GameScene extends Phaser.Scene {
         this.load.spritesheet('emFireworks3', emFireworks3, { frameWidth: EmojiUtil.emojiFrameSize[5][2].x, frameHeight: EmojiUtil.emojiFrameSize[5][2].y });
         this.load.spritesheet('emFireworks4', emFireworks4, { frameWidth: EmojiUtil.emojiFrameSize[5][3].x, frameHeight: EmojiUtil.emojiFrameSize[5][3].y });
         this.load.spritesheet('emMovingTractor', emMovingTractor, { frameWidth: EmojiUtil.emMovingTractorFrameSize.x, frameHeight: EmojiUtil.emMovingTractorFrameSize.y });
+
+        // animated skin
+        this.load.spritesheet('skin_shenlvmeng', skin_shenlvmeng, { frameWidth: this.coordinates.cardWidth, frameHeight: this.coordinates.cardHeight });
+        this.load.spritesheet('skin_dong_sunshangxiang', skin_dong_sunshangxiang, { frameWidth: this.coordinates.cardWidth, frameHeight: this.coordinates.cardHeight });
 
         // loading collectstar
         this.load.image('ground', csground);
@@ -518,8 +540,8 @@ export class GameScene extends Phaser.Scene {
             this.handleNotifyEndCollectStar(objList);
         } else if (messageType === NotifyGrabStar_RESPONSE) {
             this.handleNotifyGrabStar_RESPONSE(objList);
-        } else if (messageType === NotifyShengbi_RESPONSE) {
-            this.handleNotifyShengbi(objList);
+        } else if (messageType === NotifyDaojuInfo_RESPONSE) {
+            this.handleNotifyDaojuInfo(objList);
         }
         // } catch (e) {
         //     // alert("error")
@@ -527,9 +549,9 @@ export class GameScene extends Phaser.Scene {
         // }
     }
 
-    private handleNotifyShengbi(objList: []) {
-        var ptob: any = objList[0];
-        this.mainForm.tractorPlayer.NotifyShengbi(ptob)
+    private handleNotifyDaojuInfo(objList: []) {
+        var daojuInfo: any = objList[0];
+        this.mainForm.tractorPlayer.NotifyDaojuInfo(daojuInfo)
     }
 
     private handleNotifyGrabStar_RESPONSE(objList) {

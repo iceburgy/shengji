@@ -42,6 +42,7 @@ const PLAYER_ENTER_ROOM_REQUEST = "PlayerEnterRoom"
 const PLAYER_EXIT_AND_ENTER_ROOM_REQUEST = "ExitAndEnterRoom"
 const PLAYER_EXIT_AND_OBSERVE_REQUEST = "ExitAndObserve"
 const PLAYER_QIANDAO_REQUEST = "PlayerQiandao"
+const BUY_USE_SKIN_REQUEST = "BuyUseSkin"
 const cookies = new Cookies();
 
 export class MainForm {
@@ -80,7 +81,9 @@ export class MainForm {
     public chatForm: any
     public sgcsPlayer: SGCSPlayer;
     public rightSideButtonDepth = 1;
-    public playerIDToShengbi: any;
+    public DaojuInfo: any;
+    public MySkinInUse: any;
+    public MySkinFrame: any;
 
     public selectPresetMsgsIsOpen: boolean = false;
 
@@ -100,7 +103,7 @@ export class MainForm {
         this.timerIntervalID = []
         this.timerCountDown = 0
         this.isSendEmojiEnabled = true;
-        this.playerIDToShengbi = {};
+        this.DaojuInfo = {};
 
         // 房间信息
         this.roomNameText = this.gameScene.add.text(this.gameScene.coordinates.roomNameTextPosition.x, this.gameScene.coordinates.roomNameTextPosition.y, "")
@@ -422,7 +425,7 @@ export class MainForm {
             if (isEmptySeat) {
                 lblNickName.setText("");
                 lblObserver.setText("");
-                let chairImage = this.gameScene.add.image(this.gameScene.coordinates.playerTextPositions[i].x - (i == 1 ? 60 : 0), this.gameScene.coordinates.playerTextPositions[i].y, 'pokerChair')
+                let chairImage = this.gameScene.add.image(this.gameScene.coordinates.playerMainTextPositions[i].x - (i == 1 ? 60 : 0), this.gameScene.coordinates.playerMainTextPositions[i].y, 'pokerChair')
                     .setOrigin(0, 0)
                     .setDisplaySize(60, 60)
 
@@ -444,6 +447,34 @@ export class MainForm {
                 //set player position
                 this.PlayerPosition[p.PlayerId] = i + 1;
                 this.PositionPlayer[i + 1] = p.PlayerId;
+
+                //skin
+                if (i !== 0) {
+                    let skinInUse = this.DaojuInfo.daojuInfoByPlayer[p.PlayerId] ? this.DaojuInfo.daojuInfoByPlayer[p.PlayerId].skinInUse : CommonMethods.defaultSkinInUse;
+                    let skinType = this.GetSkinType(skinInUse)
+                    let skinImage: any
+                    if (skinType === 0) {
+                        skinImage = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[i].x - (i == 1 ? 90 : 0), this.gameScene.coordinates.playerSkinPositions[i].y, skinInUse)
+                            .setOrigin(0, 0)
+                            .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight);
+                    } else {
+                        skinImage = this.gameScene.add.sprite(this.gameScene.coordinates.playerSkinPositions[i].x - (i == 1 ? 90 : 0), this.gameScene.coordinates.playerSkinPositions[i].y, skinInUse)
+                            .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
+                            .setOrigin(0)
+                            .setInteractive()
+                            .on('pointerup', () => {
+                                if (skinImage.anims.isPlaying) skinImage.stop();
+                                else skinImage.play(skinInUse);
+                            });
+                        skinImage.play(skinInUse);
+                    }
+
+                    this.gameScene.roomUIControls.imagesChair.push(skinImage);
+                    let skinFrame = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[i].x - (i == 1 ? 90 : 0), this.gameScene.coordinates.playerSkinPositions[i].y, 'skin_frame')
+                        .setOrigin(0, 0)
+                        .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight);
+                    this.gameScene.roomUIControls.imagesChair.push(skinFrame);
+                }
 
                 var nickNameText = p.PlayerId;
                 lblNickName.setText(`${nickNameText}`);
@@ -629,6 +660,15 @@ export class MainForm {
         }
     }
 
+    public destroyMySkinInUse() {
+        if (this.MySkinInUse) {
+            this.MySkinInUse.destroy();
+        }
+        if (this.MySkinFrame) {
+            this.MySkinFrame.destroy();
+        }
+    }
+
     public PlayerOnGetCard(cardNumber: number) {
 
         //发牌播放提示音
@@ -640,8 +680,8 @@ export class MainForm {
 
         //托管代打：亮牌
         let shengbi = 0
-        if (this.playerIDToShengbi[this.tractorPlayer.MyOwnId]) {
-            shengbi = parseInt(this.playerIDToShengbi[this.tractorPlayer.MyOwnId].Shengbi);
+        if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
+            shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
         }
         let isUsingQiangliangka = shengbi >= CommonMethods.qiangliangkaCost || this.tractorPlayer.CurrentHandState.TrumpMaker && this.tractorPlayer.CurrentHandState.TrumpMaker === this.tractorPlayer.MyOwnId;
         if (this.IsDebug &&
@@ -1068,8 +1108,8 @@ export class MainForm {
                 this.lblStarters[i].setText("托管中")
                 if (this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.DistributingCards) {
                     let shengbi = 0
-                    if (this.playerIDToShengbi[curPlayer.PlayerId]) {
-                        shengbi = parseInt(this.playerIDToShengbi[curPlayer.PlayerId].Shengbi);
+                    if (this.DaojuInfo.daojuInfoByPlayer[curPlayer.PlayerId]) {
+                        shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[curPlayer.PlayerId].Shengbi);
                     }
                     let isUsingQiangliangka = shengbi >= CommonMethods.qiangliangkaCost;
                     if (isUsingQiangliangka) this.lblStarters[i].setText("抢亮卡")
@@ -1152,7 +1192,7 @@ export class MainForm {
             .createFromCache('emojiForm');
         let inputForm = this.chatForm.getChildByID("input-form")
         inputForm.style.width = `${chatFormWid}px`;
-        inputForm.style.height = `${this.btnExitRoom.getBottomRight().y}px`;
+        inputForm.style.height = `${this.btnExitRoom.getBottomRight().y - this.gameScene.coordinates.cardHeight - 10}px`;
 
         let divfooter = this.chatForm.getChildByID("divfooter")
         divfooter.style.bottom = "-1px";
@@ -1160,7 +1200,7 @@ export class MainForm {
             divfooter.style.bottom = "-3px";
         }
 
-        let fullTextDivHeight = this.gameScene.coordinates.screenHei - divfooter.offsetHeight - 10;
+        let fullTextDivHeight = this.gameScene.coordinates.screenHei - divfooter.offsetHeight - 10 - this.gameScene.coordinates.cardHeight - 10;
         let divOnlinePlayerListHeight = fullTextDivHeight * (1 - this.gameScene.coordinates.chatHeightRatio);
         let divChatHeight = fullTextDivHeight * this.gameScene.coordinates.chatHeightRatio - 5;
 
@@ -1469,17 +1509,37 @@ export class MainForm {
         }
 
         // 游戏道具栏
+        // 升币
         let lblShengbi = this.modalForm.getChildByID("lblShengbi");
         let shengbiNum = 0;
-        if (this.playerIDToShengbi[this.tractorPlayer.MyOwnId]) {
-            shengbiNum = this.playerIDToShengbi[this.tractorPlayer.MyOwnId].Shengbi;
+        if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
+            shengbiNum = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi;
         }
         lblShengbi.innerHTML = shengbiNum;
-
+        // 抢亮卡
         let selectQiangliangMin = this.modalForm.getChildByID("selectQiangliangMin")
         selectQiangliangMin.value = this.gameScene.qiangliangMin;
         selectQiangliangMin.onchange = () => {
             this.gameScene.qiangliangMin = selectQiangliangMin.value;
+        }
+        // 皮肤
+        let selectFullSkinInfo = this.modalForm.getChildByID("selectFullSkinInfo")
+        this.UpdateSkinInfoUI(false);
+        selectFullSkinInfo.onchange = () => {
+            this.UpdateSkinInfoUI(true);
+        }
+
+        let btnBuyOrUseSelectedSkin = this.modalForm.getChildByID("btnBuyOrUseSelectedSkin")
+        btnBuyOrUseSelectedSkin.onclick = () => {
+            let skinName = selectFullSkinInfo.value;
+            let isSkinOwned = this.IsSkinOwned(skinName);
+            let isSkinAfordable = this.IsSkinAfordable(skinName);
+            if (!isSkinOwned && !isSkinAfordable) {
+                alert("升币余额不足，无法购买此皮肤")
+            } else {
+                this.gameScene.sendMessageToServer(BUY_USE_SKIN_REQUEST, this.tractorPlayer.MyOwnId, skinName);
+                this.DesotroyModalForm();
+            }
         }
 
         let cbxNoOverridingFlag = this.modalForm.getChildByID("cbxNoOverridingFlag");
@@ -1526,6 +1586,106 @@ export class MainForm {
                     this.gameScene.sendMessageToServer(SwapSeat_REQUEST, this.tractorPlayer.MyOwnId, selectSwapSeat.value);
                 }
                 this.DesotroyModalForm();
+            }
+        }
+    }
+
+    private IsSkinOwned(skinName: string): boolean {
+        let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
+        if (daojuInfoByPlayer) {
+            let ownedSkinInfoList = daojuInfoByPlayer.ownedSkinInfo;
+            return ownedSkinInfoList && ownedSkinInfoList.includes(skinName);
+        }
+        return false;
+    }
+
+    private IsSkinAfordable(skinName: string): boolean {
+        let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+        let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
+        if (fullSkinInfo) {
+            return daojuInfoByPlayer.Shengbi >= fullSkinInfo[skinName].skinCost;
+        }
+        return false;
+    }
+
+    private GetSkinType(skinName: string): number {
+        let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+        if (fullSkinInfo) {
+            let targetSkinInfo = fullSkinInfo[skinName];
+            if (targetSkinInfo) {
+                return targetSkinInfo.skinType;
+            }
+        }
+        return 0;
+    }
+
+    private UpdateSkinInfoUI(preview: boolean) {
+        let selectFullSkinInfo = this.modalForm.getChildByID("selectFullSkinInfo")
+        let lblSkinType = this.modalForm.getChildByID("lblSkinType");
+        let lblSkinCost = this.modalForm.getChildByID("lblSkinCost");
+        let lblSkinIsOwned = this.modalForm.getChildByID("lblSkinIsOwned");
+        let lblSkinExp = this.modalForm.getChildByID("lblSkinExp");
+        let btnBuyOrUseSelectedSkin = this.modalForm.getChildByID("btnBuyOrUseSelectedSkin");
+        let curSkinInfo: any;
+        let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+        let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
+        if (daojuInfoByPlayer) {
+            if (fullSkinInfo) {
+                if (selectFullSkinInfo.options.length === 0) {
+                    for (const [key, value] of Object.entries(fullSkinInfo)) {
+                        var option = document.createElement("option");
+                        option.value = key;
+                        option.text = (value as any).skinDesc;
+                        selectFullSkinInfo.add(option);
+                    }
+                    selectFullSkinInfo.value = this.gameScene.skinInUse;
+                }
+
+                curSkinInfo = fullSkinInfo[selectFullSkinInfo.value];
+                if (curSkinInfo) {
+                    lblSkinType.innerHTML = curSkinInfo.skinType === 0 ? "静态" : "动态";
+                    lblSkinCost.innerHTML = `【升币】x${curSkinInfo.skinCost}`;
+                    lblSkinExp.innerHTML = curSkinInfo.skinExpiration;
+                    lblSkinIsOwned.innerHTML = "尚未拥有";
+                    btnBuyOrUseSelectedSkin.disabled = false;
+                    btnBuyOrUseSelectedSkin.value = "购买选定的皮肤";
+                }
+            }
+            let ownedSkinInfoList = daojuInfoByPlayer.ownedSkinInfo;
+            if (ownedSkinInfoList && ownedSkinInfoList.includes(selectFullSkinInfo.value)) {
+                lblSkinIsOwned.innerHTML = "已经拥有";
+                btnBuyOrUseSelectedSkin.disabled = false;
+                btnBuyOrUseSelectedSkin.value = "启用选定的皮肤";
+                if (this.gameScene.skinInUse === selectFullSkinInfo.value) {
+                    btnBuyOrUseSelectedSkin.disabled = true;
+                    btnBuyOrUseSelectedSkin.value = "正在使用选定的皮肤";
+                }
+            }
+        }
+
+        if (preview) {
+            // 皮肤预览
+            if (curSkinInfo) {
+                let skinImage: any;
+                if (curSkinInfo.skinType === 0) {
+                    skinImage = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x - 120, this.gameScene.coordinates.playerSkinPositions[0].y, selectFullSkinInfo.value)
+                        .setOrigin(0, 0)
+                        .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
+                } else {
+                    skinImage = this.gameScene.add.sprite(this.gameScene.coordinates.playerSkinPositions[0].x - 120, this.gameScene.coordinates.playerSkinPositions[0].y, selectFullSkinInfo.value)
+                        .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
+                        .setOrigin(0)
+                        .play(selectFullSkinInfo.value);
+                }
+
+                let skinFrame = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x - 120, this.gameScene.coordinates.playerSkinPositions[0].y, 'skin_frame')
+                    .setOrigin(0, 0)
+                    .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
+
+                setTimeout(() => {
+                    skinImage.destroy();
+                    skinFrame.destroy();
+                }, 3000);
             }
         }
     }
@@ -1969,9 +2129,9 @@ export class MainForm {
     }
 
     public UpdateQiandaoStatus() {
-        let qiandaoInfo: any = this.gameScene.mainForm.playerIDToShengbi[this.tractorPlayer.MyOwnId];
-        if (qiandaoInfo && this.gameScene.btnQiandao) {
-            let isRenewed: Boolean = qiandaoInfo.isRenewed;
+        let daojuInfoByPlayer: any = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
+        if (daojuInfoByPlayer && this.gameScene.btnQiandao && this.gameScene.btnQiandao.input) {
+            let isRenewed: Boolean = daojuInfoByPlayer.isRenewed;
             if (isRenewed) {
                 this.gameScene.btnQiandao.setText("签到领福利")
                     .setInteractive({ useHandCursor: true })
@@ -1981,6 +2141,93 @@ export class MainForm {
                     .disableInteractive()
                     .setColor('gray');
             }
+        }
+    }
+
+    public UpdateSkinStatus() {
+        let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
+        if (daojuInfoByPlayer) {
+            let ownedSkinInfoList = daojuInfoByPlayer.ownedSkinInfo;
+            if (ownedSkinInfoList && ownedSkinInfoList.includes(this.gameScene.skinInUse)) {
+                this.destroyMySkinInUse();
+
+                let skinType = this.GetSkinType(this.gameScene.skinInUse);
+                if (skinType === 0) {
+                    this.MySkinInUse = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x - 120, this.gameScene.coordinates.playerSkinPositions[0].y, this.gameScene.skinInUse)
+                        .setOrigin(0, 0)
+                        .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
+                } else {
+                    this.MySkinInUse = this.gameScene.add.sprite(this.gameScene.coordinates.playerSkinPositions[0].x - 120, this.gameScene.coordinates.playerSkinPositions[0].y, this.gameScene.skinInUse)
+                        .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
+                        .setOrigin(0)
+                        .setInteractive()
+                        .on('pointerup', () => {
+                            if (this.MySkinInUse.anims.isPlaying) this.MySkinInUse.stop();
+                            else this.MySkinInUse.play(this.gameScene.skinInUse);
+                        })
+                        .play(this.gameScene.skinInUse);
+                }
+                this.MySkinFrame = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x - 120, this.gameScene.coordinates.playerSkinPositions[0].y, 'skin_frame')
+                    .setOrigin(0, 0)
+                    .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
+            }
+        }
+
+        // 如果在房间里，则事实更新其它玩家的皮肤
+        if (!this.gameScene.isInGameRoom()) return;
+        var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)
+        curIndex = (curIndex + 1) % 4;
+        this.destroyImagesChair();
+        for (let i = 1; i < 4; i++) {
+            let p = this.tractorPlayer.CurrentGameState.Players[curIndex];
+            let isEmptySeat = !p;
+            if (isEmptySeat) {
+                let chairImage = this.gameScene.add.image(this.gameScene.coordinates.playerMainTextPositions[i].x - (i == 1 ? 60 : 0), this.gameScene.coordinates.playerMainTextPositions[i].y, 'pokerChair')
+                    .setOrigin(0, 0)
+                    .setDisplaySize(60, 60)
+
+                // 旁观玩家/正常玩家：坐下
+                chairImage.setInteractive({ useHandCursor: true })
+                    .on('pointerup', () => {
+                        let pos = i + 1;
+                        let playerIndex = CommonMethods.GetPlayerIndexByPos(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId, pos);
+                        this.ExitRoomAndEnter(playerIndex);
+                    })
+                    .on('pointerover', () => {
+                        chairImage.y -= 3
+                    })
+                    .on('pointerout', () => {
+                        chairImage.y += 3
+                    })
+                this.gameScene.roomUIControls.imagesChair.push(chairImage)
+            } else {
+                //skin
+                let skinInUse = this.DaojuInfo.daojuInfoByPlayer[p.PlayerId] ? this.DaojuInfo.daojuInfoByPlayer[p.PlayerId].skinInUse : CommonMethods.defaultSkinInUse;
+                let skinType = this.GetSkinType(skinInUse)
+                let skinImage: any
+                if (skinType === 0) {
+                    skinImage = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[i].x - (i == 1 ? 90 : 0), this.gameScene.coordinates.playerSkinPositions[i].y, skinInUse)
+                        .setOrigin(0, 0)
+                        .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight);
+                } else {
+                    skinImage = this.gameScene.add.sprite(this.gameScene.coordinates.playerSkinPositions[i].x - (i == 1 ? 90 : 0), this.gameScene.coordinates.playerSkinPositions[i].y, skinInUse)
+                        .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
+                        .setOrigin(0)
+                        .setInteractive()
+                        .on('pointerup', () => {
+                            if (skinImage.anims.isPlaying) skinImage.stop();
+                            else skinImage.play(skinInUse);
+                        });
+                    skinImage.play(skinInUse);
+                }
+
+                this.gameScene.roomUIControls.imagesChair.push(skinImage);
+                let skinFrame = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[i].x - (i == 1 ? 90 : 0), this.gameScene.coordinates.playerSkinPositions[i].y, 'skin_frame')
+                    .setOrigin(0, 0)
+                    .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight);
+                this.gameScene.roomUIControls.imagesChair.push(skinFrame);
+            }
+            curIndex = (curIndex + 1) % 4
         }
     }
 
@@ -2071,7 +2318,7 @@ export class MainForm {
             for (let i = 0; i < playersInGameHall.length; i++) {
                 let d = document.createElement("div");
                 let pid = playersInGameHall[i];
-                d.innerText = `【${pid}】升币x${this.playerIDToShengbi[pid].Shengbi}`;
+                d.innerText = `【${pid}】升币x${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
                 divOnlinePlayerList.appendChild(d);
             }
         }
@@ -2088,7 +2335,7 @@ export class MainForm {
             for (let i = 0; i < players.length; i++) {
                 let d = document.createElement("div");
                 let pid = players[i];
-                d.innerText = `【${pid}】升币x${this.playerIDToShengbi[pid].Shengbi}`;
+                d.innerText = `【${pid}】升币x${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
                 divOnlinePlayerList.appendChild(d);
             }
 
@@ -2100,7 +2347,7 @@ export class MainForm {
                 for (let i = 0; i < obs.length; i++) {
                     let d = document.createElement("div");
                     let oid = obs[i];
-                    d.innerText = `【${oid}】升币x${this.playerIDToShengbi[oid].Shengbi}`;
+                    d.innerText = `【${oid}】升币x${this.DaojuInfo.daojuInfoByPlayer[oid].Shengbi}`;
                     divOnlinePlayerList.appendChild(d);
                 }
             }

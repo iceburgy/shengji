@@ -40,7 +40,7 @@ export class Coordinates {
     public lineOffsetY
 
     public cardWidth
-    public cardHeigh
+    public cardHeight
     public handCardOffset
     public suitSequenceSize
     public overridingFlagHeight
@@ -57,7 +57,9 @@ export class Coordinates {
     public controlButtonOffset
 
     // players
+    public playerMainTextPositions
     public playerTextPositions
+    public playerSkinPositions
     public observerTextPositions
     public player1TextWid
     public player1TextWidBigDelta
@@ -162,7 +164,7 @@ export class Coordinates {
         this.lineOffsetY = 40
 
         this.cardWidth = 90
-        this.cardHeigh = 120
+        this.cardHeight = 120
         this.handCardOffset = 24
         this.suitSequenceSize = 15
         this.overridingFlagHeight = 40
@@ -179,11 +181,23 @@ export class Coordinates {
         // players
         this.player1TextWid = 20;
         this.player1TextWidBigDelta = 12;
-        this.playerTextPositions = [
+        this.playerMainTextPositions = [
             { x: this.centerX, y: screenHeight - 60 },
             { x: this.screenWid - 20, y: this.centerY },
             { x: this.centerX, y: 10 },
             { x: 5, y: this.centerY },
+        ]
+        this.playerTextPositions = [
+            { x: this.playerMainTextPositions[0].x, y: this.playerMainTextPositions[0].y },
+            { x: this.playerMainTextPositions[1].x, y: this.playerMainTextPositions[1].y + 120 },
+            { x: this.playerMainTextPositions[2].x + 90, y: this.playerMainTextPositions[2].y },
+            { x: this.playerMainTextPositions[3].x, y: this.playerMainTextPositions[3].y + 120 },
+        ]
+        this.playerSkinPositions = [
+            { x: screenWidthReal - 20, y: this.screenHei - 130 },
+            { x: this.playerMainTextPositions[1].x, y: this.playerMainTextPositions[1].y },
+            { x: this.playerMainTextPositions[2].x, y: this.playerMainTextPositions[2].y },
+            { x: this.playerMainTextPositions[3].x + 10, y: this.playerMainTextPositions[3].y },
         ]
         this.observerTextPositions = [
             { x: this.playerTextPositions[0].x - this.controlButtonOffset, y: this.playerTextPositions[0].y + 10 },
@@ -194,18 +208,18 @@ export class Coordinates {
 
         this.player1StarterWid = 100;
         this.playerStarterPositions = [
-            { x: this.playerTextPositions[0].x - 205, y: this.playerTextPositions[0].y },
-            { x: this.playerTextPositions[1].x - this.player1StarterWid, y: this.playerTextPositions[1].y - 50 },
-            { x: this.playerTextPositions[2].x - 205, y: this.playerTextPositions[2].y },
-            { x: this.playerTextPositions[3].x, y: this.playerTextPositions[3].y - 50 },
+            { x: this.playerMainTextPositions[0].x - 205, y: this.playerMainTextPositions[0].y },
+            { x: this.playerMainTextPositions[1].x - this.player1StarterWid, y: this.playerMainTextPositions[1].y - 50 },
+            { x: this.playerMainTextPositions[2].x - 205, y: this.playerMainTextPositions[2].y },
+            { x: this.playerMainTextPositions[3].x, y: this.playerMainTextPositions[3].y - 50 },
         ]
 
         this.emojiSize = 80;
         this.playerEmojiPositions = [
-            { x: this.playerTextPositions[0].x - 240, y: this.playerStarterPositions[0].y - 30 },
-            { x: this.screenWid - this.hiddenWidth - this.emojiSize, y: this.playerTextPositions[1].y + 50 },
-            { x: this.playerTextPositions[2].x, y: this.danmuPositionY + 10 },
-            { x: this.playerTextPositions[3].x, y: this.playerTextPositions[1].y + 50 },
+            { x: this.playerMainTextPositions[0].x - 240, y: this.playerStarterPositions[0].y - 30 },
+            { x: this.screenWid - this.hiddenWidth - this.emojiSize, y: this.playerMainTextPositions[1].y + 50 },
+            { x: this.playerMainTextPositions[2].x, y: this.danmuPositionY + 10 },
+            { x: this.playerMainTextPositions[3].x, y: this.playerMainTextPositions[1].y + 50 },
         ]
         this.sgsAnimWidth = 80;
         this.sgsAnimHeight = 120;
@@ -213,17 +227,17 @@ export class Coordinates {
 
         // cards
         this.showedCardsPositions = [
-            { x: this.centerX - this.cardWidth / 2, y: this.playerTextPositions[0].y - 300 },
-            { x: this.screenWid - 300, y: this.playerTextPositions[1].y - 100 },
-            { x: this.centerX - this.cardWidth / 2, y: this.playerTextPositions[2].y + 100 },
-            { x: this.playerTextPositions[3].x + 200, y: this.playerTextPositions[3].y - 100 },
+            { x: this.centerX - this.cardWidth / 2, y: this.playerMainTextPositions[0].y - 300 },
+            { x: this.screenWid - 300, y: this.playerMainTextPositions[1].y - 100 },
+            { x: this.centerX - this.cardWidth / 2, y: this.playerMainTextPositions[2].y + 100 },
+            { x: this.playerMainTextPositions[3].x + 200, y: this.playerMainTextPositions[3].y - 100 },
         ]
         this.trumpMadeCardsScale = 2 / 3
         this.trumpMadeCardsPositions = [
-            { x: this.playerTextPositions[0].x - this.cardWidth * this.trumpMadeCardsScale - 120, y: screenHeight - this.cardHeigh * this.trumpMadeCardsScale - 10 },
-            { x: this.screenWid - this.cardWidth * this.trumpMadeCardsScale - 10, y: this.playerTextPositions[1].y + 60 },
-            { x: this.playerTextPositions[2].x - this.cardWidth * this.trumpMadeCardsScale - 120, y: 10 },
-            { x: this.playerTextPositions[3].x, y: this.playerTextPositions[3].y + 60 },
+            { x: this.playerMainTextPositions[0].x - this.cardWidth * this.trumpMadeCardsScale - 120, y: screenHeight - this.cardHeight * this.trumpMadeCardsScale - 10 },
+            { x: this.screenWid - this.cardWidth * this.trumpMadeCardsScale - 10, y: this.playerMainTextPositions[1].y + 60 },
+            { x: this.playerMainTextPositions[2].x - this.cardWidth * this.trumpMadeCardsScale - 120, y: 10 },
+            { x: this.playerMainTextPositions[3].x, y: this.playerMainTextPositions[3].y + 60 },
         ]
 
         // last8cards
@@ -235,9 +249,9 @@ export class Coordinates {
         this.replayHandCardScale = 0.6
         this.handCardPositions = [
             { x: this.centerX - this.cardWidth / 2 - this.handCardOffset * 2, y: screenHeight - 200 },
-            { x: this.last8CardsForStarterPosition.x - this.cardWidth * this.replayHandCardScale, y: this.showedCardsPositions[0].y + this.cardHeigh * (1 - this.replayHandCardScale) },
-            { x: this.last8CardsForStarterPosition.x - this.cardWidth * this.replayHandCardScale, y: this.showedCardsPositions[2].y + this.cardHeigh * (1 - this.replayHandCardScale) },
-            { x: 10, y: this.showedCardsPositions[0].y + this.cardHeigh * (1 - this.replayHandCardScale) },
+            { x: this.last8CardsForStarterPosition.x - this.cardWidth * this.replayHandCardScale, y: this.showedCardsPositions[0].y + this.cardHeight * (1 - this.replayHandCardScale) },
+            { x: this.last8CardsForStarterPosition.x - this.cardWidth * this.replayHandCardScale, y: this.showedCardsPositions[2].y + this.cardHeight * (1 - this.replayHandCardScale) },
+            { x: 10, y: this.showedCardsPositions[0].y + this.cardHeight * (1 - this.replayHandCardScale) },
         ]
         this.toolbarSize = 50
         this.toolbarPosition = { x: this.screenWid - 360, y: this.handCardPositions[0].y - 100 - 20 }
@@ -259,8 +273,8 @@ export class Coordinates {
 
         // ending UI
         this.last8Position = { x: this.centerX - (this.cardWidth / 2) - this.handCardOffset * 3.5, y: 100 }
-        this.scoreCardsPosition = { x: this.last8Position.x, y: this.last8Position.y + this.cardHeigh + 30 }
-        this.winPointsPosition = { x: this.last8Position.x, y: this.scoreCardsPosition.y + this.cardHeigh + 30 }
+        this.scoreCardsPosition = { x: this.last8Position.x, y: this.last8Position.y + this.cardHeight + 30 }
+        this.winPointsPosition = { x: this.last8Position.x, y: this.scoreCardsPosition.y + this.cardHeight + 30 }
         this.last8PointsPosition = { x: this.last8Position.x, y: this.winPointsPosition.y + 30 }
         this.punishmentPointsPosition = { x: this.last8Position.x, y: this.last8PointsPosition.y + 30 }
         this.totalPointsPosition = { x: this.last8Position.x, y: this.punishmentPointsPosition.y + 30 }
@@ -270,6 +284,6 @@ export class Coordinates {
 
         // distributing last 8
         this.distributingLast8MaxEdge = 30
-        this.distributingLast8Position = { x: this.centerX - (this.cardWidth / 2) - this.handCardOffset * 3.5, y: this.centerY - this.cardHeigh / 2 }
+        this.distributingLast8Position = { x: this.centerX - (this.cardWidth / 2) - this.handCardOffset * 3.5, y: this.centerY - this.cardHeight / 2 }
     }
 }

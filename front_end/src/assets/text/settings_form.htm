@@ -71,16 +71,25 @@
         <li>不触发亮无主</li>
         <li>若未因此道具触发过亮牌则不扣除升币</li>
     </ul>
+    <label>抢亮下限：</label>
+    <select id="selectQiangliangMin">
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+    </select>
     </p>
     <p>
-        <label>抢亮下限：</label>
-        <select id="selectQiangliangMin">
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-        </select>
+        <b>皮肤</b><br />
+        游戏界面装饰道具。<br />
+        <label>皮肤列表：</label>
+        <select id="selectFullSkinInfo"></select><br />
+        皮肤类型：<label id="lblSkinType"></label><br />
+        皮肤价格：<label id="lblSkinCost"></label><br />
+        皮肤有效期：<label id="lblSkinExp"></label><br />
+        皮肤拥有状态：<label id="lblSkinIsOwned"></label><br />
+    <p><input type="button" id="btnBuyOrUseSelectedSkin" /></p>
     </p>
 
     <h2>游戏规则</h2>

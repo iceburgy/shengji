@@ -71,6 +71,7 @@ export class GameReplayScene extends Phaser.Scene {
     public noDanmu: string
     public noCutCards: string
     public qiangliangMin: string
+    public skinInUse: string = CommonMethods.defaultSkinInUse;
     public decadeUICanvas: HTMLElement
     public currentReplayEntities: any[]
     public selectDates: Element
@@ -165,7 +166,7 @@ export class GameReplayScene extends Phaser.Scene {
         this.load.image("bg2", bgimage)
         this.load.spritesheet('poker', pokerImage, {
             frameWidth: this.coordinates.cardWidth,
-            frameHeight: this.coordinates.cardHeigh
+            frameHeight: this.coordinates.cardHeight
         });
         this.load.spritesheet('suitsImage', suitsImage, {
             frameWidth: this.coordinates.toolbarSize,
@@ -379,9 +380,9 @@ export class GameReplayScene extends Phaser.Scene {
         let countofNonEng = (players[1].match(this.coordinates.regexNonEnglishChar) || []).length;
         let tempWid = this.coordinates.player1TextWid * players[1].length + this.coordinates.player1TextWidBigDelta * countofNonEng;
         this.mainForm.lblNickNames[1].setStyle({ fixedWidth: tempWid })
-        this.mainForm.lblNickNames[1].setX(this.coordinates.playerTextPositions[1].x - tempWid)
-        this.mainForm.lblNickNames[2].setText(players[2])
-        this.mainForm.lblNickNames[3].setText(players[3])
+        this.mainForm.lblNickNames[1].setX(this.coordinates.playerMainTextPositions[1].x - tempWid).setY(this.coordinates.playerMainTextPositions[1].y)
+        this.mainForm.lblNickNames[2].setText(players[2]).setX(this.coordinates.playerMainTextPositions[2].x)
+        this.mainForm.lblNickNames[3].setText(players[3]).setY(this.coordinates.playerMainTextPositions[3].y)
         for (let i = 0; i < this.mainForm.lblNickNames.length; i++) {
             this.mainForm.lblNickNames[i].setVisible(true);
         }
