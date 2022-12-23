@@ -25,6 +25,7 @@ import skin_key_kotori from "../assets/skin/key_kotori.jpg"
 import skin_dong_shenlvmeng from "../assets/skin/shenlvmeng.png"
 import skin_dong_sunshangxiang from "../assets/skin/dong_sunshangxiang.png"
 import skin_dong_machao from "../assets/skin/dong_machao.png"
+import skin_dong_caiwenji from "../assets/skin/dong_caiwenji.png"
 
 // audio
 import soundMaleLiangpai from '../assets/music/male/shelie1.mp3';
@@ -418,6 +419,7 @@ export class GameScene extends Phaser.Scene {
         this.load.spritesheet('skin_dong_shenlvmeng', skin_dong_shenlvmeng, { frameWidth: this.coordinates.cardWidth, frameHeight: this.coordinates.cardHeight });
         this.load.spritesheet('skin_dong_sunshangxiang', skin_dong_sunshangxiang, { frameWidth: this.coordinates.cardWidth, frameHeight: this.coordinates.cardHeight });
         this.load.spritesheet('skin_dong_machao', skin_dong_machao, { frameWidth: 438, frameHeight: 316 });
+        this.load.spritesheet('skin_dong_caiwenji', skin_dong_caiwenji, { frameWidth: 360, frameHeight: 255 });
 
         // loading collectstar
         this.load.image('ground', csground);

@@ -2238,13 +2238,11 @@ export class MainForm {
                 let skinType = this.GetSkinType(skinInUse)
                 let skinImage: any
                 if (skinType === 0) {
-                    skinImage = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[i].x - (i == 1 ? 90 : 0), this.gameScene.coordinates.playerSkinPositions[i].y, skinInUse)
-                        .setOrigin(0, 0)
-                        .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight);
+                    skinImage = this.gameScene.add.image(0, 0, skinInUse)
+                        .setVisible(false);
                 } else {
-                    skinImage = this.gameScene.add.sprite(this.gameScene.coordinates.playerSkinPositions[i].x - (i == 1 ? 90 : 0), this.gameScene.coordinates.playerSkinPositions[i].y, skinInUse)
-                        .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
-                        .setOrigin(0)
+                    skinImage = this.gameScene.add.sprite(0, 0, skinInUse)
+                        .setVisible(false)
                         .setInteractive()
                         .on('pointerup', () => {
                             if (skinImage.anims.isPlaying) skinImage.stop();
@@ -2252,11 +2250,31 @@ export class MainForm {
                         });
                     skinImage.play(skinInUse);
                 }
-
-                this.gameScene.roomUIControls.imagesChair.push(skinImage);
-                let skinFrame = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[i].x - (i == 1 ? 90 : 0), this.gameScene.coordinates.playerSkinPositions[i].y, 'skin_frame')
+                let x = this.gameScene.coordinates.playerSkinPositions[i].x;
+                let y = this.gameScene.coordinates.playerSkinPositions[i].y;
+                let height = this.gameScene.coordinates.cardHeight;
+                let width = height * (skinImage.width / skinImage.height);
+                switch (i) {
+                    case 1:
+                        x -= width;
+                        break;
+                    case 2:
+                        this.lblNickNames[2].setX(this.gameScene.coordinates.playerTextPositions[2].x + width);
+                        this.lblObservers[2].setX(this.gameScene.coordinates.playerTextPositions[2].x + width);
+                        break;
+                    default:
+                        break;
+                }
+                skinImage
+                    .setX(x)
+                    .setY(y)
                     .setOrigin(0, 0)
-                    .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight);
+                    .setDisplaySize(width, height)
+                    .setVisible(true);
+                this.gameScene.roomUIControls.imagesChair.push(skinImage);
+                let skinFrame = this.gameScene.add.image(x, y, 'skin_frame')
+                    .setOrigin(0, 0)
+                    .setDisplaySize(width, height);
                 this.gameScene.roomUIControls.imagesChair.push(skinFrame);
             }
             curIndex = (curIndex + 1) % 4

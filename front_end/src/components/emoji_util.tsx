@@ -132,15 +132,22 @@ export class EmojiUtil {
         });
         gs.anims.create({
             key: "skin_dong_sunshangxiang",
-            frameRate: 22,
+            frameRate: 18,
             frames: gs.anims.generateFrameNumbers("skin_dong_sunshangxiang", { start: 0, end: 64 }),
             repeat: -1,
             hideOnComplete: false
         });
         gs.anims.create({
             key: "skin_dong_machao",
-            frameRate: 40,
+            frameRate: 33,
             frames: gs.anims.generateFrameNumbers("skin_dong_machao", { start: 0, end: 60 }),
+            repeat: -1,
+            hideOnComplete: false
+        });
+        gs.anims.create({
+            key: "skin_dong_caiwenji",
+            frameRate: 20,
+            frames: gs.anims.generateFrameNumbers("skin_dong_caiwenji", { start: 0, end: 94 }),
             repeat: -1,
             hideOnComplete: false
         });
