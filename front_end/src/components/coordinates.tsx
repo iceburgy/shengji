@@ -272,7 +272,7 @@ export class Coordinates {
         this.replayBarPosition = { x: this.screenWid * 0.65, y: 10 }
 
         // ending UI
-        this.last8Position = { x: this.centerX - (this.cardWidth / 2) - this.handCardOffset * 3.5, y: 100 }
+        this.last8Position = { x: this.centerX - (this.cardWidth / 2) - this.handCardOffset * 3.5, y: 140 }
         this.scoreCardsPosition = { x: this.last8Position.x, y: this.last8Position.y + this.cardHeight + 30 }
         this.winPointsPosition = { x: this.last8Position.x, y: this.scoreCardsPosition.y + this.cardHeight + 30 }
         this.last8PointsPosition = { x: this.last8Position.x, y: this.winPointsPosition.y + 30 }
