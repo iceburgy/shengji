@@ -59,11 +59,16 @@ export class GameReplayScene extends Phaser.Scene {
     public clientMessages: Phaser.GameObjects.Text[]
     public danmuMessages: any[]
     public roomUIControls: { images: Phaser.GameObjects.Image[], texts: Phaser.GameObjects.Text[], imagesChair: Phaser.GameObjects.Image[] }
-    public soundbiyue1: Phaser.Sound.BaseSound;
+    public soundPool: any
+    public soundMaleLiangpai: Phaser.Sound.BaseSound;
+    public soundFemaleLiangpai: Phaser.Sound.BaseSound;
+    public soundMaleShuaicuo: Phaser.Sound.BaseSound;
+    public soundFemaleShuaicuo: Phaser.Sound.BaseSound;
+
     public soundRecoverhp: Phaser.Sound.BaseSound;
     public sounddraw: Phaser.Sound.BaseSound;
     public sounddrawx: Phaser.Sound.BaseSound;
-    public soundPlayersShowCard: Phaser.Sound.BaseSound[];
+    public soundPlayersShowCard: any[];
     public soundfankui2: Phaser.Sound.BaseSound;
     public soundtie: Phaser.Sound.BaseSound;
     public soundwin: Phaser.Sound.BaseSound;
@@ -760,4 +765,5 @@ export class GameReplayScene extends Phaser.Scene {
     public loadAudioFiles() { }
     public drawSgsAni(effectName: string, effectNature: string, wid: number, hei: number) { }
     public savePlayerLoginInfo(nnorp: string[]) { }
+    public playAudio(audioName: string | number, sex: string) { }
 }

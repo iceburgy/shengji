@@ -454,13 +454,11 @@ export class MainForm {
                     let skinType = this.GetSkinType(skinInUse)
                     let skinImage: any
                     if (skinType === 0) {
-                        skinImage = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[i].x - (i == 1 ? 90 : 0), this.gameScene.coordinates.playerSkinPositions[i].y, skinInUse)
-                            .setOrigin(0, 0)
-                            .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight);
+                        skinImage = this.gameScene.add.image(0, 0, skinInUse)
+                            .setVisible(false);
                     } else {
-                        skinImage = this.gameScene.add.sprite(this.gameScene.coordinates.playerSkinPositions[i].x - (i == 1 ? 90 : 0), this.gameScene.coordinates.playerSkinPositions[i].y, skinInUse)
-                            .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
-                            .setOrigin(0)
+                        skinImage = this.gameScene.add.sprite(0, 0, skinInUse)
+                            .setVisible(false)
                             .setInteractive()
                             .on('pointerup', () => {
                                 if (skinImage.anims.isPlaying) skinImage.stop();
@@ -468,11 +466,31 @@ export class MainForm {
                             });
                         skinImage.play(skinInUse);
                     }
-
-                    this.gameScene.roomUIControls.imagesChair.push(skinImage);
-                    let skinFrame = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[i].x - (i == 1 ? 90 : 0), this.gameScene.coordinates.playerSkinPositions[i].y, 'skin_frame')
+                    let x = this.gameScene.coordinates.playerSkinPositions[i].x;
+                    let y = this.gameScene.coordinates.playerSkinPositions[i].y;
+                    let height = this.gameScene.coordinates.cardHeight;
+                    let width = height * (skinImage.width / skinImage.height);
+                    switch (i) {
+                        case 1:
+                            x -= width;
+                            break;
+                        case 2:
+                            this.lblNickNames[2].setX(this.gameScene.coordinates.playerTextPositions[2].x + width);
+                            this.lblObservers[2].setX(this.gameScene.coordinates.playerTextPositions[2].x + width);
+                            break;
+                        default:
+                            break;
+                    }
+                    skinImage
+                        .setX(x)
+                        .setY(y)
                         .setOrigin(0, 0)
-                        .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight);
+                        .setDisplaySize(width, height)
+                        .setVisible(true);
+                    this.gameScene.roomUIControls.imagesChair.push(skinImage);
+                    let skinFrame = this.gameScene.add.image(x, y, 'skin_frame')
+                        .setOrigin(0, 0)
+                        .setDisplaySize(width, height);
                     this.gameScene.roomUIControls.imagesChair.push(skinFrame);
                 }
 
@@ -609,7 +627,7 @@ export class MainForm {
     public TrumpChanged(currentHandState: CurrentHandState) {
         if (SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep &&
             this.tractorPlayer.CurrentHandState.CurrentHandStep < SuitEnums.HandStep.DistributingLast8Cards) {
-            if (this.enableSound) this.gameScene.soundbiyue1.play()
+            if (this.enableSound) this.gameScene.playAudio(CommonMethods.audioLiangpai, this.GetPlayerSex(this.tractorPlayer.CurrentHandState.TrumpMaker));
         }
         this.tractorPlayer.CurrentHandState.CloneFrom(currentHandState)
         this.drawingFormHelper.DrawSidebarFull()
@@ -928,13 +946,13 @@ export class MainForm {
 
             //播放出牌音效
             if (this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag) {
-                if (this.enableSound) this.gameScene.soundPlayersShowCard[0].play();
+                if (this.enableSound) this.gameScene.playAudio(0, this.GetPlayerSex(latestPlayer));
             } else if (!this.tractorPlayer.playerLocalCache.isLastTrick &&
                 !this.IsDebug &&
                 !this.tractorPlayer.CurrentTrickState.serverLocalCache.muteSound) {
                 let soundInex = winResult;
                 if (winResult > 0) soundInex = this.tractorPlayer.playerLocalCache.WinResult;
-                if (this.enableSound) this.gameScene.soundPlayersShowCard[soundInex].play();
+                if (this.enableSound) this.gameScene.playAudio(soundInex, this.GetPlayerSex(latestPlayer));
             }
 
             this.drawingFormHelper.DrawShowedCardsByPosition(showedCards, position);
@@ -1428,7 +1446,7 @@ export class MainForm {
             let volValue: number = volumeControl.value
             this.gameScene.soundVolume = volValue / 100.0
             this.gameScene.loadAudioFiles()
-            this.gameScene.soundbiyue1.play()
+            this.gameScene.playAudio(CommonMethods.audioLiangpai, this.GetPlayerSex(this.tractorPlayer.MyOwnId));
         }
 
         let txtJoinAudioUrl = this.modalForm.getChildByID("txtJoinAudioUrl")
@@ -1619,6 +1637,21 @@ export class MainForm {
         return 0;
     }
 
+    public GetPlayerSex(playerID: string): string {
+        let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[playerID];
+        if (daojuInfoByPlayer) {
+            let skinInUse = daojuInfoByPlayer.skinInUse
+            let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+            if (fullSkinInfo) {
+                let targetSkinInfo = fullSkinInfo[skinInUse];
+                if (targetSkinInfo) {
+                    return targetSkinInfo.skinSex;
+                }
+            }
+        }
+        return "m";
+    }
+
     private UpdateSkinInfoUI(preview: boolean) {
         let selectFullSkinInfo = this.modalForm.getChildByID("selectFullSkinInfo")
         let lblSkinType = this.modalForm.getChildByID("lblSkinType");
@@ -1666,25 +1699,27 @@ export class MainForm {
         if (preview) {
             // 皮肤预览
             if (curSkinInfo) {
+                this.MySkinInUse.setVisible(false);
+                this.MySkinFrame.setVisible(false);
                 let skinImage: any;
                 if (curSkinInfo.skinType === 0) {
-                    skinImage = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x - 120, this.gameScene.coordinates.playerSkinPositions[0].y, selectFullSkinInfo.value)
-                        .setOrigin(0, 0)
-                        .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
+                    skinImage = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x, this.gameScene.coordinates.playerSkinPositions[0].y, selectFullSkinInfo.value)
                 } else {
-                    skinImage = this.gameScene.add.sprite(this.gameScene.coordinates.playerSkinPositions[0].x - 120, this.gameScene.coordinates.playerSkinPositions[0].y, selectFullSkinInfo.value)
-                        .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
-                        .setOrigin(0)
+                    skinImage = this.gameScene.add.sprite(this.gameScene.coordinates.playerSkinPositions[0].x, this.gameScene.coordinates.playerSkinPositions[0].y, selectFullSkinInfo.value)
                         .play(selectFullSkinInfo.value);
                 }
 
-                let skinFrame = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x - 120, this.gameScene.coordinates.playerSkinPositions[0].y, 'skin_frame')
-                    .setOrigin(0, 0)
-                    .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
+                let width = this.gameScene.coordinates.cardHeight * (skinImage.width / skinImage.height);
+                skinImage.setDisplaySize(width, this.gameScene.coordinates.cardHeight)
+
+                let skinFrame = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x, this.gameScene.coordinates.playerSkinPositions[0].y, 'skin_frame')
+                    .setDisplaySize(width, this.gameScene.coordinates.cardHeight)
 
                 setTimeout(() => {
                     skinImage.destroy();
                     skinFrame.destroy();
+                    this.MySkinInUse.setVisible(true);
+                    this.MySkinFrame.setVisible(true);
                 }, 3000);
             }
         }
@@ -2153,13 +2188,9 @@ export class MainForm {
 
                 let skinType = this.GetSkinType(this.gameScene.skinInUse);
                 if (skinType === 0) {
-                    this.MySkinInUse = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x - 120, this.gameScene.coordinates.playerSkinPositions[0].y, this.gameScene.skinInUse)
-                        .setOrigin(0, 0)
-                        .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
+                    this.MySkinInUse = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x, this.gameScene.coordinates.playerSkinPositions[0].y, this.gameScene.skinInUse)
                 } else {
-                    this.MySkinInUse = this.gameScene.add.sprite(this.gameScene.coordinates.playerSkinPositions[0].x - 120, this.gameScene.coordinates.playerSkinPositions[0].y, this.gameScene.skinInUse)
-                        .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
-                        .setOrigin(0)
+                    this.MySkinInUse = this.gameScene.add.sprite(this.gameScene.coordinates.playerSkinPositions[0].x, this.gameScene.coordinates.playerSkinPositions[0].y, this.gameScene.skinInUse)
                         .setInteractive()
                         .on('pointerup', () => {
                             if (this.MySkinInUse.anims.isPlaying) this.MySkinInUse.stop();
@@ -2167,9 +2198,10 @@ export class MainForm {
                         })
                         .play(this.gameScene.skinInUse);
                 }
-                this.MySkinFrame = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x - 120, this.gameScene.coordinates.playerSkinPositions[0].y, 'skin_frame')
-                    .setOrigin(0, 0)
-                    .setDisplaySize(this.gameScene.coordinates.cardWidth, this.gameScene.coordinates.cardHeight)
+                let width = this.gameScene.coordinates.cardHeight * (this.MySkinInUse.width / this.MySkinInUse.height);
+                this.MySkinInUse.setDisplaySize(width, this.gameScene.coordinates.cardHeight)
+                this.MySkinFrame = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x, this.gameScene.coordinates.playerSkinPositions[0].y, 'skin_frame')
+                    .setDisplaySize(width, this.gameScene.coordinates.cardHeight)
             }
         }
 

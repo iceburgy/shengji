@@ -22,22 +22,32 @@ import skin_basicmale from "../assets/skin/basicmale.png"
 import skin_basicfemale from "../assets/skin/basicfemale.png"
 import skin_pal_lixiaoyao from "../assets/skin/pal_lixiaoyao.jpg"
 import skin_key_kotori from "../assets/skin/key_kotori.jpg"
-import skin_shenlvmeng from "../assets/skin/shenlvmeng.png"
+import skin_dong_shenlvmeng from "../assets/skin/shenlvmeng.png"
 import skin_dong_sunshangxiang from "../assets/skin/dong_sunshangxiang.png"
+import skin_dong_machao from "../assets/skin/dong_machao.png"
 
-import biyue1 from '../assets/music/biyue1.mp3';
+// audio
+import soundMaleLiangpai from '../assets/music/male/shelie1.mp3';
+import soundFemaleLiangpai from '../assets/music/female/biyue1.mp3';
+import soundMaleShuaicuo from '../assets/music/male/fankui2.mp3';
+import soundFemaleShuaicuo from '../assets/music/female/guose2.mp3';
+import soundMaleDiaozhu from '../assets/music/male/zhu_junlve.mp3';
+import soundFemaleDiaozhu from '../assets/music/female/lijian2.mp3';
+import soundMaleSha from '../assets/music/male/sha.mp3';
+import soundFemaleSha from '../assets/music/female/sha.mp3';
+import soundMaleShafire from '../assets/music/male/sha_fire.mp3';
+import soundFemaleShafire from '../assets/music/female/sha_fire.mp3';
+import soundMaleShathunder from '../assets/music/male/sha_thunder.mp3';
+import soundFemaleShathunder from '../assets/music/female/sha_thunder.mp3';
+
+import recoverhp from '../assets/music/recover.mp3';
 import draw from '../assets/music/draw.mp3';
 import drawx from '../assets/music/drawx.mp3';
 import equip1 from '../assets/music/equip1.mp3';
 import equip2 from '../assets/music/equip2.mp3';
-import fankui2 from '../assets/music/fankui2.mp3';
-import sha_fire from '../assets/music/sha_fire.mp3';
-import sha_thunder from '../assets/music/sha_thunder.mp3';
-import sha from '../assets/music/sha.mp3';
 import tie from '../assets/music/tie.mp3';
 import win from '../assets/music/win.mp3';
-import zhu_junlve from '../assets/music/zhu_junlve.mp3';
-import recoverhp from '../assets/music/recover.mp3';
+
 import walkerjson from '../assets/animations/walker.json';
 import walkerpng from '../assets/animations/walker.png';
 import sf2ryujson from '../assets/animations/sf2ryu.json';
@@ -175,12 +185,16 @@ export class GameScene extends Phaser.Scene {
     public clientMessages: Phaser.GameObjects.Text[]
     public danmuMessages: any[]
     public roomUIControls: { images: Phaser.GameObjects.Image[], texts: Phaser.GameObjects.Text[], imagesChair: Phaser.GameObjects.Image[] }
-    public soundbiyue1: Phaser.Sound.BaseSound;
+    public soundPool: any
+    public soundMaleLiangpai: Phaser.Sound.BaseSound;
+    public soundFemaleLiangpai: Phaser.Sound.BaseSound;
+    public soundMaleShuaicuo: Phaser.Sound.BaseSound;
+    public soundFemaleShuaicuo: Phaser.Sound.BaseSound;
+
     public soundRecoverhp: Phaser.Sound.BaseSound;
     public sounddraw: Phaser.Sound.BaseSound;
     public sounddrawx: Phaser.Sound.BaseSound;
-    public soundPlayersShowCard: Phaser.Sound.BaseSound[];
-    public soundfankui2: Phaser.Sound.BaseSound;
+    public soundPlayersShowCard: any[];
     public soundtie: Phaser.Sound.BaseSound;
     public soundwin: Phaser.Sound.BaseSound;
     public soundVolume: number
@@ -251,6 +265,8 @@ export class GameScene extends Phaser.Scene {
         this.playerEmail = playerEmail;
 
         this.coordinates = new Coordinates(this.isReplayMode);
+
+        this.soundPool = {};
     }
 
     preload() {
@@ -346,18 +362,25 @@ export class GameScene extends Phaser.Scene {
             frameWidth: this.coordinates.toolbarSize,
             frameHeight: this.coordinates.toolbarSize
         });
-        this.load.audio("biyue1", biyue1);
+        this.load.audio("soundMaleLiangpai", soundMaleLiangpai);
+        this.load.audio("soundFemaleLiangpai", soundFemaleLiangpai);
+        this.load.audio("soundMaleShuaicuo", soundMaleShuaicuo);
+        this.load.audio("soundFemaleShuaicuo", soundFemaleShuaicuo);
+        this.load.audio("soundMaleDiaozhu", soundMaleDiaozhu);
+        this.load.audio("soundFemaleDiaozhu", soundFemaleDiaozhu);
+        this.load.audio("soundMaleSha", soundMaleSha);
+        this.load.audio("soundFemaleSha", soundFemaleSha);
+        this.load.audio("soundMaleShafire", soundMaleShafire);
+        this.load.audio("soundFemaleShafire", soundFemaleShafire);
+        this.load.audio("soundMaleShathunder", soundMaleShathunder);
+        this.load.audio("soundFemaleShathunder", soundFemaleShathunder);
+
         this.load.audio("draw", draw);
         this.load.audio("drawx", drawx);
         this.load.audio("equip1", equip1);
         this.load.audio("equip2", equip2);
-        this.load.audio("fankui2", fankui2);
-        this.load.audio("sha", sha);
-        this.load.audio("sha_fire", sha_fire);
-        this.load.audio("sha_thunder", sha_thunder);
         this.load.audio("tie", tie);
         this.load.audio("win", win);
-        this.load.audio("zhu_junlve", zhu_junlve);
         this.load.audio("recoverhp", recoverhp);
         this.load.html('settingsForm', settingsForm);
         this.load.html('emojiForm', emojiForm);
@@ -392,8 +415,9 @@ export class GameScene extends Phaser.Scene {
         this.load.spritesheet('emMovingTractor', emMovingTractor, { frameWidth: EmojiUtil.emMovingTractorFrameSize.x, frameHeight: EmojiUtil.emMovingTractorFrameSize.y });
 
         // animated skin
-        this.load.spritesheet('skin_shenlvmeng', skin_shenlvmeng, { frameWidth: this.coordinates.cardWidth, frameHeight: this.coordinates.cardHeight });
+        this.load.spritesheet('skin_dong_shenlvmeng', skin_dong_shenlvmeng, { frameWidth: this.coordinates.cardWidth, frameHeight: this.coordinates.cardHeight });
         this.load.spritesheet('skin_dong_sunshangxiang', skin_dong_sunshangxiang, { frameWidth: this.coordinates.cardWidth, frameHeight: this.coordinates.cardHeight });
+        this.load.spritesheet('skin_dong_machao', skin_dong_machao, { frameWidth: 438, frameHeight: 316 });
 
         // loading collectstar
         this.load.image('ground', csground);
@@ -693,19 +717,40 @@ export class GameScene extends Phaser.Scene {
 
     public loadAudioFiles() {
         this.mainForm.enableSound = this.soundVolume > 0
-        this.soundbiyue1 = this.sound.add("biyue1", { volume: this.soundVolume });
+        this.soundMaleLiangpai = this.sound.add("soundMaleLiangpai", { volume: this.soundVolume });
+        this.soundFemaleLiangpai = this.sound.add("soundFemaleLiangpai", { volume: this.soundVolume });
+        this.soundMaleShuaicuo = this.sound.add("soundMaleShuaicuo", { volume: this.soundVolume });
+        this.soundFemaleShuaicuo = this.sound.add("soundFemaleShuaicuo", { volume: this.soundVolume });
+
+        let tempequip1 = this.sound.add("equip1", { volume: this.soundVolume });
+        let tempequip2 = this.sound.add("equip2", { volume: this.soundVolume });
+        let tempmalediaozhu = this.sound.add("soundMaleDiaozhu", { volume: this.soundVolume });
+        let tempfemalediaozhu = this.sound.add("soundFemaleDiaozhu", { volume: this.soundVolume });
+        let tempmalesha = this.sound.add("soundMaleSha", { volume: this.soundVolume });
+        let tempfemalediaosha = this.sound.add("soundFemaleSha", { volume: this.soundVolume });
+        let tempmaleshafire = this.sound.add("soundMaleShafire", { volume: this.soundVolume });
+        let tempfemaleshafire = this.sound.add("soundFemaleShafire", { volume: this.soundVolume });
+        let tempmaleshathunder = this.sound.add("soundMaleShathunder", { volume: this.soundVolume });
+        let tempfemaleshathunder = this.sound.add("soundFemaleShathunder", { volume: this.soundVolume });
+        this.soundPlayersShowCard = [
+            { "m": tempequip1, "f": tempequip1 },
+            { "m": tempequip2, "f": tempequip2 },
+            { "m": tempmalediaozhu, "f": tempfemalediaozhu },
+            { "m": tempmalesha, "f": tempfemalediaosha },
+            { "m": tempmaleshafire, "f": tempfemaleshafire },
+            { "m": tempmaleshathunder, "f": tempfemaleshathunder },
+        ];
+
+        this.soundPool[CommonMethods.audioLiangpai] = { "m": this.soundMaleLiangpai, "f": this.soundFemaleLiangpai };
+        this.soundPool[CommonMethods.audioShuaicuo] = { "m": this.soundMaleShuaicuo, "f": this.soundFemaleShuaicuo };
+        this.soundPool[CommonMethods.audioDiaozhu] = { "m": this.soundMaleDiaozhu, "f": this.soundFemaleDiaozhu };
+        this.soundPool[CommonMethods.audioSha] = { "m": this.soundMaleSha, "f": this.soundFemaleSha };
+        this.soundPool[CommonMethods.audioShafire] = { "m": this.soundMaleShafire, "f": this.soundFemaleShafire };
+        this.soundPool[CommonMethods.audioShathunder] = { "m": this.soundMaleShathunder, "f": this.soundFemaleShathunder };
+
         this.soundRecoverhp = this.sound.add("recoverhp", { volume: this.soundVolume });
         this.sounddraw = this.sound.add("draw", { volume: this.soundVolume });
         this.sounddrawx = this.sound.add("drawx", { volume: this.soundVolume });
-        this.soundPlayersShowCard = [
-            this.sound.add("equip1", { volume: this.soundVolume }),
-            this.sound.add("equip2", { volume: this.soundVolume }),
-            this.sound.add("zhu_junlve", { volume: this.soundVolume }),
-            this.sound.add("sha", { volume: this.soundVolume }),
-            this.sound.add("sha_fire", { volume: this.soundVolume }),
-            this.sound.add("sha_thunder", { volume: this.soundVolume }),
-        ]
-        this.soundfankui2 = this.sound.add("fankui2", { volume: this.soundVolume });
         this.soundtie = this.sound.add("tie", { volume: this.soundVolume });
         this.soundwin = this.sound.add("win", { volume: this.soundVolume });
     }
@@ -751,4 +796,13 @@ export class GameScene extends Phaser.Scene {
         }
         skillAnimate(effectName, effectNature, wid, hei)
     }
+
+    public playAudio(audioName: string | number, sex: string) {
+        if (typeof audioName === "string") {
+            this.soundPool[audioName][sex].play();
+        } else {
+            this.soundPlayersShowCard[audioName][sex].play();
+        }
+    }
 }
+

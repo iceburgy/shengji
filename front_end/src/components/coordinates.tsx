@@ -183,18 +183,18 @@ export class Coordinates {
         this.player1TextWidBigDelta = 12;
         this.playerMainTextPositions = [
             { x: this.centerX, y: screenHeight - 60 },
-            { x: this.screenWid - 20, y: this.centerY },
+            { x: this.screenWid - 20, y: this.centerY - 80 },
             { x: this.centerX, y: 10 },
-            { x: 5, y: this.centerY },
+            { x: 5, y: this.centerY - 80 },
         ]
         this.playerTextPositions = [
             { x: this.playerMainTextPositions[0].x, y: this.playerMainTextPositions[0].y },
             { x: this.playerMainTextPositions[1].x, y: this.playerMainTextPositions[1].y + 120 },
-            { x: this.playerMainTextPositions[2].x + 90, y: this.playerMainTextPositions[2].y },
+            { x: this.playerMainTextPositions[2].x, y: this.playerMainTextPositions[2].y }, // x is dynamically calculated based on skin width
             { x: this.playerMainTextPositions[3].x, y: this.playerMainTextPositions[3].y + 120 },
         ]
         this.playerSkinPositions = [
-            { x: screenWidthReal - 20, y: this.screenHei - 130 },
+            { x: screenWidthReal - 120, y: this.screenHei - 70 },
             { x: this.playerMainTextPositions[1].x, y: this.playerMainTextPositions[1].y },
             { x: this.playerMainTextPositions[2].x, y: this.playerMainTextPositions[2].y },
             { x: this.playerMainTextPositions[3].x + 10, y: this.playerMainTextPositions[3].y },
@@ -202,7 +202,7 @@ export class Coordinates {
         this.observerTextPositions = [
             { x: this.playerTextPositions[0].x - this.controlButtonOffset, y: this.playerTextPositions[0].y + 10 },
             { x: this.playerTextPositions[1].x, y: this.playerTextPositions[1].y + 40 },
-            { x: this.playerTextPositions[2].x, y: this.playerTextPositions[2].y + 40 },
+            { x: this.playerTextPositions[2].x, y: this.playerTextPositions[2].y + 40 }, // x is dynamically calculated based on skin width
             { x: this.playerTextPositions[3].x, y: this.playerTextPositions[3].y + 40 },
         ]
 
@@ -216,10 +216,10 @@ export class Coordinates {
 
         this.emojiSize = 80;
         this.playerEmojiPositions = [
-            { x: this.playerMainTextPositions[0].x - 240, y: this.playerStarterPositions[0].y - 30 },
-            { x: this.screenWid - this.hiddenWidth - this.emojiSize, y: this.playerMainTextPositions[1].y + 50 },
-            { x: this.playerMainTextPositions[2].x, y: this.danmuPositionY + 10 },
-            { x: this.playerMainTextPositions[3].x, y: this.playerMainTextPositions[1].y + 50 },
+            { x: this.playerMainTextPositions[0].x - this.emojiSize - 120, y: this.playerStarterPositions[0].y - 30 },
+            { x: this.screenWid - this.hiddenWidth - this.emojiSize, y: this.playerTextPositions[1].y + 50 },
+            { x: this.playerMainTextPositions[2].x - this.emojiSize - 20, y: this.danmuPositionY + 10 },
+            { x: this.playerMainTextPositions[3].x, y: this.playerTextPositions[1].y + 50 },
         ]
         this.sgsAnimWidth = 80;
         this.sgsAnimHeight = 120;
@@ -228,9 +228,9 @@ export class Coordinates {
         // cards
         this.showedCardsPositions = [
             { x: this.centerX - this.cardWidth / 2, y: this.playerMainTextPositions[0].y - 300 },
-            { x: this.screenWid - 300, y: this.playerMainTextPositions[1].y - 100 },
+            { x: this.screenWid - 300, y: this.playerMainTextPositions[1].y },
             { x: this.centerX - this.cardWidth / 2, y: this.playerMainTextPositions[2].y + 140 },
-            { x: this.playerMainTextPositions[3].x + 200, y: this.playerMainTextPositions[3].y - 100 },
+            { x: this.playerMainTextPositions[3].x + 200, y: this.playerMainTextPositions[3].y },
         ]
         this.trumpMadeCardsScale = 2 / 3
         this.trumpMadeCardsPositions = [

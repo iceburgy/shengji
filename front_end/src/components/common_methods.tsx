@@ -34,6 +34,13 @@ export class CommonMethods {
     public static qiangliangkaCost = 1;
     public static defaultSkinInUse = "skin_questionmark";
 
+    public static audioLiangpai = "liangpai";
+    public static audioShuaicuo = "shuaicuo";
+    public static audioDiaozhu = "diaozhu";
+    public static audioSha = "sha";
+    public static audioShafire = "shafire";
+    public static audioShathunder = "shathunder";
+
     constructor() {
     }
 

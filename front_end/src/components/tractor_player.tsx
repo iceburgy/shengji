@@ -118,11 +118,16 @@ export class TractorPlayer {
             }
             else if (m.includes("新游戏即将开始")) {
                 //新游戏开始前播放提示音，告诉玩家要抢庄
-                if (this.mainForm.enableSound) this.mainForm.gameScene.soundwin.play()
+                if (this.mainForm.enableSound) this.mainForm.gameScene.soundwin.play();
             }
             else if (m.includes("罚分") && !this.mainForm.gameScene.isReplayMode) {
                 //甩牌失败播放提示音
-                if (this.mainForm.enableSound) this.mainForm.gameScene.soundfankui2.play()
+                let playerID = this.MyOwnId;
+                if (msgs[0].includes("【")) {
+                    playerID = msgs[0].split("【")[1].split("】")[0];
+                }
+                if (this.mainForm.enableSound) this.mainForm.gameScene.playAudio(CommonMethods.audioShuaicuo, this.mainForm.GetPlayerSex(playerID));
+
             }
 
             this.mainForm.gameScene.clientMessages.push(this.mainForm.gameScene.add.text(posX, posY + i * this.mainForm.gameScene.coordinates.lineOffsetY, m)

@@ -124,9 +124,9 @@ export class EmojiUtil {
 
     public static CreateAllAnimations(gs: Phaser.Scene) {
         gs.anims.create({
-            key: "skin_shenlvmeng",
+            key: "skin_dong_shenlvmeng",
             frameRate: 14,
-            frames: gs.anims.generateFrameNumbers("skin_shenlvmeng", { start: 0, end: 40 }),
+            frames: gs.anims.generateFrameNumbers("skin_dong_shenlvmeng", { start: 0, end: 40 }),
             repeat: -1,
             hideOnComplete: false
         });
@@ -134,6 +134,13 @@ export class EmojiUtil {
             key: "skin_dong_sunshangxiang",
             frameRate: 22,
             frames: gs.anims.generateFrameNumbers("skin_dong_sunshangxiang", { start: 0, end: 64 }),
+            repeat: -1,
+            hideOnComplete: false
+        });
+        gs.anims.create({
+            key: "skin_dong_machao",
+            frameRate: 40,
+            frames: gs.anims.generateFrameNumbers("skin_dong_machao", { start: 0, end: 60 }),
             repeat: -1,
             hideOnComplete: false
         });
