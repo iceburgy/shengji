@@ -229,15 +229,15 @@ export class Coordinates {
         this.showedCardsPositions = [
             { x: this.centerX - this.cardWidth / 2, y: this.playerMainTextPositions[0].y - 300 },
             { x: this.screenWid - 300, y: this.playerMainTextPositions[1].y - 100 },
-            { x: this.centerX - this.cardWidth / 2, y: this.playerMainTextPositions[2].y + 100 },
+            { x: this.centerX - this.cardWidth / 2, y: this.playerMainTextPositions[2].y + 140 },
             { x: this.playerMainTextPositions[3].x + 200, y: this.playerMainTextPositions[3].y - 100 },
         ]
         this.trumpMadeCardsScale = 2 / 3
         this.trumpMadeCardsPositions = [
             { x: this.playerMainTextPositions[0].x - this.cardWidth * this.trumpMadeCardsScale - 120, y: screenHeight - this.cardHeight * this.trumpMadeCardsScale - 10 },
-            { x: this.screenWid - this.cardWidth * this.trumpMadeCardsScale - 10, y: this.playerMainTextPositions[1].y + 60 },
+            { x: this.screenWid - this.cardWidth * this.trumpMadeCardsScale - 10, y: this.playerStarterPositions[1].y - this.cardHeight * this.trumpMadeCardsScale - 10 },
             { x: this.playerMainTextPositions[2].x - this.cardWidth * this.trumpMadeCardsScale - 120, y: 10 },
-            { x: this.playerMainTextPositions[3].x, y: this.playerMainTextPositions[3].y + 60 },
+            { x: this.playerMainTextPositions[3].x, y: this.playerStarterPositions[3].y - this.cardHeight * this.trumpMadeCardsScale - 10 },
         ]
 
         // last8cards
