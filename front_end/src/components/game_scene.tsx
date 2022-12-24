@@ -585,7 +585,9 @@ export class GameScene extends Phaser.Scene {
 
     private handleNotifyDaojuInfo(objList: []) {
         var daojuInfo: any = objList[0];
-        this.mainForm.tractorPlayer.NotifyDaojuInfo(daojuInfo)
+        var updateQiandao: boolean = objList[1];
+        var updateSkin: boolean = objList[2];
+        this.mainForm.tractorPlayer.NotifyDaojuInfo(daojuInfo, updateQiandao, updateSkin);
     }
 
     private handleNotifyGrabStar_RESPONSE(objList) {

@@ -527,10 +527,10 @@ export class TractorPlayer {
         }, this.PingInterval + this.PingInterval / 2);
     }
 
-    public NotifyDaojuInfo(daojuInfo: any) {
+    public NotifyDaojuInfo(daojuInfo: any, updateQiandao: boolean, updateSkin: boolean) {
         this.mainForm.DaojuInfo = daojuInfo;
-        this.mainForm.UpdateQiandaoStatus();
+        if (updateQiandao) this.mainForm.UpdateQiandaoStatus();
         this.mainForm.gameScene.skinInUse = daojuInfo.daojuInfoByPlayer[this.MyOwnId] ? daojuInfo.daojuInfoByPlayer[this.MyOwnId].skinInUse : CommonMethods.defaultSkinInUse;
-        this.mainForm.UpdateSkinStatus();
+        if (updateSkin) this.mainForm.UpdateSkinStatus();
     }
 }

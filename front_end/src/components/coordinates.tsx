@@ -1,3 +1,5 @@
+import { CommonMethods } from "./common_methods";
+
 const chatWidth = 240;
 const screenWidthReal = document.documentElement.clientWidth;
 const screenWidth = screenWidthReal - chatWidth;
@@ -229,7 +231,7 @@ export class Coordinates {
         this.showedCardsPositions = [
             { x: this.centerX - this.cardWidth / 2, y: this.playerMainTextPositions[0].y - 300 },
             { x: this.screenWid - 300, y: this.playerMainTextPositions[1].y },
-            { x: this.centerX - this.cardWidth / 2, y: this.playerMainTextPositions[2].y + 140 },
+            { x: this.centerX - this.cardWidth / 2, y: this.playerMainTextPositions[2].y + (CommonMethods.isMobile() ? 100 : 140) },
             { x: this.playerMainTextPositions[3].x + 200, y: this.playerMainTextPositions[3].y },
         ]
         this.trumpMadeCardsScale = 2 / 3
@@ -272,7 +274,7 @@ export class Coordinates {
         this.replayBarPosition = { x: this.screenWid * 0.65, y: 10 }
 
         // ending UI
-        this.last8Position = { x: this.centerX - (this.cardWidth / 2) - this.handCardOffset * 3.5, y: 140 }
+        this.last8Position = { x: this.centerX - (this.cardWidth / 2) - this.handCardOffset * 3.5, y: (CommonMethods.isMobile() ? 100 : 140) }
         this.scoreCardsPosition = { x: this.last8Position.x, y: this.last8Position.y + this.cardHeight + 30 }
         this.winPointsPosition = { x: this.last8Position.x, y: this.scoreCardsPosition.y + this.cardHeight + 30 }
         this.last8PointsPosition = { x: this.last8Position.x, y: this.winPointsPosition.y + 30 }
