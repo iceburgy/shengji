@@ -26,6 +26,10 @@ import skin_dong_shenlvmeng from "../assets/skin/shenlvmeng.png"
 import skin_dong_sunshangxiang from "../assets/skin/dong_sunshangxiang.png"
 import skin_dong_machao from "../assets/skin/dong_machao.png"
 import skin_dong_caiwenji from "../assets/skin/dong_caiwenji.png"
+import skin_ry_diaochan from "../assets/skin/ry_diaochan.jpg"
+import skin_ry_luna from "../assets/skin/ry_luna.jpg"
+import skin_ry_sunwukong from "../assets/skin/ry_sunwukong.jpg"
+import skin_ry_zhaoyun from "../assets/skin/ry_zhaoyun.jpg"
 
 // audio
 import soundMaleLiangpai from '../assets/music/male/shelie1.mp3';
@@ -337,6 +341,10 @@ export class GameScene extends Phaser.Scene {
         this.load.image("leisha", leisha)
         this.load.image("pusha", pusha)
         this.load.image("zhugong", zhugong)
+        this.load.image("skin_ry_diaochan", skin_ry_diaochan)
+        this.load.image("skin_ry_luna", skin_ry_luna)
+        this.load.image("skin_ry_sunwukong", skin_ry_sunwukong)
+        this.load.image("skin_ry_zhaoyun", skin_ry_zhaoyun)
         this.overridingLabelImages = [
             "bagua",
             "zhugong",
