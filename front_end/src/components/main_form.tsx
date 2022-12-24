@@ -2281,7 +2281,7 @@ export class MainForm {
         }
     }
 
-    public NotifyEmojiEventHandler(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string) {
+    public NotifyEmojiEventHandler(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string, noSpeaker: boolean) {
         let isPlayerInGameHall = this.gameScene.isInGameHall();
         if (0 <= emojiType && emojiType < CommonMethods.winEmojiTypeLength && Object.keys(this.PlayerPosition).includes(playerID)) {
             msgString = CommonMethods.emojiMsgs[emojiType];
@@ -2307,7 +2307,7 @@ export class MainForm {
             }
         } else {
             let prefix = "";
-            if (playerID) {
+            if (playerID && !noSpeaker) {
                 prefix = `【${playerID}】说：`;
             }
             finalMsg = `${prefix}${msgString}`;

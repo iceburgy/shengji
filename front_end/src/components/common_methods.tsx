@@ -31,7 +31,7 @@ export class CommonMethods {
     public static cookieExpireInDays = 3650;
     public static recoverLoginPassFlag = "RecoverLoginPass";
     public static loginSuccessFlag = "LoginSuccess";
-    public static qiangliangkaCost = 1;
+    public static qiangliangkaCost = 10;
     public static defaultSkinInUse = "skin_questionmark";
 
     public static audioLiangpai = "liangpai";

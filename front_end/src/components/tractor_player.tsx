@@ -498,8 +498,8 @@ export class TractorPlayer {
         this.mainForm.NotifyGameRoomPlayerListEventHandler(playerID, isJoining, roomName)
     }
 
-    public NotifyEmoji(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string) {
-        this.mainForm.NotifyEmojiEventHandler(playerID, emojiType, emojiIndex, isCenter, msgString)
+    public NotifyEmoji(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string, noSpeaker: boolean) {
+        this.mainForm.NotifyEmojiEventHandler(playerID, emojiType, emojiIndex, isCenter, msgString, noSpeaker)
     }
 
     public CutCardShoeCards() {
