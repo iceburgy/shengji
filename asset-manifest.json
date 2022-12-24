@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/shengjiweb/static/css/main.5ad0da08.css",
-    "main.js": "/shengjiweb/static/js/main.dbf9c6f4.js",
+    "main.js": "/shengjiweb/static/js/main.d32ddd67.js",
     "static/js/787.22edae46.chunk.js": "/shengjiweb/static/js/787.22edae46.chunk.js",
     "static/media/badjob.png": "/shengjiweb/static/media/badjob.42a9576209b8b6ef2382.png",
     "static/media/badjob2.png": "/shengjiweb/static/media/badjob2.69b0d76db1dea5a75369.png",
@@ -71,7 +71,7 @@
     "static/media/suits.png": "/shengjiweb/static/media/suits.6d604c8e5b6cc271340f.png",
     "static/media/recover.mp3": "/shengjiweb/static/media/recover.e5198c81ec4b04e17f3c.mp3",
     "static/media/shelie1.mp3": "/shengjiweb/static/media/shelie1.34d4bb69847d598589d4.mp3",
-    "static/media/settings_form.htm": "/shengjiweb/static/media/settings_form.e897a2d698ef5c098373.htm",
+    "static/media/settings_form.htm": "/shengjiweb/static/media/settings_form.db6a73d181321c5f7c22.htm",
     "static/media/biyue1.mp3": "/shengjiweb/static/media/biyue1.1522c92cde01bc5f3e9a.mp3",
     "static/media/sha_thunder.mp3": "/shengjiweb/static/media/sha_thunder.57fefa11fcd3da0f3772.mp3",
     "static/media/guose2.mp3": "/shengjiweb/static/media/guose2.dc1683f9c446d8045dc7.mp3",
@@ -85,11 +85,11 @@
     "index.html": "/shengjiweb/index.html",
     "static/media/replay_form.htm": "/shengjiweb/static/media/replay_form.0072c5b6eb0c31dfce5a.htm",
     "main.5ad0da08.css.map": "/shengjiweb/static/css/main.5ad0da08.css.map",
-    "main.dbf9c6f4.js.map": "/shengjiweb/static/js/main.dbf9c6f4.js.map",
+    "main.d32ddd67.js.map": "/shengjiweb/static/js/main.d32ddd67.js.map",
     "787.22edae46.chunk.js.map": "/shengjiweb/static/js/787.22edae46.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5ad0da08.css",
-    "static/js/main.dbf9c6f4.js"
+    "static/js/main.d32ddd67.js"
   ]
 }
