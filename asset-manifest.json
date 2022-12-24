@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/shengjiweb/static/css/main.5ad0da08.css",
-    "main.js": "/shengjiweb/static/js/main.6b62ff27.js",
+    "main.js": "/shengjiweb/static/js/main.91f9a004.js",
     "static/js/787.22edae46.chunk.js": "/shengjiweb/static/js/787.22edae46.chunk.js",
     "static/media/badjob.png": "/shengjiweb/static/media/badjob.42a9576209b8b6ef2382.png",
     "static/media/badjob2.png": "/shengjiweb/static/media/badjob2.69b0d76db1dea5a75369.png",
@@ -34,8 +34,11 @@
     "static/media/bagua.png": "/shengjiweb/static/media/bagua.613a4da0680ce7bd389f.png",
     "static/media/fireworks2.png": "/shengjiweb/static/media/fireworks2.9bee1650b2a0bcad27b9.png",
     "static/media/movingtractor.png": "/shengjiweb/static/media/movingtractor.0339b5ba35086d562ae6.png",
+    "static/media/ry_diaochan.jpg": "/shengjiweb/static/media/ry_diaochan.7f5753e0342ba9cc4c29.jpg",
     "static/media/happy.png": "/shengjiweb/static/media/happy.2f266c494178be532e36.png",
+    "static/media/ry_luna.jpg": "/shengjiweb/static/media/ry_luna.a330e4abc56bbd4f857a.jpg",
     "static/media/questionmark.png": "/shengjiweb/static/media/questionmark.ac9e226f2861c7c6d006.png",
+    "static/media/ry_sunwukong.jpg": "/shengjiweb/static/media/ry_sunwukong.ac4ee40fda24ab52d672.jpg",
     "static/media/hurryup2.png": "/shengjiweb/static/media/hurryup2.b163ed944043d1ae9f50.png",
     "static/media/poker_table.png": "/shengjiweb/static/media/poker_table.1952f2d2d789e62f9c3b.png",
     "static/media/poker.png": "/shengjiweb/static/media/poker.5b0e60719fdc4847f45d.png",
@@ -43,6 +46,7 @@
     "static/media/pal_lixiaoyao.jpg": "/shengjiweb/static/media/pal_lixiaoyao.2030096581bae13b7f9d.jpg",
     "static/media/huosha.png": "/shengjiweb/static/media/huosha.a8eeab98a7a5e48f598d.png",
     "static/media/fireworks4.png": "/shengjiweb/static/media/fireworks4.0998641b2ef8e185b6af.png",
+    "static/media/ry_zhaoyun.jpg": "/shengjiweb/static/media/ry_zhaoyun.65776a170911522b30dc.jpg",
     "static/media/sha.png": "/shengjiweb/static/media/sha.ec9dbc887d77bd51cebb.png",
     "static/media/poker_chair.png": "/shengjiweb/static/media/poker_chair.49311992522efd67763f.png",
     "static/media/leisha.png": "/shengjiweb/static/media/leisha.713051029874af887177.png",
@@ -81,11 +85,11 @@
     "index.html": "/shengjiweb/index.html",
     "static/media/replay_form.htm": "/shengjiweb/static/media/replay_form.0072c5b6eb0c31dfce5a.htm",
     "main.5ad0da08.css.map": "/shengjiweb/static/css/main.5ad0da08.css.map",
-    "main.6b62ff27.js.map": "/shengjiweb/static/js/main.6b62ff27.js.map",
+    "main.91f9a004.js.map": "/shengjiweb/static/js/main.91f9a004.js.map",
     "787.22edae46.chunk.js.map": "/shengjiweb/static/js/787.22edae46.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5ad0da08.css",
-    "static/js/main.6b62ff27.js"
+    "static/js/main.91f9a004.js"
   ]
 }
