@@ -1534,6 +1534,31 @@ export class MainForm {
             shengbiNum = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi;
         }
         lblShengbi.innerHTML = shengbiNum;
+
+        let btnShengbiLeadingBoard = this.modalForm.getChildByID("btnShengbiLeadingBoard")
+        btnShengbiLeadingBoard.onclick = () => {
+            let divShengbiLeadingBoard = this.modalForm.getChildByID("divShengbiLeadingBoard")
+            divShengbiLeadingBoard.innerHTML = "";
+
+            let shengbiLeadingBoard = this.DaojuInfo.shengbiLeadingBoard;
+            if (!shengbiLeadingBoard) return;
+
+            let sortable = [];
+            for (const [key, value] of Object.entries(shengbiLeadingBoard)) {
+                sortable.push([key, (value as number)]);
+            }
+            sortable.sort(function (a: any, b: any) {
+                return a[1] !== b[1] ? -1 * (a[1] - b[1]) : (a[0] <= b[0] ? -1 : 1);
+            });
+            var ul = document.createElement("ul");
+            for (let i = 0; i < sortable.length; i++) {
+                var li = document.createElement("li");
+                li.innerText = `${sortable[i][0]}：【升币】x${sortable[i][1]}`;
+                ul.appendChild(li);
+            }
+            divShengbiLeadingBoard.appendChild(ul);
+        }
+
         // 抢亮卡
         let selectQiangliangMin = this.modalForm.getChildByID("selectQiangliangMin")
         selectQiangliangMin.value = this.gameScene.qiangliangMin;
