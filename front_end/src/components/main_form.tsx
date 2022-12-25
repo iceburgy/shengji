@@ -476,7 +476,7 @@ export class MainForm {
                             break;
                         case 2:
                             this.lblNickNames[2].setX(this.gameScene.coordinates.playerTextPositions[2].x + width);
-                            this.lblObservers[2].setX(this.gameScene.coordinates.playerTextPositions[2].x + width);
+                            this.lblObservers[2].setX(this.gameScene.coordinates.observerTextPositions[2].x + width);
                             break;
                         default:
                             break;
@@ -517,10 +517,11 @@ export class MainForm {
                         obNameText += `${newLine}【${ob}】`
                     });
 
-                    let ox = this.gameScene.coordinates.observerTextPositions[i].x + (i === 0 ? this.lblNickNames[0].width : 0);
                     lblObserver.setText(`${obNameText}`)
-                        .setX(ox)
                         .setVisible(true);
+                    if (i === 0) {
+                        lblObserver.setX(this.gameScene.coordinates.observerTextPositions[i].x + this.lblNickNames[0].width);
+                    }
                     if (i === 1) {
                         lblObserver.setStyle({ fixedWidth: tempWidOb })
                         lblObserver.setX(this.gameScene.coordinates.observerTextPositions[i].x - tempWidOb)
