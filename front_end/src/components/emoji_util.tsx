@@ -124,30 +124,65 @@ export class EmojiUtil {
 
     public static CreateAllAnimations(gs: Phaser.Scene) {
         gs.anims.create({
-            key: "skin_dong_shenlvmeng",
-            frameRate: 14,
-            frames: gs.anims.generateFrameNumbers("skin_dong_shenlvmeng", { start: 0, end: 40 }),
-            repeat: -1,
-            hideOnComplete: false
-        });
-        gs.anims.create({
-            key: "skin_dong_sunshangxiang",
-            frameRate: 18,
-            frames: gs.anims.generateFrameNumbers("skin_dong_sunshangxiang", { start: 0, end: 64 }),
-            repeat: -1,
-            hideOnComplete: false
-        });
-        gs.anims.create({
-            key: "skin_dong_machao",
-            frameRate: 33,
-            frames: gs.anims.generateFrameNumbers("skin_dong_machao", { start: 0, end: 60 }),
-            repeat: -1,
-            hideOnComplete: false
-        });
-        gs.anims.create({
-            key: "skin_dong_caiwenji",
+            key: "skin_dong_caiwenji_jinxiudaimei",
             frameRate: 20,
-            frames: gs.anims.generateFrameNumbers("skin_dong_caiwenji", { start: 0, end: 94 }),
+            frames: gs.anims.generateFrameNumbers("skin_dong_caiwenji_jinxiudaimei", { start: 0, end: 94 }),
+            repeat: -1,
+            hideOnComplete: false
+        });
+        gs.anims.create({
+            key: "skin_dong_jiangwei_fenghuoluanshi",
+            frameRate: 10,
+            frames: gs.anims.generateFrameNumbers("skin_dong_jiangwei_fenghuoluanshi", { start: 0, end: 50 }),
+            repeat: -1,
+            hideOnComplete: false
+        });
+        gs.anims.create({
+            key: "skin_dong_liubei_liuxingyaodi",
+            frameRate: 13,
+            frames: gs.anims.generateFrameNumbers("skin_dong_liubei_liuxingyaodi", { start: 0, end: 40 }),
+            repeat: -1,
+            hideOnComplete: false
+        });
+        gs.anims.create({
+            key: "skin_dong_machao_xunitiantuan",
+            frameRate: 33,
+            frames: gs.anims.generateFrameNumbers("skin_dong_machao_xunitiantuan", { start: 0, end: 59 }),
+            repeat: -1,
+            hideOnComplete: false
+        });
+        gs.anims.create({
+            key: "skin_dong_pangde_guoganshanzhan",
+            frameRate: 15,
+            frames: gs.anims.generateFrameNumbers("skin_dong_pangde_guoganshanzhan", { start: 0, end: 59 }),
+            repeat: -1,
+            hideOnComplete: false
+        });
+        gs.anims.create({
+            key: "skin_dong_shenlvmeng_baiyidujiang",
+            frameRate: 14,
+            frames: gs.anims.generateFrameNumbers("skin_dong_shenlvmeng_baiyidujiang", { start: 0, end: 40 }),
+            repeat: -1,
+            hideOnComplete: false
+        });
+        gs.anims.create({
+            key: "skin_dong_shenzhouyu_honglianyehuo",
+            frameRate: 16,
+            frames: gs.anims.generateFrameNumbers("skin_dong_shenzhouyu_honglianyehuo", { start: 0, end: 80 }),
+            repeat: -1,
+            hideOnComplete: false
+        });
+        gs.anims.create({
+            key: "skin_dong_sunshangxiang_huahaoyueyuan",
+            frameRate: 18,
+            frames: gs.anims.generateFrameNumbers("skin_dong_sunshangxiang_huahaoyueyuan", { start: 0, end: 64 }),
+            repeat: -1,
+            hideOnComplete: false
+        });
+        gs.anims.create({
+            key: "skin_dong_zhenji_duanruiluoshui",
+            frameRate: 24,
+            frames: gs.anims.generateFrameNumbers("skin_dong_zhenji_duanruiluoshui", { start: 0, end: 99 }),
             repeat: -1,
             hideOnComplete: false
         });

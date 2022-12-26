@@ -16,20 +16,37 @@ import pusha from "../assets/sha.png"
 import zhugong from "../assets/zhugong.png"
 
 // skin
-import skin_frame from "../assets/skin/frame.png"
-import skin_questionmark from "../assets/skin/questionmark.png"
-import skin_basicmale from "../assets/skin/basicmale.png"
-import skin_basicfemale from "../assets/skin/basicfemale.png"
-import skin_pal_lixiaoyao from "../assets/skin/pal_lixiaoyao.jpg"
-import skin_key_kotori from "../assets/skin/key_kotori.jpg"
-import skin_dong_shenlvmeng from "../assets/skin/shenlvmeng.png"
-import skin_dong_sunshangxiang from "../assets/skin/dong_sunshangxiang.png"
-import skin_dong_machao from "../assets/skin/dong_machao.png"
-import skin_dong_caiwenji from "../assets/skin/dong_caiwenji.png"
-import skin_ry_diaochan from "../assets/skin/ry_diaochan.jpg"
-import skin_ry_luna from "../assets/skin/ry_luna.jpg"
-import skin_ry_sunwukong from "../assets/skin/ry_sunwukong.jpg"
-import skin_ry_zhaoyun from "../assets/skin/ry_zhaoyun.jpg"
+import skin_frame from "../assets/skin/frame.avif"
+import skin_questionmark from "../assets/skin/questionmark.avif"
+import skin_basicmale from "../assets/skin/basicmale.avif"
+import skin_basicfemale from "../assets/skin/basicfemale.avif"
+import skin_noname_gjqt_bailitusu from "../assets/skin/gjqt_bailitusu.avif"
+import skin_noname_gjqt_yinqianshang from "../assets/skin/gjqt_yinqianshang.avif"
+import skin_noname_gw_luobo from "../assets/skin/gw_luobo.avif"
+import skin_noname_key_haruko from "../assets/skin/key_haruko.avif"
+import skin_noname_key_hinata from "../assets/skin/key_hinata.avif"
+import skin_noname_key_kotori from "../assets/skin/key_kotori.avif"
+import skin_noname_key_yui from "../assets/skin/key_yui.avif"
+import skin_noname_pal_linyueru from "../assets/skin/pal_linyueru.avif"
+import skin_noname_pal_lixiaoyao from "../assets/skin/pal_lixiaoyao.avif"
+import skin_noname_pal_wangxiaohu from "../assets/skin/pal_wangxiaohu.avif"
+import skin_noname_yxs_wangzhaojun from "../assets/skin/yxs_wangzhaojun.avif"
+import skin_noname_yxs_wuzetian from "../assets/skin/yxs_wuzetian.avif"
+
+import skin_ry_diaochan from "../assets/skin/ry_diaochan.avif"
+import skin_ry_luna from "../assets/skin/ry_luna.avif"
+import skin_ry_sunwukong from "../assets/skin/ry_sunwukong.avif"
+import skin_ry_zhaoyun from "../assets/skin/ry_zhaoyun.avif"
+// skin dong
+import skin_dong_caiwenji_jinxiudaimei from "../assets/skin/dong_caiwenji_jinxiudaimei.avif"
+import skin_dong_jiangwei_fenghuoluanshi from "../assets/skin/dong_jiangwei_fenghuoluanshi.avif"
+import skin_dong_liubei_liuxingyaodi from "../assets/skin/dong_liubei_liuxingyaodi.avif"
+import skin_dong_machao_xunitiantuan from "../assets/skin/dong_machao_xunitiantuan.avif"
+import skin_dong_pangde_guoganshanzhan from "../assets/skin/dong_pangde_guoganshanzhan.avif"
+import skin_dong_shenlvmeng_baiyidujiang from "../assets/skin/dong_shenlvmeng_baiyidujiang.avif"
+import skin_dong_shenzhouyu_honglianyehuo from "../assets/skin/dong_shenzhouyu_honglianyehuo.avif"
+import skin_dong_sunshangxiang_huahaoyueyuan from "../assets/skin/dong_sunshangxiang_huahaoyueyuan.avif"
+import skin_dong_zhenji_duanruiluoshui from "../assets/skin/dong_zhenji_duanruiluoshui.avif"
 
 // audio
 import soundMaleLiangpai from '../assets/music/male/shelie1.mp3';
@@ -331,8 +348,18 @@ export class GameScene extends Phaser.Scene {
         this.load.image("pokerTable", pokerTable)
         this.load.image("pokerChair", pokerChair)
         this.load.image("bagua", bagua)
-        this.load.image("skin_pal_lixiaoyao", skin_pal_lixiaoyao)
-        this.load.image("skin_key_kotori", skin_key_kotori)
+        this.load.image("skin_noname_gjqt_bailitusu", skin_noname_gjqt_bailitusu)
+        this.load.image("skin_noname_gjqt_yinqianshang", skin_noname_gjqt_yinqianshang)
+        this.load.image("skin_noname_gw_luobo", skin_noname_gw_luobo)
+        this.load.image("skin_noname_key_haruko", skin_noname_key_haruko)
+        this.load.image("skin_noname_key_hinata", skin_noname_key_hinata)
+        this.load.image("skin_noname_key_kotori", skin_noname_key_kotori)
+        this.load.image("skin_noname_key_yui", skin_noname_key_yui)
+        this.load.image("skin_noname_pal_linyueru", skin_noname_pal_linyueru)
+        this.load.image("skin_noname_pal_lixiaoyao", skin_noname_pal_lixiaoyao)
+        this.load.image("skin_noname_pal_wangxiaohu", skin_noname_pal_wangxiaohu)
+        this.load.image("skin_noname_yxs_wangzhaojun", skin_noname_yxs_wangzhaojun)
+        this.load.image("skin_noname_yxs_wuzetian", skin_noname_yxs_wuzetian)
         this.load.image("skin_questionmark", skin_questionmark)
         this.load.image("skin_basicmale", skin_basicmale)
         this.load.image("skin_basicfemale", skin_basicfemale)
@@ -424,10 +451,15 @@ export class GameScene extends Phaser.Scene {
         this.load.spritesheet('emMovingTractor', emMovingTractor, { frameWidth: EmojiUtil.emMovingTractorFrameSize.x, frameHeight: EmojiUtil.emMovingTractorFrameSize.y });
 
         // animated skin
-        this.load.spritesheet('skin_dong_shenlvmeng', skin_dong_shenlvmeng, { frameWidth: this.coordinates.cardWidth, frameHeight: this.coordinates.cardHeight });
-        this.load.spritesheet('skin_dong_sunshangxiang', skin_dong_sunshangxiang, { frameWidth: this.coordinates.cardWidth, frameHeight: this.coordinates.cardHeight });
-        this.load.spritesheet('skin_dong_machao', skin_dong_machao, { frameWidth: 438, frameHeight: 316 });
-        this.load.spritesheet('skin_dong_caiwenji', skin_dong_caiwenji, { frameWidth: 360, frameHeight: 255 });
+        this.load.spritesheet('skin_dong_caiwenji_jinxiudaimei', skin_dong_caiwenji_jinxiudaimei, { frameWidth: 360, frameHeight: 255 });
+        this.load.spritesheet('skin_dong_jiangwei_fenghuoluanshi', skin_dong_jiangwei_fenghuoluanshi, { frameWidth: 176, frameHeight: 232 });
+        this.load.spritesheet('skin_dong_liubei_liuxingyaodi', skin_dong_liubei_liuxingyaodi, { frameWidth: 287, frameHeight: 381 });
+        this.load.spritesheet('skin_dong_machao_xunitiantuan', skin_dong_machao_xunitiantuan, { frameWidth: 438, frameHeight: 316 });
+        this.load.spritesheet('skin_dong_pangde_guoganshanzhan', skin_dong_pangde_guoganshanzhan, { frameWidth: 260, frameHeight: 184 });
+        this.load.spritesheet('skin_dong_shenlvmeng_baiyidujiang', skin_dong_shenlvmeng_baiyidujiang, { frameWidth: 175, frameHeight: 232 });
+        this.load.spritesheet('skin_dong_shenzhouyu_honglianyehuo', skin_dong_shenzhouyu_honglianyehuo, { frameWidth: 136, frameHeight: 160 });
+        this.load.spritesheet('skin_dong_sunshangxiang_huahaoyueyuan', skin_dong_sunshangxiang_huahaoyueyuan, { frameWidth: 175, frameHeight: 232 });
+        this.load.spritesheet('skin_dong_zhenji_duanruiluoshui', skin_dong_zhenji_duanruiluoshui, { frameWidth: 360, frameHeight: 255 });
 
         // loading collectstar
         this.load.image('ground', csground);

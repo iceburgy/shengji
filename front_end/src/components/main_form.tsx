@@ -1682,6 +1682,7 @@ export class MainForm {
         let selectFullSkinInfo = this.modalForm.getChildByID("selectFullSkinInfo")
         let lblSkinType = this.modalForm.getChildByID("lblSkinType");
         let lblSkinCost = this.modalForm.getChildByID("lblSkinCost");
+        let lblSkinOnwers = this.modalForm.getChildByID("lblSkinOnwers");
         let lblSkinIsOwned = this.modalForm.getChildByID("lblSkinIsOwned");
         let lblSkinSex = this.modalForm.getChildByID("lblSkinSex");
         let btnBuyOrUseSelectedSkin = this.modalForm.getChildByID("btnBuyOrUseSelectedSkin");
@@ -1705,6 +1706,11 @@ export class MainForm {
                     lblSkinSex.innerHTML = curSkinInfo.skinSex === "f" ? "女性" : "男性";
                     lblSkinType.innerHTML = curSkinInfo.skinType === 0 ? "静态" : "动态";
                     lblSkinCost.innerHTML = `【升币】x${curSkinInfo.skinCost}`;
+                    let skinOwnersMsg = `此皮肤尚未被人解锁`;
+                    if (curSkinInfo.skinOwners > 0) {
+                        skinOwnersMsg = `已有【${curSkinInfo.skinOwners}】人拥有此皮肤`;
+                    }
+                    lblSkinOnwers.innerHTML = skinOwnersMsg;
                     lblSkinIsOwned.innerHTML = "尚未拥有";
                     btnBuyOrUseSelectedSkin.disabled = false;
                     btnBuyOrUseSelectedSkin.value = "购买选定的皮肤";
