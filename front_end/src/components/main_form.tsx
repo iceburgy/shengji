@@ -980,8 +980,12 @@ export class MainForm {
             showedCards.forEach(card => {
                 showedPoker.AddCard(card);
             })
-            let showedTractors: number[] = showedPoker.GetTractorBySuit(this.tractorPlayer.CurrentTrickState.LeadingSuit());
-            if (showedTractors.length > 1) this.drawingFormHelper.DrawMovingTractorByPosition(showedCards.length, position)
+            let showedTractors: number[];
+            if (winResult < 3) {
+                showedTractors = showedPoker.GetTractorBySuit(this.tractorPlayer.CurrentTrickState.LeadingSuit());
+            } else {
+                showedTractors = showedPoker.GetTractorBySuit(this.tractorPlayer.CurrentHandState.Trump);
+            }
         }
 
         this.RobotPlayFollowing();
