@@ -4,6 +4,7 @@ import { PlayerEntity } from './player_entity';
 import { SuitEnums } from './suit_enums';
 export class CommonMethods {
     public static SendEmoji_REQUEST = "SendEmoji"
+    public static SendBroadcast_REQUEST = "SendBroadcast"
     public static PlayerHasCutCards_REQUEST = "PlayerHasCutCards"
     public static cardNumToValue: string[] = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
     public static reenterRoomSignal = "断线重连中,请稍后...";
@@ -32,6 +33,8 @@ export class CommonMethods {
     public static recoverLoginPassFlag = "RecoverLoginPass";
     public static loginSuccessFlag = "LoginSuccess";
     public static qiangliangkaCost = 10;
+    public static sendBroadcastPrefix = "@all";
+    public static sendBroadcastCost = 10;
     public static defaultSkinInUse = "skin_questionmark";
 
     public static audioLiangpai = "liangpai";

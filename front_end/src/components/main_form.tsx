@@ -1276,9 +1276,26 @@ export class MainForm {
             msgString = selectPresetMsgs.value;
             emojiType = selectPresetMsgs.selectedIndex;
             emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
+        } else if (msgString.startsWith(CommonMethods.sendBroadcastPrefix)) {
+            // SendBroadcast
+            this.sendBroadcastMsgType(msgString);
+            return;
         }
         let args: (string | number)[] = [emojiType, emojiIndex, msgString];
         this.sendEmojiWithCheck(args)
+    }
+
+    public sendBroadcastMsgType(msg: string) {
+        let shengbi = 0
+        if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
+            shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
+        }
+        if (shengbi < CommonMethods.sendBroadcastCost) {
+            alert("升币余额不足，无法发送广播消息")
+            return;
+        }
+
+        this.gameScene.sendMessageToServer(CommonMethods.SendBroadcast_REQUEST, this.tractorPlayer.MyOwnId, msg);
     }
 
     public blurChat() {
