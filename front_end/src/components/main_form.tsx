@@ -1558,7 +1558,7 @@ export class MainForm {
             var ul = document.createElement("ul");
             for (let i = 0; i < sortable.length; i++) {
                 var li = document.createElement("li");
-                li.innerText = `${sortable[i][0]}：【升币】x${sortable[i][1]}`;
+                li.innerText = `【${sortable[i][0]}】${sortable[i][1]}`;
                 ul.appendChild(li);
             }
             divShengbiLeadingBoard.appendChild(ul);
@@ -2404,7 +2404,7 @@ export class MainForm {
             for (let i = 0; i < playersInGameHall.length; i++) {
                 let d = document.createElement("div");
                 let pid = playersInGameHall[i];
-                d.innerText = `【${pid}】升币x${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
+                d.innerText = `【${pid}】积分：${this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal}`;
                 divOnlinePlayerList.appendChild(d);
             }
         }
@@ -2421,7 +2421,7 @@ export class MainForm {
             for (let i = 0; i < players.length; i++) {
                 let d = document.createElement("div");
                 let pid = players[i];
-                d.innerText = `【${pid}】升币x${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
+                d.innerText = `【${pid}】积分：${this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal}`;
                 divOnlinePlayerList.appendChild(d);
             }
 
@@ -2433,7 +2433,7 @@ export class MainForm {
                 for (let i = 0; i < obs.length; i++) {
                     let d = document.createElement("div");
                     let oid = obs[i];
-                    d.innerText = `【${oid}】升币x${this.DaojuInfo.daojuInfoByPlayer[oid].Shengbi}`;
+                    d.innerText = `【${oid}】积分：${this.DaojuInfo.daojuInfoByPlayer[oid].ShengbiTotal}`;
                     divOnlinePlayerList.appendChild(d);
                 }
             }

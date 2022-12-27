@@ -20,6 +20,31 @@ import skin_frame from "../assets/skin/frame.webp"
 import skin_questionmark from "../assets/skin/questionmark.webp"
 import skin_basicmale from "../assets/skin/basicmale.webp"
 import skin_basicfemale from "../assets/skin/basicfemale.webp"
+
+//boys and girls
+import skin_girl_mask from "../assets/skin/skin_girl_mask.webp"
+import skin_girl_moyu from "../assets/skin/skin_girl_moyu.webp"
+import skin_girl_1 from "../assets/skin/skin_girl_1.webp"
+import skin_girl_2 from "../assets/skin/skin_girl_2.webp"
+import skin_girl_3 from "../assets/skin/skin_girl_3.webp"
+import skin_girl_4 from "../assets/skin/skin_girl_4.webp"
+import skin_girl_5 from "../assets/skin/skin_girl_5.webp"
+import skin_girl_6 from "../assets/skin/skin_girl_6.webp"
+import skin_girl_7 from "../assets/skin/skin_girl_7.webp"
+import skin_girl_8 from "../assets/skin/skin_girl_8.webp"
+import skin_girl_9 from "../assets/skin/skin_girl_9.webp"
+import skin_boy_mask from "../assets/skin/skin_boy_mask.webp"
+import skin_boy_moyu from "../assets/skin/skin_boy_moyu.webp"
+import skin_boy_1 from "../assets/skin/skin_boy_1.webp"
+import skin_boy_2 from "../assets/skin/skin_boy_2.webp"
+import skin_boy_3 from "../assets/skin/skin_boy_3.webp"
+import skin_boy_4 from "../assets/skin/skin_boy_4.webp"
+import skin_boy_5 from "../assets/skin/skin_boy_5.webp"
+import skin_boy_6 from "../assets/skin/skin_boy_6.webp"
+import skin_boy_7 from "../assets/skin/skin_boy_7.webp"
+import skin_boy_8 from "../assets/skin/skin_boy_8.webp"
+import skin_boy_9 from "../assets/skin/skin_boy_9.webp"
+
 import skin_noname_gjqt_bailitusu from "../assets/skin/gjqt_bailitusu.webp"
 import skin_noname_gjqt_yinqianshang from "../assets/skin/gjqt_yinqianshang.webp"
 import skin_noname_gw_luobo from "../assets/skin/gw_luobo.webp"
@@ -348,6 +373,28 @@ export class GameScene extends Phaser.Scene {
         this.load.image("pokerTable", pokerTable)
         this.load.image("pokerChair", pokerChair)
         this.load.image("bagua", bagua)
+        this.load.image("skin_girl_mask", skin_girl_mask)
+        this.load.image("skin_girl_moyu", skin_girl_moyu)
+        this.load.image("skin_girl_1", skin_girl_1)
+        this.load.image("skin_girl_2", skin_girl_2)
+        this.load.image("skin_girl_3", skin_girl_3)
+        this.load.image("skin_girl_4", skin_girl_4)
+        this.load.image("skin_girl_5", skin_girl_5)
+        this.load.image("skin_girl_6", skin_girl_6)
+        this.load.image("skin_girl_7", skin_girl_7)
+        this.load.image("skin_girl_8", skin_girl_8)
+        this.load.image("skin_girl_9", skin_girl_9)
+        this.load.image("skin_boy_mask", skin_boy_mask)
+        this.load.image("skin_boy_moyu", skin_boy_moyu)
+        this.load.image("skin_boy_1", skin_boy_1)
+        this.load.image("skin_boy_2", skin_boy_2)
+        this.load.image("skin_boy_3", skin_boy_3)
+        this.load.image("skin_boy_4", skin_boy_4)
+        this.load.image("skin_boy_5", skin_boy_5)
+        this.load.image("skin_boy_6", skin_boy_6)
+        this.load.image("skin_boy_7", skin_boy_7)
+        this.load.image("skin_boy_8", skin_boy_8)
+        this.load.image("skin_boy_9", skin_boy_9)
         this.load.image("skin_noname_gjqt_bailitusu", skin_noname_gjqt_bailitusu)
         this.load.image("skin_noname_gjqt_yinqianshang", skin_noname_gjqt_yinqianshang)
         this.load.image("skin_noname_gw_luobo", skin_noname_gw_luobo)
