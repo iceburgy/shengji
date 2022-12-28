@@ -986,7 +986,7 @@ export class MainForm {
             } else {
                 showedTractors = showedPoker.GetTractorBySuit(this.tractorPlayer.CurrentHandState.Trump);
             }
-            this.drawingFormHelper.DrawMovingTractorByPosition(showedCards.length, position);
+            if (showedTractors.length > 1) this.drawingFormHelper.DrawMovingTractorByPosition(showedCards.length, position);
         }
 
         this.RobotPlayFollowing();
