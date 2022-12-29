@@ -184,9 +184,9 @@ export class Coordinates {
         this.player1TextWid = 20;
         this.player1TextWidBigDelta = 12;
         this.playerMainTextPositions = [
-            { x: this.centerX, y: screenHeight - 60 },
+            { x: this.centerX - this.cardWidth / 2, y: screenHeight - 60 },
             { x: this.screenWid - 20, y: this.centerY - 80 },
-            { x: this.centerX, y: 10 },
+            { x: this.centerX - this.cardWidth / 2, y: 10 },
             { x: 5, y: this.centerY - 80 },
         ]
         this.playerTextPositions = [
