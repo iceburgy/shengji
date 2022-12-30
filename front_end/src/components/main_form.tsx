@@ -1558,6 +1558,21 @@ export class MainForm {
         }
         lblShengbi.innerHTML = shengbiNum;
 
+        // 签到按钮
+        let btnQiandaoInSettings = this.modalForm.getChildByID("btnQiandaoInSettings")
+        if (this.IsQiandaoRenewed()) {
+            btnQiandaoInSettings.disabled = false;
+            btnQiandaoInSettings.value = "签到领福利";
+        } else {
+            btnQiandaoInSettings.disabled = true;
+            btnQiandaoInSettings.value = "今日已签到";
+        }
+        btnQiandaoInSettings.onclick = () => {
+            btnQiandaoInSettings.disabled = true;
+            this.DesotroyModalForm();
+            this.gameScene.sendMessageToServer(PLAYER_QIANDAO_REQUEST, this.tractorPlayer.MyOwnId, "")
+        }
+
         let btnShengbiLeadingBoard = this.modalForm.getChildByID("btnShengbiLeadingBoard")
         btnShengbiLeadingBoard.onclick = () => {
             let divShengbiLeadingBoard = this.modalForm.getChildByID("divShengbiLeadingBoard")
@@ -2133,6 +2148,8 @@ export class MainForm {
                 this.gameScene.btnQiandao.setStyle({ backgroundColor: 'gray' })
             })
             .on('pointerup', () => {
+                this.gameScene.btnQiandao.disableInteractive()
+                    .setColor('gray');
                 this.gameScene.sendMessageToServer(PLAYER_QIANDAO_REQUEST, this.tractorPlayer.MyOwnId, "")
             }, this)
         this.UpdateQiandaoStatus();
@@ -2233,10 +2250,8 @@ export class MainForm {
     }
 
     public UpdateQiandaoStatus() {
-        let daojuInfoByPlayer: any = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
-        if (daojuInfoByPlayer && this.gameScene.btnQiandao && this.gameScene.btnQiandao.input) {
-            let isRenewed: Boolean = daojuInfoByPlayer.isRenewed;
-            if (isRenewed) {
+        if (this.gameScene.btnQiandao && this.gameScene.btnQiandao.input) {
+            if (this.IsQiandaoRenewed()) {
                 this.gameScene.btnQiandao.setText("签到领福利")
                     .setInteractive({ useHandCursor: true })
                     .setColor('white');
@@ -2246,6 +2261,11 @@ export class MainForm {
                     .setColor('gray');
             }
         }
+    }
+
+    public IsQiandaoRenewed(): boolean {
+        let daojuInfoByPlayer: any = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
+        return daojuInfoByPlayer && daojuInfoByPlayer.isRenewed;
     }
 
     public UpdateSkinStatus() {
