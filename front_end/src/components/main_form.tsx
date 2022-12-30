@@ -1599,12 +1599,23 @@ export class MainForm {
         btnBuyOrUseSelectedSkin.onclick = () => {
             let skinName = selectFullSkinInfo.value;
             let isSkinOwned = this.IsSkinOwned(skinName);
-            let isSkinAfordable = this.IsSkinAfordable(skinName);
+            let isSkinAfordableWithConfMsg: any[] = this.IsSkinAfordableWithConfMsg(skinName);
+            let isSkinAfordable = isSkinAfordableWithConfMsg[0] as boolean;
             if (!isSkinOwned && !isSkinAfordable) {
                 alert("升币余额不足，无法购买此皮肤")
             } else {
-                this.gameScene.sendMessageToServer(BUY_USE_SKIN_REQUEST, this.tractorPlayer.MyOwnId, skinName);
-                this.DesotroyModalForm();
+                let doTransaction = true;
+                let msg = isSkinAfordableWithConfMsg[1] as string;
+                if (msg && msg.length > 0) {
+                    var c = window.confirm(msg);
+                    if (!c) {
+                        doTransaction = false;
+                    }
+                }
+                if (doTransaction) {
+                    this.gameScene.sendMessageToServer(BUY_USE_SKIN_REQUEST, this.tractorPlayer.MyOwnId, skinName);
+                    this.DesotroyModalForm();
+                }
             }
         }
 
@@ -1665,13 +1676,17 @@ export class MainForm {
         return false;
     }
 
-    private IsSkinAfordable(skinName: string): boolean {
+    private IsSkinAfordableWithConfMsg(skinName: string): any[] {
         let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
         let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
-        if (fullSkinInfo) {
-            return daojuInfoByPlayer.Shengbi >= fullSkinInfo[skinName].skinCost;
+        if (fullSkinInfo && daojuInfoByPlayer.Shengbi >= fullSkinInfo[skinName].skinCost) {
+            let msg = "";
+            if (fullSkinInfo[skinName].skinCost > 0) {
+                msg = `此次购买将消耗升币【${fullSkinInfo[skinName].skinCost}】，购买前余额：【${daojuInfoByPlayer.Shengbi}】，购买后余额：【${daojuInfoByPlayer.Shengbi - fullSkinInfo[skinName].skinCost}】，是否确定？`;
+            }
+            return [true, msg];
         }
-        return false;
+        return [false, ""];
     }
 
     private GetSkinType(skinName: string): number {
