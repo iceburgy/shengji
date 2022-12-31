@@ -2395,7 +2395,7 @@ export class MainForm {
                 if (this.tractorPlayer.MyOwnId === playerID) this.sgDrawingHelper.hiddenGames[msgString].apply(this.sgDrawingHelper, [true, playerID]);
             }
         } else {
-            let prefix = "";
+            let prefix = "【系统消息】：";
             if (playerID && !noSpeaker) {
                 prefix = `【${playerID}】说：`;
             }
