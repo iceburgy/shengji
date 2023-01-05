@@ -322,32 +322,33 @@ export class Algorithm {
         let currentCards = new CurrentPoker()
         currentCards.CloneFrom(currentPoker)
 
-        availableTrump.forEach((st: number) => {
+        for (let i = 0; i < availableTrump.length; i++) {
+            let st: number = availableTrump[i];
             switch (st) {
                 case SuitEnums.Suit.Heart:
                     let heartCount = currentCards.HeartsNoRankTotal();
-                    if ((isFirstHand || heartCount >= qiangliangMin) && heartCount > nonJokerMaxCount) {
+                    if (isFirstHand || heartCount >= qiangliangMin && heartCount > nonJokerMaxCount) {
                         nonJokerMaxCount = heartCount;
                         nonJoker = st;
                     }
                     break;
                 case SuitEnums.Suit.Spade:
                     let spadeCount = currentCards.SpadesNoRankTotal();
-                    if ((isFirstHand || spadeCount >= qiangliangMin) && spadeCount > nonJokerMaxCount) {
+                    if (isFirstHand || spadeCount >= qiangliangMin && spadeCount > nonJokerMaxCount) {
                         nonJokerMaxCount = spadeCount;
                         nonJoker = st;
                     }
                     break;
                 case SuitEnums.Suit.Diamond:
                     let diamondCount = currentCards.DiamondsNoRankTotal();
-                    if ((isFirstHand || diamondCount >= qiangliangMin) && diamondCount > nonJokerMaxCount) {
+                    if (isFirstHand || diamondCount >= qiangliangMin && diamondCount > nonJokerMaxCount) {
                         nonJokerMaxCount = diamondCount;
                         nonJoker = st;
                     }
                     break;
                 case SuitEnums.Suit.Club:
                     let clubCount = currentCards.ClubsNoRankTotal();
-                    if ((isFirstHand || clubCount >= qiangliangMin) && clubCount > nonJokerMaxCount) {
+                    if (isFirstHand || clubCount >= qiangliangMin && clubCount > nonJokerMaxCount) {
                         nonJokerMaxCount = clubCount;
                         nonJoker = st;
                     }
@@ -359,8 +360,8 @@ export class Algorithm {
                 default:
                     break;
             }
-        })
-        if (nonJokerMaxCount > 0) return nonJoker;
+        }
+        if (isFirstHand || nonJokerMaxCount > 0) return nonJoker;
         else return mayJoker;
     }
 }
