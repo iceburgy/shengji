@@ -611,6 +611,7 @@ export class DrawingFormHelper {
 
     public TrumpMadeCardsShow() {
         this.destroyAllShowedCards()
+        if (this.mainForm.tractorPlayer.CurrentHandState.IsNoTrumpMaker) return
         if (this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker == SuitEnums.TrumpExposingPoker.None) return
         let posID = this.mainForm.PlayerPosition[this.mainForm.tractorPlayer.CurrentHandState.TrumpMaker]
         if (posID == 1) return
@@ -631,6 +632,10 @@ export class DrawingFormHelper {
     public TrumpMadeCardsShowFromLastTrick() {
         let trumpDict: any = {}
         let lastTrumpStates: TrumpState[] = this.mainForm.tractorPlayer.CurrentHandState.LastTrumpStates
+
+        // 如果是无人亮主，则不画
+        if (lastTrumpStates.length === 1 && lastTrumpStates[0].IsNoTrumpMaker) return;
+
         lastTrumpStates.forEach(lastHandState => {
             let key1 = lastHandState.TrumpMaker;
             if (!Object.keys(trumpDict).includes(key1)) {
@@ -796,7 +801,9 @@ export class DrawingFormHelper {
         let trumpMakerString = ""
         let trumpIndex = 0
         let trumpMaker = this.mainForm.tractorPlayer.CurrentHandState.TrumpMaker
-        if (trumpMaker) {
+        if (trumpMaker && this.mainForm.tractorPlayer.CurrentHandState.IsNoTrumpMaker) {
+            trumpMakerString = "无人亮主"
+        } else if (trumpMaker) {
             trumpMakerString = trumpMaker
             trumpIndex = this.mainForm.tractorPlayer.CurrentHandState.Trump
         }
@@ -804,7 +811,7 @@ export class DrawingFormHelper {
         let trumpImage = this.mainForm.gameScene.add.text(this.mainForm.gameScene.coordinates.sidebarTrumpMaker.x, this.mainForm.gameScene.coordinates.sidebarTrumpMaker.y, exposerString).setColor("orange").setFontSize(this.mainForm.gameScene.coordinates.iconSize)
         this.mainForm.gameScene.sidebarImages.push(trumpImage)
 
-        if (trumpMaker) {
+        if (trumpMaker && !this.mainForm.tractorPlayer.CurrentHandState.IsNoTrumpMaker) {
             this.mainForm.gameScene.sidebarImages.push(
                 this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.sidebarTrumpMaker.x + trumpImage.displayWidth + 10, this.mainForm.gameScene.coordinates.sidebarTrumpMaker.y, 'suitsImage', trumpIndex - 1 + 5)
                     .setOrigin(0, 0)

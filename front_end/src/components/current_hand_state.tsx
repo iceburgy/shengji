@@ -14,6 +14,7 @@ export class CurrentHandState {
     public Trump: number
     public TrumpExposingPoker: number
     public TrumpMaker: string
+    public IsNoTrumpMaker: boolean
     public CurrentHandStep: number
     public IsFirstHand: boolean
     public DiscardedCards: number[]
@@ -43,6 +44,7 @@ export class CurrentHandState {
         this.Trump = 0
         this.TrumpExposingPoker = 0
         this.TrumpMaker = ""
+        this.IsNoTrumpMaker = false
         this.CurrentHandStep = 0
         this.IsFirstHand = false
         this.DiscardedCards = []
@@ -67,6 +69,7 @@ export class CurrentHandState {
         this.Trump = from.Trump
         this.TrumpExposingPoker = from.TrumpExposingPoker
         this.TrumpMaker = from.TrumpMaker
+        this.IsNoTrumpMaker = from.IsNoTrumpMaker
         this.CurrentHandStep = from.CurrentHandStep
         this.IsFirstHand = from.IsFirstHand
         this.DiscardedCards = CommonMethods.deepCopy<number[]>(from.DiscardedCards)
