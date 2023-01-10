@@ -349,11 +349,23 @@ export class SGDrawingHelper {
     }
 
     public NotifyUpdateGobang(state: SGGBState) {
-        this.IsPlayingGame = SGGBState.GameName;
         this.sggbState = state;
 
+        let isGameEnded = this.sggbState.GameStage === "over" && !this.sggbState.PlayerIdWinner;
+        if (isGameEnded) {
+            this.destroyGame(0);
+            return;
+        }
+        else {
+            this.IsPlayingGame = SGGBState.GameName;
+        }
+
         // 后来加入的玩家，重新画UI
-        if ((!this.imageChessboard || !this.imageChessboard.active) && this.sggbState.GameStage !== "created") {
+        // - 没有gameboard
+        // - 不是第一次开始新游戏
+        let isJoiningLater = (!this.imageChessboard || !this.imageChessboard.active) &&
+            this.sggbState.GameStage !== "created";
+        if (isJoiningLater) {
             this.InitUIGobang();
             if (this.sggbState.PlayerId2) {
                 this.txtGobangPlayer2.setText(this.sggbState.PlayerId2);
@@ -400,15 +412,11 @@ export class SGDrawingHelper {
                 this.ProcessMovedGobang();
                 break;
             case "over":
-                if (this.sggbState.PlayerIdWinner) {
-                    this.ProcessMovedGobang();
-                    this.txtGobangPlayerMoving.setText(`恭喜玩家\n【${this.sggbState.PlayerIdMoved}】\n获胜！`);
-                    this.imageChessboard.disableInteractive();
-                    this.btnStartGobang.setVisible(!this.mainForm.tractorPlayer.isObserver);
-                    if (this.mainForm.enableSound) this.mainForm.gameScene.soundwin.play();
-                } else {
-                    this.destroyGame(0);
-                }
+                this.ProcessMovedGobang();
+                this.txtGobangPlayerMoving.setText(`恭喜玩家\n【${this.sggbState.PlayerIdMoved}】\n获胜！`);
+                this.imageChessboard.disableInteractive();
+                this.btnStartGobang.setVisible(!this.mainForm.tractorPlayer.isObserver);
+                if (this.mainForm.enableSound) this.mainForm.gameScene.soundwin.play();
                 break;
             default:
                 break;
