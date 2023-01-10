@@ -516,6 +516,7 @@ export class SGDrawingHelper {
             .setDepth(2);
         this.hiddenGamesImages.push(lblPlayerMoving);
         this.txtGobangPlayerMoving = this.mainForm.gameScene.add.text(infoBasePoint.x + panelInfoWidth / 2, infoBasePoint.y + 40 + infoSectionHeight * 5, '')
+            .setLineSpacing(5)
             .setPadding(2)
             .setColor('blue')
             .setFontSize(18)
