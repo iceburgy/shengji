@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/shengjiweb/static/css/main.5ad0da08.css",
-    "main.js": "/shengjiweb/static/js/main.306d10b3.js",
+    "main.js": "/shengjiweb/static/js/main.bf80b9f5.js",
     "static/js/787.22edae46.chunk.js": "/shengjiweb/static/js/787.22edae46.chunk.js",
     "static/media/badjob.png": "/shengjiweb/static/media/badjob.42a9576209b8b6ef2382.png",
     "static/media/badjob2.png": "/shengjiweb/static/media/badjob2.69b0d76db1dea5a75369.png",
@@ -79,6 +79,7 @@
     "static/media/chessboard.webp": "/shengjiweb/static/media/chessboard.1369aa3fee689f327f43.webp",
     "static/media/suitsbar.png": "/shengjiweb/static/media/suitsbar.1cbed9c2727db86d481b.png",
     "static/media/pal_linyueru.webp": "/shengjiweb/static/media/pal_linyueru.f3c1c46c080e1cc49cb7.webp",
+    "static/media/white00a.png": "/shengjiweb/static/media/white00a.83535dfa4256af98fd9e.png",
     "static/media/ground2.png": "/shengjiweb/static/media/ground2.e60087308b061a9fc38f.png",
     "static/media/ground.png": "/shengjiweb/static/media/ground.69db09bf9618dbe6c387.png",
     "static/media/skin_boy_mask.webp": "/shengjiweb/static/media/skin_boy_mask.d537fdd6a7c338200ce0.webp",
@@ -87,9 +88,12 @@
     "static/media/skin_girl_8.webp": "/shengjiweb/static/media/skin_girl_8.5fa8d272eb5e1b86069a.webp",
     "static/media/yxs_wangzhaojun.webp": "/shengjiweb/static/media/yxs_wangzhaojun.7e1520bf12d714a22783.webp",
     "static/media/begin.png": "/shengjiweb/static/media/begin.f2f85b09c4952a4de364.png",
+    "static/media/black00a.png": "/shengjiweb/static/media/black00a.91e1fdd967fb794c4d14.png",
+    "static/media/black01a.png": "/shengjiweb/static/media/black01a.7f8ee40f392e306be75d.png",
     "static/media/bomb.png": "/shengjiweb/static/media/bomb.e4e45d2792977401c07c.png",
     "static/media/draw.mp3": "/shengjiweb/static/media/draw.954ad0b789a9eaa8a10e.mp3",
     "static/media/gjqt_bailitusu.webp": "/shengjiweb/static/media/gjqt_bailitusu.21409288d44e92726a54.webp",
+    "static/media/white01a.png": "/shengjiweb/static/media/white01a.7f540d6fd1c7fe42a9f5.png",
     "static/media/star.png": "/shengjiweb/static/media/star.f8bef5757a894e844d8a.png",
     "static/media/suits.png": "/shengjiweb/static/media/suits.6d604c8e5b6cc271340f.png",
     "static/media/click.wav": "/shengjiweb/static/media/click.35a9838bca67d2e58a25.wav",
@@ -129,11 +133,11 @@
     "static/media/replay_form.htm": "/shengjiweb/static/media/replay_form.0072c5b6eb0c31dfce5a.htm",
     "static/media/chatPanel.webp": "/shengjiweb/static/media/chatPanel.cd4c19676a3defaa1fe7.webp",
     "main.5ad0da08.css.map": "/shengjiweb/static/css/main.5ad0da08.css.map",
-    "main.306d10b3.js.map": "/shengjiweb/static/js/main.306d10b3.js.map",
+    "main.bf80b9f5.js.map": "/shengjiweb/static/js/main.bf80b9f5.js.map",
     "787.22edae46.chunk.js.map": "/shengjiweb/static/js/787.22edae46.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5ad0da08.css",
-    "static/js/main.306d10b3.js"
+    "static/js/main.bf80b9f5.js"
   ]
 }
