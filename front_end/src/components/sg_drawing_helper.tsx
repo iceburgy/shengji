@@ -374,7 +374,7 @@ export class SGDrawingHelper {
                 this.txtGobangPlayerMoving.setText(this.sggbState.PlayerIdMoving);
             }
             if (this.sggbState.GameStage === "over" && this.sggbState.PlayerIdWinner) {
-                this.txtGobangPlayerMoving.setText(`恭喜玩家\n【${this.sggbState.PlayerIdMoved}】\n获胜！`);
+                this.txtGobangPlayerMoving.setText(`恭喜玩家\n【${this.sggbState.PlayerIdMoved}】\n获胜`);
             }
             if ((this.sggbState.GameStage === "over" && this.sggbState.PlayerIdWinner) ||
                 (this.sggbState.GameStage === "restarted")) {
@@ -413,7 +413,7 @@ export class SGDrawingHelper {
                 break;
             case "over":
                 this.ProcessMovedGobang();
-                this.txtGobangPlayerMoving.setText(`恭喜玩家\n【${this.sggbState.PlayerIdMoved}】\n获胜！`);
+                this.txtGobangPlayerMoving.setText(`恭喜玩家\n【${this.sggbState.PlayerIdMoved}】\n获胜`);
                 this.imageChessboard.disableInteractive();
                 this.btnStartGobang.setVisible(!this.mainForm.tractorPlayer.isObserver);
                 if (this.mainForm.enableSound) this.mainForm.gameScene.soundwin.play();
@@ -480,7 +480,8 @@ export class SGDrawingHelper {
             .setDepth(2);
         this.hiddenGamesImages.push(lblPlayer1);
 
-        let lblPlayer1Piece = this.mainForm.gameScene.add.sprite(infoBasePoint.x + panelInfoWidth / 2 - 50, infoBasePoint.y + 40, this.gobangColorByID[1], 0)
+        let lblPlayer1Piece = this.mainForm.gameScene.add.sprite(infoBasePoint.x + panelInfoWidth / 2 - 50, infoBasePoint.y + 40, "gobangPieceBlackPlain", 0)
+            .setDisplaySize(30, 30)
             .setDepth(2)
             .setOrigin(0.5);
         this.hiddenGamesImages.push(lblPlayer1Piece);
@@ -502,7 +503,8 @@ export class SGDrawingHelper {
             .setDepth(2);
         this.hiddenGamesImages.push(lblPlayer2);
 
-        let lblPlayer2Piece = this.mainForm.gameScene.add.sprite(infoBasePoint.x + panelInfoWidth / 2 - 50, infoBasePoint.y + 40 + infoSectionHeight * 2, this.gobangColorByID[2], 0)
+        let lblPlayer2Piece = this.mainForm.gameScene.add.sprite(infoBasePoint.x + panelInfoWidth / 2 - 50, infoBasePoint.y + 40 + infoSectionHeight * 2, "gobangPieceWhitePlain", 0)
+            .setDisplaySize(30, 30)
             .setDepth(2)
             .setOrigin(0.5);
         this.hiddenGamesImages.push(lblPlayer2Piece);
@@ -524,6 +526,7 @@ export class SGDrawingHelper {
             .setDepth(2);
         this.hiddenGamesImages.push(lblPlayerMoving);
         this.txtGobangPlayerMoving = this.mainForm.gameScene.add.text(infoBasePoint.x + panelInfoWidth / 2, infoBasePoint.y + 40 + infoSectionHeight * 5, '')
+            .setAlign("center")
             .setLineSpacing(5)
             .setPadding(2)
             .setColor('blue')
@@ -585,7 +588,9 @@ export class SGDrawingHelper {
         if (LastMoveIndexRow >= 0 && this.imageChessboardCells[LastMoveIndexRow][LastMoveIndexCol]) {
             this.imageChessboardCells[LastMoveIndexRow][LastMoveIndexCol].destroy();
             let lastPieceColor = this.gobangColorByID[this.sggbState.ChessBoard[LastMoveIndexRow][LastMoveIndexCol]];
-            this.imageChessboardCells[LastMoveIndexRow][LastMoveIndexCol] = this.mainForm.gameScene.add.sprite(lastMoveX, lastMoveY, lastPieceColor, 0).setOrigin(0.5);
+            this.imageChessboardCells[LastMoveIndexRow][LastMoveIndexCol] = this.mainForm.gameScene.add.sprite(lastMoveX, lastMoveY, lastPieceColor, 0)
+                .setDisplaySize(30, 30)
+                .setOrigin(0.5);
             this.hiddenGamesImages.push(this.imageChessboardCells[LastMoveIndexRow][LastMoveIndexCol]);
         }
 
@@ -598,7 +603,9 @@ export class SGDrawingHelper {
         let moveX = this.gobangBoardOriginX + this.gobangBoardCell * CurMoveIndexCol;
         let moveY = this.gobangBoardOriginY + this.gobangBoardCell * CurMoveIndexRow;
         let curPieceColor = this.gobangColorByID[this.sggbState.ChessBoard[CurMoveIndexRow][CurMoveIndexCol]];
-        this.imageChessboardCells[CurMoveIndexRow][CurMoveIndexCol] = this.mainForm.gameScene.add.sprite(moveX, moveY, curPieceColor, 1).setOrigin(0.5);
+        this.imageChessboardCells[CurMoveIndexRow][CurMoveIndexCol] = this.mainForm.gameScene.add.sprite(moveX, moveY, `${curPieceColor}0`, 0)
+            .setDisplaySize(30, 30)
+            .setOrigin(0.5);
         this.hiddenGamesImages.push(this.imageChessboardCells[CurMoveIndexRow][CurMoveIndexCol]);
         if (this.mainForm.enableSound) this.mainForm.gameScene.soundclickwa.play();
 

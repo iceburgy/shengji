@@ -20,8 +20,12 @@ import chatPanel from "../assets/gobang/chatPanel.webp"
 import chessboard from "../assets/gobang/chessboard.webp"
 import gobangStartBtn from "../assets/gobang/startBtn.webp"
 import gobangQuitBtn from "../assets/gobang/quitBtn.webp"
-import gobangPieceBlack from "../assets/gobang/blackNew.webp"
-import gobangPieceWhite from "../assets/gobang/whiteNew.webp"
+import gobangPieceBlackPlain from "../assets/gobang/blackNew.webp"
+import gobangPieceWhitePlain from "../assets/gobang/whiteNew.webp"
+import gobangPieceBlack0 from "../assets/gobang/black00a.png"
+import gobangPieceBlack from "../assets/gobang/black01a.png"
+import gobangPieceWhite0 from "../assets/gobang/white00a.png"
+import gobangPieceWhite from "../assets/gobang/white01a.png"
 
 // skin
 import skin_frame from "../assets/skin/frame.webp"
@@ -432,8 +436,12 @@ export class GameScene extends Phaser.Scene {
         this.load.image("chessboard", chessboard)
         this.load.image("gobangStartBtn", gobangStartBtn)
         this.load.image("gobangQuitBtn", gobangQuitBtn)
-        this.load.spritesheet('gobangPieceBlack', gobangPieceBlack, { frameWidth: 30, frameHeight: 30 });
-        this.load.spritesheet('gobangPieceWhite', gobangPieceWhite, { frameWidth: 30, frameHeight: 30 });
+        this.load.spritesheet('gobangPieceBlackPlain', gobangPieceBlackPlain, { frameWidth: 30, frameHeight: 30 });
+        this.load.spritesheet('gobangPieceWhitePlain', gobangPieceWhitePlain, { frameWidth: 30, frameHeight: 30 });
+        this.load.spritesheet('gobangPieceBlack', gobangPieceBlack, { frameWidth: 640, frameHeight: 620 });
+        this.load.spritesheet('gobangPieceWhite', gobangPieceWhite, { frameWidth: 619, frameHeight: 633 });
+        this.load.spritesheet('gobangPieceBlack0', gobangPieceBlack0, { frameWidth: 641, frameHeight: 622 });
+        this.load.spritesheet('gobangPieceWhite0', gobangPieceWhite0, { frameWidth: 1068, frameHeight: 1103 });
 
         this.load.image("skin_ry_diaochan", skin_ry_diaochan)
         this.load.image("skin_ry_luna", skin_ry_luna)
