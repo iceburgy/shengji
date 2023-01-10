@@ -25,6 +25,7 @@ import Cookies from 'universal-cookie';
 import { SGCSPlayer } from './sg_cs_player';
 import { SGDrawingHelper } from './sg_drawing_helper';
 import { SGCSState } from './sg_cs_state';
+import { SGGBState } from './sg_gobang_state';
 
 const ReadyToStart_REQUEST = "ReadyToStart"
 const ToggleIsRobot_REQUEST = "ToggleIsRobot"
@@ -53,6 +54,14 @@ export class MainForm {
     public btnRobot: Phaser.GameObjects.Text
     public btnExitRoom: Phaser.GameObjects.Text
     public btnExitAndObserve: Phaser.GameObjects.Text
+
+    // gobang
+    public btnSmallGames: Phaser.GameObjects.Text
+    public groupSmallGames: Phaser.GameObjects.Group
+    public panelSmallGames: Phaser.GameObjects.Sprite
+    public btnGobang: Phaser.GameObjects.Text
+    public btnCollectStar: Phaser.GameObjects.Text
+
     public isSendEmojiEnabled: boolean
     public btnPig: Phaser.GameObjects.Text
 
@@ -210,6 +219,92 @@ export class MainForm {
             })
         this.gameScene.roomUIControls.texts.push(this.btnExitAndObserve)
 
+        // 小游戏按钮
+        this.btnSmallGames = this.gameScene.add.text(this.gameScene.coordinates.btnSmallGamesPosition.x, this.gameScene.coordinates.btnSmallGamesPosition.y, '小游戏')
+            .setVisible(false)
+            .setColor('white')
+            .setFontSize(30)
+            .setPadding(10)
+            .setShadow(2, 2, "#333333", 2, true, true)
+            .setStyle({ backgroundColor: 'gray' })
+            .setInteractive({ useHandCursor: true })
+            .on('pointerup', () => this.SmallGamesHandler())
+            .on('pointerover', () => {
+                this.btnSmallGames.setStyle({ backgroundColor: 'lightblue' })
+            })
+            .on('pointerout', () => {
+                this.btnSmallGames.setStyle({ backgroundColor: 'gray' })
+            })
+        this.gameScene.roomUIControls.texts.push(this.btnSmallGames)
+
+        this.groupSmallGames = this.gameScene.add.group()
+            .setVisible(false);
+
+        let panelSmallGamesHeight = this.btnSmallGames.height * 2 + 40;
+        this.panelSmallGames = this.gameScene.add.sprite(this.gameScene.coordinates.btnSmallGamesPosition.x, this.gameScene.coordinates.btnSmallGamesPosition.y - panelSmallGamesHeight, 'chatPanel')
+        this.panelSmallGames.setOrigin(0, 0)
+            .setDisplaySize(this.btnSmallGames.width, panelSmallGamesHeight)
+            .setVisible(false)
+            .setDepth(1);
+        this.groupSmallGames.add(this.panelSmallGames);
+
+        this.btnGobang = this.gameScene.add.text(this.panelSmallGames.getTopLeft().x + this.panelSmallGames.displayWidth / 2, this.panelSmallGames.getTopLeft().y + 40, '五子棋',)
+            .setVisible(false)
+            .setColor('white')
+            .setDepth(2)
+            .setFontSize(20)
+            .setPadding(10)
+            .setShadow(2, 2, "#333333", 2, true, true)
+            .setStyle({ backgroundColor: 'gray' })
+            .setInteractive({ useHandCursor: true })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerover', () => {
+                this.btnGobang.setStyle({ backgroundColor: 'lightblue' })
+            })
+            .on('pointerout', () => {
+                this.btnGobang.setStyle({ backgroundColor: 'gray' })
+            })
+            .on('pointerdown', () => {
+                this.btnGobang.setScale(0.9);
+            })
+            .on('pointerup', () => {
+                this.btnGobang.setScale(1);
+                let args: (string | number)[] = [-1, -1, "gobang"];
+                this.sendEmojiWithCheck(args);
+                this.SmallGamesHandler();
+            });
+        this.groupSmallGames.add(this.btnGobang);
+
+        this.btnCollectStar = this.gameScene.add.text(this.panelSmallGames.getTopLeft().x + this.panelSmallGames.displayWidth / 2, this.panelSmallGames.getTopLeft().y + 100, '摘星星',)
+            .setVisible(false)
+            .setColor('white')
+            .setDepth(2)
+            .setFontSize(20)
+            .setPadding(10)
+            .setShadow(2, 2, "#333333", 2, true, true)
+            .setStyle({ backgroundColor: 'gray' })
+            .setInteractive({ useHandCursor: true })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerover', () => {
+                this.btnCollectStar.setStyle({ backgroundColor: 'lightblue' })
+            })
+            .on('pointerout', () => {
+                this.btnCollectStar.setStyle({ backgroundColor: 'gray' })
+            })
+            .on('pointerdown', () => {
+                this.btnCollectStar.setScale(0.9);
+            })
+            .on('pointerup', () => {
+                this.btnCollectStar.setScale(1);
+                let args: (string | number)[] = [-1, -1, "collectstar"];
+                this.sendEmojiWithCheck(args);
+                this.SmallGamesHandler();
+            });
+        this.groupSmallGames.add(this.btnCollectStar);
+        this.gameScene.roomUIControls.images.push(this.groupSmallGames);
+
         // 确定按钮
         this.btnPig = this.gameScene.add.text(this.gameScene.coordinates.btnPigPosition.x, this.gameScene.coordinates.btnPigPosition.y, '确定')
             .setColor('gray')
@@ -354,11 +449,20 @@ export class MainForm {
             this.btnReady.setColor('white')
             this.btnExitAndObserve.setInteractive({ useHandCursor: true })
             this.btnExitAndObserve.setColor('white')
+
+            // small games
+            this.btnSmallGames.setInteractive({ useHandCursor: true })
+            this.btnSmallGames.setColor('white')
         } else {
             this.btnReady.disableInteractive()
             this.btnReady.setColor('gray')
             this.btnExitAndObserve.disableInteractive()
             this.btnExitAndObserve.setColor('gray')
+
+            // small games
+            this.btnSmallGames.disableInteractive()
+            this.btnSmallGames.setColor('gray')
+            this.groupSmallGames.setVisible(false);
         }
         this.btnReady.setText(readyToStart ? "取消" : "就绪")
         this.setStartLabels()
@@ -410,6 +514,13 @@ export class MainForm {
         this.btnShowLastTrick.setVisible(true)
         this.btnReady.setVisible(!this.tractorPlayer.isObserver)
         this.btnExitAndObserve.setVisible(!this.tractorPlayer.isObserver)
+
+        // small games
+        this.btnSmallGames.setVisible(!this.tractorPlayer.isObserver);
+        if (this.tractorPlayer.isObserver) {
+            this.groupSmallGames.setVisible(false);
+        }
+
         this.btnRobot.setVisible(!this.tractorPlayer.isObserver)
 
         var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)
@@ -455,9 +566,11 @@ export class MainForm {
                     let skinImage: any
                     if (skinType === 0) {
                         skinImage = this.gameScene.add.image(0, 0, skinInUse)
+                            .setDepth(-1)
                             .setVisible(false);
                     } else {
                         skinImage = this.gameScene.add.sprite(0, 0, skinInUse)
+                            .setDepth(-1)
                             .setVisible(false)
                             .setInteractive()
                             .on('pointerup', () => {
@@ -489,6 +602,7 @@ export class MainForm {
                         .setVisible(true);
                     this.gameScene.roomUIControls.imagesChair.push(skinImage);
                     let skinFrame = this.gameScene.add.image(x, y, 'skin_frame')
+                        .setDepth(-1)
                         .setOrigin(0, 0)
                         .setDisplaySize(width, height);
                     this.gameScene.roomUIControls.imagesChair.push(skinFrame);
@@ -609,8 +723,18 @@ export class MainForm {
         if (!this.btnExitAndObserve || !this.btnExitAndObserve.input.enabled) return;
         this.btnExitAndObserve.disableInteractive()
         this.btnExitAndObserve.setColor('gray')
+
+        // small games
+        this.btnSmallGames.disableInteractive()
+        this.btnSmallGames.setColor('gray')
+        this.groupSmallGames.setVisible(false);
+
         this.destroyGameRoom();
         this.gameScene.sendMessageToServer(PLAYER_EXIT_AND_OBSERVE_REQUEST, this.tractorPlayer.MyOwnId, "");
+    }
+
+    public SmallGamesHandler() {
+        this.groupSmallGames.toggleVisible();
     }
 
     public ReenterOrResumeEvent() {
@@ -666,7 +790,18 @@ export class MainForm {
             this.lblNickNames[i].disableInteractive();
         }
         if (this.sgDrawingHelper.IsPlayingGame) {
-            this.sgDrawingHelper.hitBomb(this.sgDrawingHelper.players.children.entries[this.sgDrawingHelper.myPlayerIndex], undefined);
+            switch (this.sgDrawingHelper.IsPlayingGame) {
+                case SGCSState.GameName:
+                    this.sgDrawingHelper.hitBomb(this.sgDrawingHelper.players.children.entries[this.sgDrawingHelper.myPlayerIndex], undefined);
+                    break;
+                case SGGBState.GameName:
+                    this.sgDrawingHelper.sggbState.GameAction = "quit";
+                    this.sgDrawingHelper.UpdateGobang();
+                    break;
+                default:
+                    break;
+            }
+
             this.sgDrawingHelper.destroyGame(0);
         }
     }
@@ -1307,7 +1442,7 @@ export class MainForm {
     }
 
     private shortcutKeyDownEventhandler(event: KeyboardEvent) {
-        if (!event || !event.key || !this.sgDrawingHelper.IsPlayingGame) return;
+        if (!event || !event.key || !this.sgDrawingHelper.IsPlayingGame || this.sgDrawingHelper.IsPlayingGame !== SGCSState.GameName) return;
         if (!this.sgDrawingHelper.sgcsState.Dudes[this.sgDrawingHelper.myPlayerIndex].Enabled) return;
         let ekey: string = event.key.toLowerCase();
         if (!['arrowup', 'arrowleft', 'arrowright'].includes(ekey)) return;
@@ -1337,7 +1472,7 @@ export class MainForm {
     private shortcutKeyUpEventhandler(event: KeyboardEvent) {
         if (!event || !event.key) return;
         let ekey: string = event.key.toLowerCase();
-        if (this.sgDrawingHelper.IsPlayingGame) {
+        if (this.sgDrawingHelper.IsPlayingGame === SGCSState.GameName) {
             if (['arrowleft', 'arrowright'].includes(ekey)) {
                 if (this.sgcsPlayer.PlayerId === this.tractorPlayer.MyOwnId && this.sgDrawingHelper.sgcsState.Dudes[this.sgDrawingHelper.myPlayerIndex].Enabled) {
                     this.sgcsPlayer.ReleaseLeftOrRightKey();
@@ -1368,7 +1503,17 @@ export class MainForm {
         } else {
             if (ekey === 'escape') {
                 if (this.sgDrawingHelper.IsPlayingGame) {
-                    this.sgDrawingHelper.hitBomb(this.sgDrawingHelper.players.children.entries[this.sgDrawingHelper.myPlayerIndex], undefined);
+                    switch (this.sgDrawingHelper.IsPlayingGame) {
+                        case SGCSState.GameName:
+                            this.sgDrawingHelper.hitBomb(this.sgDrawingHelper.players.children.entries[this.sgDrawingHelper.myPlayerIndex], undefined);
+                            break;
+                        case SGGBState.GameName:
+                            this.sgDrawingHelper.sggbState.GameAction = "quit";
+                            this.sgDrawingHelper.UpdateGobang();
+                            break;
+                        default:
+                            break;
+                    }
                     this.sgDrawingHelper.destroyGame(2);
                 }
                 this.resetGameRoomUI();
@@ -2355,6 +2500,7 @@ export class MainForm {
                         break;
                 }
                 skinImage
+                    .setDepth(-1)
                     .setX(x)
                     .setY(y)
                     .setOrigin(0, 0)
@@ -2362,6 +2508,7 @@ export class MainForm {
                     .setVisible(true);
                 this.gameScene.roomUIControls.imagesChair.push(skinImage);
                 let skinFrame = this.gameScene.add.image(x, y, 'skin_frame')
+                    .setDepth(-1)
                     .setOrigin(0, 0)
                     .setDisplaySize(width, height);
                 this.gameScene.roomUIControls.imagesChair.push(skinFrame);

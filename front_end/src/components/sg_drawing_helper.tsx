@@ -6,8 +6,11 @@ import { SGCSBomb } from './sg_cs_bomb';
 import { SGCSPlayer } from './sg_cs_player';
 import { stringify } from 'querystring';
 import { SGCSDude } from './sg_cs_dude';
+import { SGGBState } from './sg_gobang_state';
+import { fontWeight } from '@mui/system';
 
 const CreateCollectStar_REQUEST = "CreateCollectStar"
+const UpdateGobang_REQUEST = "UpdateGobang"
 const EndCollectStar_REQUEST = "EndCollectStar"
 const GrabStar_REQUEST = "GrabStar"
 
@@ -18,6 +21,7 @@ export class SGDrawingHelper {
     public DrawSf2ryu: Function
     public DrawWalker: Function
     public CreateCollectStar: Function
+    public UpdateGobang: Function
     public hiddenEffects: any
     public hiddenEffectImages: any[]
     public hiddenGames: any
@@ -30,13 +34,27 @@ export class SGDrawingHelper {
     public usageText: any;
     public IsPlayingGame: string = "";
     public sgcsState: SGCSState;
+    public sggbState: SGGBState;
     public myPlayerIndex: number = -1;
+    public txtGobangPlayer1: any
+    public txtGobangPlayer2: any
+    public txtGobangPlayerMoving: any
+    public btnStartGobang: any
+    public btnQuitGobang: any
+    public imageChessboard: any
+    public imageChessboardCells: any
+    public gobangBoardEdge = 25
+    public gobangBoardCell = 35
+    public gobangBoardOriginX: any
+    public gobangBoardOriginY: any
+    public gobangColorByID = ["", "gobangPieceBlack", "gobangPieceWhite"]
 
     constructor(mf: MainForm) {
         this.mainForm = mf
         this.hiddenEffectImages = [];
         this.hiddenGamesImages = [];
         this.sgcsState = new SGCSState(mf);
+        this.sggbState = new SGGBState(mf);
 
         this.DrawSf2ryu = function () {
             this.hiddenEffectImages = [];
@@ -86,12 +104,22 @@ export class SGDrawingHelper {
             this.mainForm.gameScene.sendMessageToServer(CreateCollectStar_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.sgcsState));
         }
 
+        this.UpdateGobang = function (isNewGame?: boolean, playerID?: string) {
+            if (isNewGame) {
+                this.sggbState = new SGGBState(this.mainForm);
+                this.sggbState.GameAction = "create";
+            }
+            if (playerID) this.sggbState.PlayerId1 = playerID;
+            this.mainForm.gameScene.sendMessageToServer(UpdateGobang_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.sggbState));
+        }
+
         this.hiddenEffects = {
             "hadoken": this.DrawSf2ryu,
             "walker": this.DrawWalker,
         }
         this.hiddenGames = {
             "collectstar": this.CreateCollectStar,
+            "gobang": this.UpdateGobang,
         }
     }
 
@@ -287,7 +315,7 @@ export class SGDrawingHelper {
                 this.playerStop(player)
                 player.setTint("0xff0000");
                 setTimeout(() => {
-                    player.disableBody(true, true);
+                    if (player && player.body) player.disableBody(true, true);
                 }, 2 * 1000);
             }
         }
@@ -318,5 +346,292 @@ export class SGDrawingHelper {
         else if (player.rightKeyPressed) this.moveRight(dude);
         else if (player.upKeyPressed) this.playerJump(dude);
         else this.playerStop(dude);
+    }
+
+    public NotifyUpdateGobang(state: SGGBState) {
+        this.IsPlayingGame = SGGBState.GameName;
+        this.sggbState = state;
+
+        // 后来加入的玩家，重新画UI
+        if ((!this.imageChessboard || !this.imageChessboard.active) && this.sggbState.GameStage !== "created") {
+            this.InitUIGobang();
+            if (this.sggbState.PlayerId2) {
+                this.txtGobangPlayer2.setText(this.sggbState.PlayerId2);
+            }
+            if (this.sggbState.PlayerIdMoving) {
+                this.txtGobangPlayerMoving.setText(this.sggbState.PlayerIdMoving);
+            }
+            if (this.sggbState.GameStage === "over" && this.sggbState.PlayerIdWinner) {
+                this.txtGobangPlayerMoving.setText(`恭喜玩家\n【${this.sggbState.PlayerIdMoved}】\n获胜！`);
+            }
+            if ((this.sggbState.GameStage === "over" && this.sggbState.PlayerIdWinner) ||
+                (this.sggbState.GameStage === "restarted")) {
+                this.btnStartGobang.setVisible(!this.mainForm.tractorPlayer.isObserver);
+            }
+            this.DrawPiecesGobang();
+            return;
+        }
+
+        switch (this.sggbState.GameStage) {
+            case "created":
+                this.InitUIGobang();
+                break;
+            case "restarted":
+                this.cleanupUIBoardGobang();
+                this.InitImageChessboardCellsGobang();
+                this.txtGobangPlayer1.setText(this.sggbState.PlayerId1);
+                this.txtGobangPlayer2.setText("");
+                this.txtGobangPlayerMoving.setText("");
+                this.btnStartGobang.setVisible(!this.mainForm.tractorPlayer.isObserver && this.sggbState.PlayerId1 !== this.mainForm.tractorPlayer.MyOwnId);
+                this.btnQuitGobang.setVisible([this.sggbState.PlayerId1, this.sggbState.PlayerId2].includes(this.mainForm.tractorPlayer.MyOwnId));
+                break;
+            case "joined":
+                this.txtGobangPlayer2.setText(this.sggbState.PlayerId2);
+                this.txtGobangPlayerMoving.setText(this.sggbState.PlayerId1);
+                if (this.sggbState.PlayerIdMoving === this.mainForm.tractorPlayer.MyOwnId) {
+                    this.imageChessboard.setInteractive();
+                } else {
+                    this.imageChessboard.disableInteractive();
+                    this.btnStartGobang.setVisible(false);
+                }
+                this.btnQuitGobang.setVisible([this.sggbState.PlayerId1, this.sggbState.PlayerId2].includes(this.mainForm.tractorPlayer.MyOwnId));
+                break;
+            case "moved":
+                this.ProcessMovedGobang();
+                break;
+            case "over":
+                if (this.sggbState.PlayerIdWinner) {
+                    this.ProcessMovedGobang();
+                    this.txtGobangPlayerMoving.setText(`恭喜玩家\n【${this.sggbState.PlayerIdMoved}】\n获胜！`);
+                    this.imageChessboard.disableInteractive();
+                    this.btnStartGobang.setVisible(!this.mainForm.tractorPlayer.isObserver);
+                    if (this.mainForm.enableSound) this.mainForm.gameScene.soundwin.play();
+                } else {
+                    this.destroyGame(0);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private InitUIGobang() {
+        this.mainForm.blurChat();
+        this.hiddenGamesImages = [];
+        let panelInfoWidth = 160;
+        // chess board
+        this.imageChessboard = this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.centerX - panelInfoWidth / 2, this.mainForm.gameScene.coordinates.centerY, 'chessboard');
+        let cellBasePoint = this.imageChessboard.getTopLeft();
+        this.gobangBoardOriginX = cellBasePoint.x + this.gobangBoardEdge;
+        this.gobangBoardOriginY = cellBasePoint.y += this.gobangBoardEdge;
+        this.imageChessboard.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            let tempX = pointer.x - this.gobangBoardOriginX;
+            if (tempX < -17)
+                tempX = -17;
+            if (tempX > 507)
+                tempX = 507;
+            let tempY = pointer.y - this.gobangBoardOriginY;
+            if (tempY < -17)
+                tempY = -17;
+            if (tempY > 507)
+                tempY = 507;
+            // very counter-intuitive: indexX comes from coordinate Y
+            let indexRow = Math.abs(Math.round((tempY) / this.gobangBoardCell));
+            let indexCol = Math.abs(Math.round((tempX) / this.gobangBoardCell));
+            if (this.sggbState.ChessBoard[indexRow][indexCol] !== 0) {
+                alert("bad move");
+                return;
+            }
+            this.imageChessboard.disableInteractive();
+            this.sggbState.LastMove = this.sggbState.CurMove;
+            this.sggbState.CurMove = [indexRow, indexCol];
+            this.sggbState.GameAction = "move";
+            this.sggbState.PlayerIdMoved = this.sggbState.PlayerIdMoving;
+            this.sggbState.PlayerIdMoving = this.sggbState.PlayerId1 === this.sggbState.PlayerIdMoved ? this.sggbState.PlayerId2 : this.sggbState.PlayerId1;
+            this.UpdateGobang();
+        });
+        this.hiddenGamesImages.push(this.imageChessboard);
+
+        // chess board cells
+        this.InitImageChessboardCellsGobang();
+
+        let infoBasePoint = this.imageChessboard.getTopRight();
+        let panelInfo = this.mainForm.gameScene.add.sprite(infoBasePoint.x, infoBasePoint.y, 'chatPanel')
+            .setOrigin(0, 0)
+            .setDisplaySize(panelInfoWidth, this.imageChessboard.displayHeight)
+            .setDepth(1);
+        this.hiddenGamesImages.push(panelInfo);
+
+        let infoSectionHeight = 60;
+        let lblPlayer1 = this.mainForm.gameScene.add.text(infoBasePoint.x + panelInfoWidth / 2, infoBasePoint.y + 40, '玩家1')
+            .setPadding(2)
+            .setColor('black')
+            .setStyle({ fontWeight: "bold" })
+            .setFontSize(22)
+            .setOrigin(0.5)
+            .setDepth(2);
+        this.hiddenGamesImages.push(lblPlayer1);
+
+        let lblPlayer1Piece = this.mainForm.gameScene.add.sprite(infoBasePoint.x + panelInfoWidth / 2 - 50, infoBasePoint.y + 40, this.gobangColorByID[1], 0)
+            .setDepth(2)
+            .setOrigin(0.5);
+        this.hiddenGamesImages.push(lblPlayer1Piece);
+
+        this.txtGobangPlayer1 = this.mainForm.gameScene.add.text(infoBasePoint.x + panelInfoWidth / 2, infoBasePoint.y + 40 + infoSectionHeight, this.sggbState.PlayerId1)
+            .setPadding(2)
+            .setColor('blue')
+            .setFontSize(18)
+            .setOrigin(0.5)
+            .setDepth(2);
+        this.hiddenGamesImages.push(this.txtGobangPlayer1);
+
+        let lblPlayer2 = this.mainForm.gameScene.add.text(infoBasePoint.x + panelInfoWidth / 2, infoBasePoint.y + 40 + infoSectionHeight * 2, '玩家2')
+            .setPadding(2)
+            .setColor('black')
+            .setStyle({ fontWeight: "bold" })
+            .setFontSize(22)
+            .setOrigin(0.5)
+            .setDepth(2);
+        this.hiddenGamesImages.push(lblPlayer2);
+
+        let lblPlayer2Piece = this.mainForm.gameScene.add.sprite(infoBasePoint.x + panelInfoWidth / 2 - 50, infoBasePoint.y + 40 + infoSectionHeight * 2, this.gobangColorByID[2], 0)
+            .setDepth(2)
+            .setOrigin(0.5);
+        this.hiddenGamesImages.push(lblPlayer2Piece);
+
+        this.txtGobangPlayer2 = this.mainForm.gameScene.add.text(infoBasePoint.x + panelInfoWidth / 2, infoBasePoint.y + 40 + infoSectionHeight * 3, '')
+            .setPadding(2)
+            .setColor('blue')
+            .setFontSize(18)
+            .setOrigin(0.5)
+            .setDepth(2);
+        this.hiddenGamesImages.push(this.txtGobangPlayer2);
+
+        let lblPlayerMoving = this.mainForm.gameScene.add.text(infoBasePoint.x + panelInfoWidth / 2, infoBasePoint.y + 40 + infoSectionHeight * 4, '行动方')
+            .setPadding(2)
+            .setColor('black')
+            .setStyle({ fontWeight: "bold" })
+            .setFontSize(22)
+            .setOrigin(0.5)
+            .setDepth(2);
+        this.hiddenGamesImages.push(lblPlayerMoving);
+        this.txtGobangPlayerMoving = this.mainForm.gameScene.add.text(infoBasePoint.x + panelInfoWidth / 2, infoBasePoint.y + 40 + infoSectionHeight * 5, '')
+            .setPadding(2)
+            .setColor('blue')
+            .setFontSize(18)
+            .setOrigin(0.5)
+            .setDepth(2);
+        this.hiddenGamesImages.push(this.txtGobangPlayerMoving);
+
+        let infoBasePointBottom = this.imageChessboard.getBottomRight();
+        // 开始按钮
+        this.btnStartGobang = this.mainForm.gameScene.add.sprite(infoBasePointBottom.x + panelInfoWidth / 2, infoBasePointBottom.y - 100, 'gobangStartBtn')
+            // 如果是我自己创建的游戏，则不需要“开始按钮”
+            .setVisible(!this.mainForm.tractorPlayer.isObserver && this.sggbState.PlayerId1 !== this.mainForm.tractorPlayer.MyOwnId && this.sggbState.GameStage === "created")
+            .setDepth(2)
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => {
+                this.btnStartGobang.setScale(0.9);
+            })
+            .on('pointerup', () => {
+                this.btnStartGobang.setScale(1);
+                if (this.sggbState.GameStage === "over" && this.sggbState.PlayerIdWinner) {
+                    this.sggbState = new SGGBState(this.mainForm);
+                    this.sggbState.PlayerId1 = this.mainForm.tractorPlayer.MyOwnId;
+                    this.sggbState.GameAction = "restart";
+                    this.UpdateGobang();
+                } else {
+                    this.sggbState.PlayerId2 = this.mainForm.tractorPlayer.MyOwnId;
+                    this.sggbState.GameAction = "join";
+                    this.UpdateGobang();
+                }
+            });
+        this.hiddenGamesImages.push(this.btnStartGobang);
+
+        // 退出按钮
+        this.btnQuitGobang = this.mainForm.gameScene.add.sprite(infoBasePointBottom.x + panelInfoWidth / 2, infoBasePointBottom.y - 40, 'gobangQuitBtn')
+            // 只有加入了游戏的玩家才能退出
+            .setVisible([this.sggbState.PlayerId1, this.sggbState.PlayerId2].includes(this.mainForm.tractorPlayer.MyOwnId))
+            .setDepth(2)
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => {
+                this.btnQuitGobang.setScale(0.9);
+            })
+            .on('pointerup', () => {
+                this.btnQuitGobang.setScale(1);
+                this.sggbState.GameAction = "quit";
+                this.UpdateGobang();
+            });
+        this.hiddenGamesImages.push(this.btnQuitGobang);
+    }
+
+    private ProcessMovedGobang() {
+        // update last move piece
+        let LastMoveIndexRow = this.sggbState.LastMove[0];
+        let LastMoveIndexCol = this.sggbState.LastMove[1];
+        let lastMoveX = this.gobangBoardOriginX + this.gobangBoardCell * LastMoveIndexCol;
+        let lastMoveY = this.gobangBoardOriginY + this.gobangBoardCell * LastMoveIndexRow;
+        if (LastMoveIndexRow >= 0 && this.imageChessboardCells[LastMoveIndexRow][LastMoveIndexCol]) {
+            this.imageChessboardCells[LastMoveIndexRow][LastMoveIndexCol].destroy();
+            let lastPieceColor = this.gobangColorByID[this.sggbState.ChessBoard[LastMoveIndexRow][LastMoveIndexCol]];
+            this.imageChessboardCells[LastMoveIndexRow][LastMoveIndexCol] = this.mainForm.gameScene.add.sprite(lastMoveX, lastMoveY, lastPieceColor, 0).setOrigin(0.5);
+            this.hiddenGamesImages.push(this.imageChessboardCells[LastMoveIndexRow][LastMoveIndexCol]);
+        }
+
+        // update current move piece
+        let CurMoveIndexRow = this.sggbState.CurMove[0];
+        let CurMoveIndexCol = this.sggbState.CurMove[1];
+        if (this.imageChessboardCells[CurMoveIndexRow][CurMoveIndexCol]) {
+            this.imageChessboardCells[CurMoveIndexRow][CurMoveIndexCol].destroy();
+        }
+        let moveX = this.gobangBoardOriginX + this.gobangBoardCell * CurMoveIndexCol;
+        let moveY = this.gobangBoardOriginY + this.gobangBoardCell * CurMoveIndexRow;
+        let curPieceColor = this.gobangColorByID[this.sggbState.ChessBoard[CurMoveIndexRow][CurMoveIndexCol]];
+        this.imageChessboardCells[CurMoveIndexRow][CurMoveIndexCol] = this.mainForm.gameScene.add.sprite(moveX, moveY, curPieceColor, 1).setOrigin(0.5);
+        this.hiddenGamesImages.push(this.imageChessboardCells[CurMoveIndexRow][CurMoveIndexCol]);
+        if (this.mainForm.enableSound) this.mainForm.gameScene.soundclickwa.play();
+
+        this.txtGobangPlayerMoving.setText(this.sggbState.PlayerIdMoving);
+        if (this.sggbState.PlayerIdMoving === this.mainForm.tractorPlayer.MyOwnId) {
+            this.imageChessboard.setInteractive();
+        }
+    }
+
+    public cleanupUIBoardGobang() {
+        this.imageChessboardCells.forEach((row: any[]) => {
+            row.forEach(cell => {
+                if (cell) {
+                    cell.destroy();
+                }
+            })
+        })
+        this.imageChessboardCells = [];
+    }
+
+    private InitImageChessboardCellsGobang() {
+        this.imageChessboardCells = [];
+        for (let i = 0; i < 15; i++) {
+            let row: any = [];
+            this.imageChessboardCells.push(row);
+        }
+    }
+
+    private DrawPiecesGobang() {
+        for (let i = 0; i < this.sggbState.ChessBoard.length; i++) {
+            for (let j = 0; j < this.sggbState.ChessBoard[i].length; j++) {
+                let moveX = this.gobangBoardOriginX + this.gobangBoardCell * j;
+                let moveY = this.gobangBoardOriginY + this.gobangBoardCell * i;
+                let pieceColor = this.gobangColorByID[this.sggbState.ChessBoard[i][j]];
+                if (!pieceColor) continue;
+                let pieceTypeID = 0;
+                if (this.sggbState.LastMove && this.sggbState.LastMove[0] && this.sggbState.LastMove[0] === i && this.sggbState.LastMove[1] === j) {
+                    pieceTypeID = 1;
+                }
+                this.imageChessboardCells[i][j] = this.mainForm.gameScene.add.sprite(moveX, moveY, pieceColor, pieceTypeID).setOrigin(0.5);
+                this.hiddenGamesImages.push(this.imageChessboardCells[i][j]);
+            }
+        }
     }
 }

@@ -71,6 +71,7 @@ export class GameReplayScene extends Phaser.Scene {
     public soundPlayersShowCard: any[];
     public soundfankui2: Phaser.Sound.BaseSound;
     public soundtie: Phaser.Sound.BaseSound;
+    public soundclickwa: Phaser.Sound.BaseSound;
     public soundwin: Phaser.Sound.BaseSound;
     public soundVolume: number
     public noDanmu: string

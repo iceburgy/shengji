@@ -131,6 +131,7 @@ export class TractorPlayer {
             }
 
             this.mainForm.gameScene.clientMessages.push(this.mainForm.gameScene.add.text(posX, posY + i * this.mainForm.gameScene.coordinates.lineOffsetY, m)
+                .setDepth(m.includes("您已离线") ? 100 : 0)
                 .setColor("yellow")
                 .setFontSize(28)
                 .setShadow(2, 2, "#333333", 2, true, true))

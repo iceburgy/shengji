@@ -15,6 +15,14 @@ import leisha from "../assets/leisha.png"
 import pusha from "../assets/sha.png"
 import zhugong from "../assets/zhugong.png"
 
+// gobang
+import chatPanel from "../assets/gobang/chatPanel.webp"
+import chessboard from "../assets/gobang/chessboard.webp"
+import gobangStartBtn from "../assets/gobang/startBtn.webp"
+import gobangQuitBtn from "../assets/gobang/quitBtn.webp"
+import gobangPieceBlack from "../assets/gobang/blackNew.webp"
+import gobangPieceWhite from "../assets/gobang/whiteNew.webp"
+
 // skin
 import skin_frame from "../assets/skin/frame.webp"
 import skin_questionmark from "../assets/skin/questionmark.webp"
@@ -94,6 +102,7 @@ import equip1 from '../assets/music/equip1.mp3';
 import equip2 from '../assets/music/equip2.mp3';
 import tie from '../assets/music/tie.mp3';
 import win from '../assets/music/win.mp3';
+import clickwa from '../assets/music/click.wav';
 
 import walkerjson from '../assets/animations/walker.json';
 import walkerpng from '../assets/animations/walker.png';
@@ -189,6 +198,7 @@ const NotifySgcsPlayerUpdated_RESPONSE = "NotifySgcsPlayerUpdated"
 const NotifyCreateCollectStar_RESPONSE = "NotifyCreateCollectStar"
 const NotifyEndCollectStar_RESPONSE = "NotifyEndCollectStar"
 const NotifyGrabStar_RESPONSE = "NotifyGrabStar"
+const NotifyUpdateGobang_RESPONSE = "NotifyUpdateGobang"
 
 const dummyValue = "dummyValue"
 const IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
@@ -231,7 +241,7 @@ export class GameScene extends Phaser.Scene {
     public playerEmail: string
     public clientMessages: Phaser.GameObjects.Text[]
     public danmuMessages: any[]
-    public roomUIControls: { images: Phaser.GameObjects.Image[], texts: Phaser.GameObjects.Text[], imagesChair: Phaser.GameObjects.Image[] }
+    public roomUIControls: { images: any[], texts: Phaser.GameObjects.Text[], imagesChair: Phaser.GameObjects.Image[] }
     public soundPool: any
     public soundMaleLiangpai: Phaser.Sound.BaseSound;
     public soundFemaleLiangpai: Phaser.Sound.BaseSound;
@@ -243,6 +253,7 @@ export class GameScene extends Phaser.Scene {
     public sounddrawx: Phaser.Sound.BaseSound;
     public soundPlayersShowCard: any[];
     public soundtie: Phaser.Sound.BaseSound;
+    public soundclickwa: Phaser.Sound.BaseSound;
     public soundwin: Phaser.Sound.BaseSound;
     public soundVolume: number
     public noDanmu: string
@@ -415,6 +426,15 @@ export class GameScene extends Phaser.Scene {
         this.load.image("leisha", leisha)
         this.load.image("pusha", pusha)
         this.load.image("zhugong", zhugong)
+
+        // gobang
+        this.load.image("chatPanel", chatPanel)
+        this.load.image("chessboard", chessboard)
+        this.load.image("gobangStartBtn", gobangStartBtn)
+        this.load.image("gobangQuitBtn", gobangQuitBtn)
+        this.load.spritesheet('gobangPieceBlack', gobangPieceBlack, { frameWidth: 30, frameHeight: 30 });
+        this.load.spritesheet('gobangPieceWhite', gobangPieceWhite, { frameWidth: 30, frameHeight: 30 });
+
         this.load.image("skin_ry_diaochan", skin_ry_diaochan)
         this.load.image("skin_ry_luna", skin_ry_luna)
         this.load.image("skin_ry_sunwukong", skin_ry_sunwukong)
@@ -468,6 +488,7 @@ export class GameScene extends Phaser.Scene {
         this.load.html('settingsForm', settingsForm);
         this.load.html('emojiForm', emojiForm);
         this.load.html('cutCardsForm', cutCardsForm);
+        this.load.audio("clickwa", clickwa);
 
         this.load.atlas('walker', walkerpng, walkerjson);
         this.load.atlas('sf2ryu', sf2ryupng, sf2ryujson);
@@ -536,7 +557,10 @@ export class GameScene extends Phaser.Scene {
             this.percentText.destroy();
             this.assetText.destroy();
 
-            this.add.image(0, 0, 'bg2').setOrigin(0).setDisplaySize(this.coordinates.screenWidReal, this.coordinates.screenHei);
+            this.add.image(0, 0, 'bg2')
+                .setDepth(-100)
+                .setOrigin(0)
+                .setDisplaySize(this.coordinates.screenWidReal, this.coordinates.screenHei);
             try {
                 this.websocket = new WebSocket(`${this.wsprotocal}://${this.hostName}`)
                 this.websocket.onerror = this.onerror.bind(this)
@@ -611,55 +635,88 @@ export class GameScene extends Phaser.Scene {
         const objList = JSON.parse(content)
         if (objList == null || objList.length == 0) return
 
-        if (messageType === NotifyGameHall_RESPONSE) {
-            this.handleNotifyGameHall(objList);
-        } else if (messageType === NotifyOnlinePlayerList_RESPONSE) {
-            this.handleNotifyOnlinePlayerList(playerID, objList);
-        } else if (messageType === NotifyGameRoomPlayerList_RESPONSE) {
-            this.handleNotifyGameRoomPlayerList(playerID, objList);
-        } else if (messageType === NotifyMessage_RESPONSE) {
-            this.handleNotifyMessage(objList);
-        } else if (messageType === NotifyRoomSetting_RESPONSE) {
-            this.handleNotifyRoomSetting(objList);
-        } else if (messageType === NotifyGameState_RESPONSE) {
-            this.handleNotifyGameState(objList);
-        } else if (messageType === NotifyCurrentHandState_RESPONSE) {
-            this.handleNotifyCurrentHandState(objList);
-        } else if (messageType === NotifyCurrentTrickState_RESPONSE) {
-            this.handleNotifyCurrentTrickState(objList);
-        } else if (messageType === GetDistributedCard_RESPONSE) {
-            this.handleGetDistributedCard(objList);
-        } else if (messageType === NotifyCardsReady_RESPONSE) {
-            this.handleNotifyCardsReady(objList);
-        } else if (messageType === NotifyDumpingValidationResult_RESPONSE) {
-            this.handleNotifyDumpingValidationResult(objList);
-        } else if (messageType === NotifyTryToDumpResult_RESPONSE) {
-            this.handleNotifyTryToDumpResult(objList);
-        } else if (messageType === NotifyStartTimer_RESPONSE) {
-            this.handleNotifyStartTimer(objList);
-        } else if (messageType === NotifyEmoji_RESPONSE) {
-            this.handleNotifyEmoji(objList);
-        } else if (messageType === CutCardShoeCards_RESPONSE) {
-            this.handleCutCardShoeCards();
-        } else if (messageType === NotifyReplayState_RESPONSE) {
-            this.handleNotifyReplayState(objList);
-        } else if (messageType === NotifyPing_RESPONSE) {
-            this.handleNotifyPing_RESPONSE();
-        } else if (messageType === NotifySgcsPlayerUpdated_RESPONSE) {
-            this.handleNotifySgcsPlayerUpdated_RESPONSE(objList);
-        } else if (messageType === NotifyCreateCollectStar_RESPONSE) {
-            this.handleNotifyCreateCollectStar_RESPONSE(objList);
-        } else if (messageType === NotifyEndCollectStar_RESPONSE) {
-            this.handleNotifyEndCollectStar(objList);
-        } else if (messageType === NotifyGrabStar_RESPONSE) {
-            this.handleNotifyGrabStar_RESPONSE(objList);
-        } else if (messageType === NotifyDaojuInfo_RESPONSE) {
-            this.handleNotifyDaojuInfo(objList);
+        switch (messageType) {
+            case NotifyGameHall_RESPONSE:
+                this.handleNotifyGameHall(objList);
+                break;
+            case NotifyOnlinePlayerList_RESPONSE:
+                this.handleNotifyOnlinePlayerList(playerID, objList);
+                break;
+            case NotifyGameRoomPlayerList_RESPONSE:
+                this.handleNotifyGameRoomPlayerList(playerID, objList);
+                break;
+            case NotifyMessage_RESPONSE:
+                this.handleNotifyMessage(objList);
+                break;
+            case NotifyRoomSetting_RESPONSE:
+                this.handleNotifyRoomSetting(objList);
+                break;
+            case NotifyGameState_RESPONSE:
+                this.handleNotifyGameState(objList);
+                break;
+            case NotifyCurrentHandState_RESPONSE:
+                this.handleNotifyCurrentHandState(objList);
+                break;
+            case NotifyCurrentTrickState_RESPONSE:
+                this.handleNotifyCurrentTrickState(objList);
+                break;
+            case GetDistributedCard_RESPONSE:
+                this.handleGetDistributedCard(objList);
+                break;
+            case NotifyCardsReady_RESPONSE:
+                this.handleNotifyCardsReady(objList);
+                break;
+            case NotifyDumpingValidationResult_RESPONSE:
+                this.handleNotifyDumpingValidationResult(objList);
+                break;
+            case NotifyTryToDumpResult_RESPONSE:
+                this.handleNotifyTryToDumpResult(objList);
+                break;
+            case NotifyStartTimer_RESPONSE:
+                this.handleNotifyStartTimer(objList);
+                break;
+            case NotifyEmoji_RESPONSE:
+                this.handleNotifyEmoji(objList);
+                break;
+            case CutCardShoeCards_RESPONSE:
+                this.handleCutCardShoeCards();
+                break;
+            case NotifyReplayState_RESPONSE:
+                this.handleNotifyReplayState(objList);
+                break;
+            case NotifyPing_RESPONSE:
+                this.handleNotifyPing_RESPONSE();
+                break;
+            case NotifySgcsPlayerUpdated_RESPONSE:
+                this.handleNotifySgcsPlayerUpdated_RESPONSE(objList);
+                break;
+            case NotifyCreateCollectStar_RESPONSE:
+                this.handleNotifyCreateCollectStar_RESPONSE(objList);
+                break;
+            case NotifyEndCollectStar_RESPONSE:
+                this.handleNotifyEndCollectStar(objList);
+                break;
+            case NotifyGrabStar_RESPONSE:
+                this.handleNotifyGrabStar_RESPONSE(objList);
+                break;
+            case NotifyDaojuInfo_RESPONSE:
+                this.handleNotifyDaojuInfo(objList);
+                break;
+            case NotifyUpdateGobang_RESPONSE:
+                this.handleNotifyUpdateGobang_RESPONSE(objList);
+                break;
+            default:
+                break;
         }
         // } catch (e) {
         //     // alert("error")
         //     document.body.innerHTML = `<div>!!! onmessage Error: ${e}</div>`
         // }
+    }
+
+    private handleNotifyUpdateGobang_RESPONSE(objList) {
+        var result: SGGBState = objList[0];
+        this.mainForm.sgDrawingHelper.NotifyUpdateGobang(result);
     }
 
     private handleNotifyDaojuInfo(objList: []) {
@@ -844,6 +901,7 @@ export class GameScene extends Phaser.Scene {
         this.sounddrawx = this.sound.add("drawx", { volume: this.soundVolume });
         this.soundtie = this.sound.add("tie", { volume: this.soundVolume });
         this.soundwin = this.sound.add("win", { volume: this.soundVolume });
+        this.soundclickwa = this.sound.add("clickwa", { volume: this.soundVolume });
     }
 
     public saveSettings() {
