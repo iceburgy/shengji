@@ -401,7 +401,7 @@ export class SGDrawingHelper {
                 this.txtGobangPlayer2.setText(this.sggbState.PlayerId2);
                 this.txtGobangPlayerMoving.setText(this.sggbState.PlayerId1);
                 if (this.sggbState.PlayerIdMoving === this.mainForm.tractorPlayer.MyOwnId) {
-                    this.imageChessboard.setInteractive();
+                    this.imageChessboard.setInteractive({ useHandCursor: true });
                 } else {
                     this.imageChessboard.disableInteractive();
                     this.btnStartGobang.setVisible(false);
@@ -611,7 +611,7 @@ export class SGDrawingHelper {
 
         this.txtGobangPlayerMoving.setText(this.sggbState.PlayerIdMoving);
         if (this.sggbState.PlayerIdMoving === this.mainForm.tractorPlayer.MyOwnId) {
-            this.imageChessboard.setInteractive();
+            this.imageChessboard.setInteractive({ useHandCursor: true });
         }
     }
 
