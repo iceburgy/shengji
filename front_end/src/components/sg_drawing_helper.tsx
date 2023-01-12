@@ -26,6 +26,7 @@ export class SGDrawingHelper {
     public hiddenEffectImages: any[]
     public hiddenGames: any
     public hiddenGamesImages: any[]
+    public endCollectStarRequested: boolean = false;
     public players: any;
     public stars: any;
     public bombs: any;
@@ -126,6 +127,7 @@ export class SGDrawingHelper {
     public NotifyCreateCollectStar(state: SGCSState) {
         if (state.Stage > 1 && !this.IsPlayingGame) return;
         this.sgcsState = state;
+        this.endCollectStarRequested = false;
         if (this.sgcsState.Stage > 1) {
             this.usageText.setText(`stage: ${this.sgcsState.Stage}\nmove: ← and →\njump: ↑\nquit: esc`);
             //  A new batch of stars to collect
@@ -302,7 +304,8 @@ export class SGDrawingHelper {
     }
 
     public hitBomb(player: any, bomb: any) {
-        if (this.myPlayerIndex < 0 || this.players.children.entries[this.myPlayerIndex] !== player) return;
+        if (this.myPlayerIndex < 0 || this.players.children.entries[this.myPlayerIndex] !== player || this.endCollectStarRequested) return;
+        this.endCollectStarRequested = true;
         this.mainForm.gameScene.sendMessageToServer(EndCollectStar_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.myPlayerIndex));
     }
 
