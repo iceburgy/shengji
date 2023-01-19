@@ -695,11 +695,6 @@ export class MainForm {
 
             curIndex = (curIndex + 1) % 4
         }
-        if (this.tractorPlayer.isObserver &&
-            this.tractorPlayer.CurrentHandState.CurrentHandStep === SuitEnums.HandStep.Playing) {
-            if (this.tractorPlayer.CurrentHandState.Last8Holder === this.tractorPlayer.PlayerId) this.drawingFormHelper.DrawDiscardedCards();
-            else this.drawingFormHelper.destroyLast8Cards();
-        }
         this.loadEmojiForm();
 
         /*
@@ -737,8 +732,9 @@ export class MainForm {
         this.groupSmallGames.toggleVisible();
     }
 
-    public ReenterOrResumeEvent() {
+    public ReenterOrResumeOrObservePlayerByIDEvent(drawCards: boolean) {
         this.drawingFormHelper.DrawSidebarFull();
+        if (!drawCards) return;
         this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick = CommonMethods.deepCopy<any>(this.tractorPlayer.CurrentTrickState.ShowedCards);
         if (this.tractorPlayer.CurrentTrickState.ShowedCards && Object.keys(this.tractorPlayer.CurrentTrickState.ShowedCards).length == 4) {
             this.tractorPlayer.playerLocalCache.WinnderID = TractorRules.GetWinner(this.tractorPlayer.CurrentTrickState);
@@ -865,9 +861,6 @@ export class MainForm {
         }
     }
 
-    public AllCardsGot() {
-        this.drawingFormHelper.ResortMyHandCards()
-    }
     public ShowingCardBegan() {
         this.DiscardingLast8();
         this.drawingFormHelper.destroyToolbar();
@@ -987,10 +980,10 @@ export class MainForm {
 
     public DrawDiscardedCardsCaller() {
         if (this.tractorPlayer.CurrentPoker != null && this.tractorPlayer.CurrentPoker.Count() > 0 &&
-            this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId &&
             this.tractorPlayer.CurrentHandState.DiscardedCards != null &&
             this.tractorPlayer.CurrentHandState.DiscardedCards.length == 8) {
-            this.drawingFormHelper.DrawDiscardedCards();
+            if (this.tractorPlayer.CurrentHandState.Last8Holder === this.tractorPlayer.PlayerId) this.drawingFormHelper.DrawDiscardedCards();
+            else this.drawingFormHelper.destroyLast8Cards();
         }
     }
 
@@ -1008,19 +1001,6 @@ export class MainForm {
         this.drawingFormHelper.ResortMyHandCards();
 
         this.drawingFormHelper.reDrawToolbar();
-    }
-
-    public ObservePlayerByIDEvent() {
-        let tempCP = this.tractorPlayer.CurrentHandState.PlayerHoldingCards[this.tractorPlayer.PlayerId]
-        this.tractorPlayer.CurrentPoker.CloneFrom(tempCP);
-        if (this.tractorPlayer.isObserverChanged) {
-            this.drawingFormHelper.ResortMyHandCards();
-            // DrawDiscardedCardsCaller();
-
-            this.drawingFormHelper.DrawSidebarFull();
-
-            this.tractorPlayer.isObserverChanged = false;
-        }
     }
 
     //检查当前出牌者的牌是否为大牌：0 - 否；1 - 是；2 - 是且为吊主；3 - 是且为主毙牌

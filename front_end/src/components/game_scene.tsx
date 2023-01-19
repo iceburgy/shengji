@@ -827,17 +827,20 @@ export class GameScene extends Phaser.Scene {
 
     private handleNotifyGameState(objList: []) {
         var gameState: GameState = objList[0];
-        this.mainForm.tractorPlayer.NotifyGameState(gameState)
+        var notifyType: string = objList[1];
+        this.mainForm.tractorPlayer.NotifyGameState(gameState, notifyType)
     }
 
     private handleNotifyCurrentHandState(objList: []) {
         var currentHandState: CurrentHandState = objList[0];
-        this.mainForm.tractorPlayer.NotifyCurrentHandState(currentHandState)
+        var notifyType: string = objList[1];
+        this.mainForm.tractorPlayer.NotifyCurrentHandState(currentHandState, notifyType)
     }
 
     private handleNotifyCurrentTrickState(objList: []) {
         var currentTrickState: CurrentTrickState = objList[0];
-        this.mainForm.tractorPlayer.NotifyCurrentTrickState(currentTrickState)
+        var notifyType: string = objList[1];
+        this.mainForm.tractorPlayer.NotifyCurrentTrickState(currentTrickState, notifyType)
     }
 
     private processAuth(): boolean {

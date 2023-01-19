@@ -44,6 +44,8 @@ export class CommonMethods {
     public static audioShafire = "shafire";
     public static audioShathunder = "shathunder";
 
+    public static NotifyCurrentHandStateType_ObservePlayerById = "ObservePlayerById";
+
     constructor() {
     }
 

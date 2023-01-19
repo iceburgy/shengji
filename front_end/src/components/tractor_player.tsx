@@ -29,7 +29,6 @@ export class TractorPlayer {
     public PlayerId: string
     public MyOwnId: string
     public isObserver: boolean
-    public isObserverChanged: boolean
     public IsTryingReenter: boolean
     public IsOtherTryingReenter: boolean
     public IsTryingResumeGame: boolean
@@ -52,7 +51,6 @@ export class TractorPlayer {
         this.PlayerId = mf.gameScene.playerName
         this.MyOwnId = mf.gameScene.playerName
         this.isObserver = false
-        this.isObserverChanged = false
         this.IsTryingReenter = false
         this.IsOtherTryingReenter = false
         this.IsTryingResumeGame = false
@@ -160,7 +158,7 @@ export class TractorPlayer {
         }
     }
 
-    public NotifyGameState(gameState: GameState) {
+    public NotifyGameState(gameState: GameState, notifyType?: string) {
         //bug修复：如果所有人都就绪了，然后来自服务器的新消息就绪人数既不是0又不是4（由于网络延迟导致有一人未就绪的来自服务器的消息滞后到达），那么不处理这条消息
         var isCurrentAllReady = CommonMethods.GetReadyCount(this.CurrentGameState.Players) == 4
         var newReadyCount = CommonMethods.GetReadyCount(gameState.Players);
@@ -176,7 +174,6 @@ export class TractorPlayer {
             if (p != null && p.Observers.includes(this.MyOwnId, 0)) {
                 if (this.PlayerId != p.PlayerId) {
                     this.isObserver = true;
-                    this.isObserverChanged = true;
                     this.PlayerId = p.PlayerId;
                 }
                 break;
@@ -224,8 +221,9 @@ export class TractorPlayer {
             this.mainForm.NewPlayerJoined(meJoined)
         }
 
-        if (this.IsTryingReenter || this.IsTryingResumeGame) {
-            this.mainForm.ReenterOrResumeEvent()
+        if (this.IsTryingReenter ||
+            this.IsTryingResumeGame) {
+            this.mainForm.ReenterOrResumeOrObservePlayerByIDEvent(true)
             this.IsTryingReenter = false;
             this.IsTryingResumeGame = false;
         }
@@ -233,7 +231,7 @@ export class TractorPlayer {
             this.IsOtherTryingReenter = false;
         }
     }
-    public NotifyCurrentHandState(currentHandState: CurrentHandState) {
+    public NotifyCurrentHandState(currentHandState: CurrentHandState, notifyType?: string) {
 
         var trumpChanged = false;
         var newHandStep = false;
@@ -257,11 +255,23 @@ export class TractorPlayer {
             this.CurrentPoker.CloneFrom(this.CurrentHandState.PlayerHoldingCards[this.PlayerId] as CurrentPoker)
             this.CurrentPoker.Rank = this.CurrentHandState.Rank;
             this.CurrentPoker.Trump = this.CurrentHandState.Trump;
-            this.mainForm.AllCardsGot();
+            this.mainForm.drawingFormHelper.ResortMyHandCards();
+            return;
+        }
 
-            if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8CardsFinished) {
-                this.mainForm.Last8Discarded()
+        //改变旁观视角
+        if (notifyType && notifyType === CommonMethods.NotifyCurrentHandStateType_ObservePlayerById) {
+            let drawCards = false;
+            if (SuitEnums.HandStep.DistributingCards <= currentHandState.CurrentHandStep &&
+                currentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing &&
+                this.CurrentHandState.PlayerHoldingCards != undefined &&
+                this.CurrentHandState.PlayerHoldingCards[this.PlayerId] != undefined) {
+                drawCards = true;
+                this.CurrentPoker.CloneFrom(this.CurrentHandState.PlayerHoldingCards[this.PlayerId] as CurrentPoker)
+                this.CurrentPoker.Rank = this.CurrentHandState.Rank;
+                this.CurrentPoker.Trump = this.CurrentHandState.Trump;
             }
+            this.mainForm.ReenterOrResumeOrObservePlayerByIDEvent(drawCards)
             return;
         }
 
@@ -272,7 +282,7 @@ export class TractorPlayer {
 
             // //resort cards
             if (currentHandState.CurrentHandStep > SuitEnums.HandStep.DistributingCards) {
-                this.mainForm.AllCardsGot();
+                this.mainForm.drawingFormHelper.ResortMyHandCards();
             }
         }
         if (currentHandState.CurrentHandStep == SuitEnums.HandStep.BeforeDistributingCards) {
@@ -280,7 +290,7 @@ export class TractorPlayer {
         }
         else if (newHandStep) {
             if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCardsFinished) {
-                this.mainForm.AllCardsGot();
+                this.mainForm.drawingFormHelper.ResortMyHandCards();
             }
             else if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingLast8Cards) {
                 this.mainForm.DistributingLast8Cards()
@@ -294,7 +304,7 @@ export class TractorPlayer {
             //player begin to showing card
             //开始出牌
             else if (currentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
-                this.mainForm.AllCardsGot();
+                this.mainForm.drawingFormHelper.ResortMyHandCards();
                 this.mainForm.ShowingCardBegan();
             }
             else if (currentHandState.CurrentHandStep == SuitEnums.HandStep.Ending) {
@@ -317,17 +327,8 @@ export class TractorPlayer {
             this.CurrentPoker.Rank = this.CurrentHandState.Rank;
             this.mainForm.StarterFailedForTrump()
         }
-
-        if (this.isObserver &&
-            this.CurrentHandState.PlayerHoldingCards != undefined &&
-            this.CurrentHandState.PlayerHoldingCards[this.PlayerId] != undefined) {
-            //即时更新旁观手牌
-            this.CurrentPoker = new CurrentPoker()
-            this.CurrentPoker.CloneFrom(this.CurrentHandState.PlayerHoldingCards[this.PlayerId])
-            this.mainForm.ObservePlayerByIDEvent()
-        }
     }
-    public NotifyCurrentTrickState(currentTrickState: CurrentTrickState) {
+    public NotifyCurrentTrickState(currentTrickState: CurrentTrickState, notifyType?: string) {
 
         this.CurrentTrickState.CloneFrom(currentTrickState);
         // 显示确定按钮，提示当前回合玩家出牌
@@ -366,10 +367,10 @@ export class TractorPlayer {
         }
 
         if (this.CurrentPoker.Count() == TractorRules.GetCardNumberofEachPlayer(this.CurrentGameState.Players.length) && this.PlayerId != this.CurrentHandState.Last8Holder) {
-            this.mainForm.AllCardsGot();
+            this.mainForm.drawingFormHelper.ResortMyHandCards();
         }
         else if (this.CurrentPoker.Count() == TractorRules.GetCardNumberofEachPlayer(this.CurrentGameState.Players.length) + 8) {
-            this.mainForm.AllCardsGot();
+            this.mainForm.drawingFormHelper.ResortMyHandCards();
         }
     }
     public NotifyCardsReady(mcir: boolean[]) {
