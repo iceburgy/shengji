@@ -180,9 +180,22 @@ export class TractorPlayer {
             }
         }
 
+        var curIndex = CommonMethods.GetPlayerIndexByID(gameState.Players, this.PlayerId)
+        let newPlayerPosition: any = {};
+        let newPositionPlayer: any = {};
+        for (let i = 0; i < 4; i++) {
+            let p = gameState.Players[curIndex];
+            if (p) {
+                newPlayerPosition[p.PlayerId] = i + 1;
+                newPositionPlayer[i + 1] = p.PlayerId;
+            }
+            curIndex = (curIndex + 1) % 4
+        }
+
         var totalPlayers = 0;
         for (let i = 0; i < 4; i++) {
-            playerChanged = playerChanged || !(this.CurrentGameState.Players[i] != null && gameState.Players[i] != null && this.CurrentGameState.Players[i].PlayerId == gameState.Players[i].PlayerId);
+            playerChanged = playerChanged || !(!newPositionPlayer[i + 1] && !this.mainForm.PositionPlayer[i + 1] ||
+                newPositionPlayer[i + 1] && this.mainForm.PositionPlayer[i + 1] && newPositionPlayer[i + 1] == this.mainForm.PositionPlayer[i + 1]);
             ObserverChanged = ObserverChanged || !(this.CurrentGameState.Players[i] != null && gameState.Players[i] != null && CommonMethods.ArrayIsEqual(this.CurrentGameState.Players[i].Observers, gameState.Players[i].Observers));
 
             if (gameState.Players[i] != null && gameState.Players[i].Team != 0 &&
@@ -193,7 +206,6 @@ export class TractorPlayer {
                 totalPlayers++;
             }
         }
-        var meJoined = !CommonMethods.IncludesByPlayerID(this.CurrentGameState.Players, this.MyOwnId) && CommonMethods.IncludesByPlayerID(gameState.Players, this.MyOwnId)
         var anyBecomesReady = CommonMethods.SomeoneBecomesReady(this.CurrentGameState.Players, gameState.Players)
 
         this.CurrentGameState.CloneFrom(gameState);
@@ -218,7 +230,9 @@ export class TractorPlayer {
         }
 
         if ((playerChanged || ObserverChanged)) {
-            this.mainForm.NewPlayerJoined(meJoined)
+            this.mainForm.PlayerPosition = newPlayerPosition;
+            this.mainForm.PositionPlayer = newPositionPlayer;
+            this.mainForm.NewPlayerJoined(playerChanged)
         }
 
         if (this.IsTryingReenter ||

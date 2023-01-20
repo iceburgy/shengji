@@ -498,7 +498,7 @@ export class MainForm {
         }
     }
 
-    public NewPlayerJoined(meJoined: boolean) {
+    public NewPlayerJoined(playerChanged: boolean) {
         if (this.gameScene.isInGameHall()) {
             this.destroyGameHall()
             this.init();
@@ -524,9 +524,7 @@ export class MainForm {
         this.btnRobot.setVisible(!this.tractorPlayer.isObserver)
 
         var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)
-        this.PlayerPosition = {};
-        this.PositionPlayer = {};
-        this.destroyImagesChair();
+        if (playerChanged) this.destroyImagesChair();
         for (let i = 0; i < 4; i++) {
             let lblNickName = this.lblNickNames[i];
             let lblObserver = this.lblObservers[i];
@@ -534,33 +532,31 @@ export class MainForm {
             let p = this.tractorPlayer.CurrentGameState.Players[curIndex];
             let isEmptySeat = !p;
             if (isEmptySeat) {
-                lblNickName.setText("");
-                lblObserver.setText("");
-                let chairImage = this.gameScene.add.image(this.gameScene.coordinates.playerMainTextPositions[i].x - (i == 1 ? 60 : 0), this.gameScene.coordinates.playerMainTextPositions[i].y, 'pokerChair')
-                    .setOrigin(0, 0)
-                    .setDisplaySize(60, 60)
+                if (playerChanged) {
+                    lblNickName.setText("");
+                    lblObserver.setText("");
+                    let chairImage = this.gameScene.add.image(this.gameScene.coordinates.playerMainTextPositions[i].x - (i == 1 ? 60 : 0), this.gameScene.coordinates.playerMainTextPositions[i].y, 'pokerChair')
+                        .setOrigin(0, 0)
+                        .setDisplaySize(60, 60)
 
-                // 旁观玩家/正常玩家：坐下
-                chairImage.setInteractive({ useHandCursor: true })
-                    .on('pointerup', () => {
-                        let pos = i + 1;
-                        let playerIndex = CommonMethods.GetPlayerIndexByPos(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId, pos);
-                        this.ExitRoomAndEnter(playerIndex);
-                    })
-                    .on('pointerover', () => {
-                        chairImage.y -= 3
-                    })
-                    .on('pointerout', () => {
-                        chairImage.y += 3
-                    })
-                this.gameScene.roomUIControls.imagesChair.push(chairImage)
+                    // 旁观玩家/正常玩家：坐下
+                    chairImage.setInteractive({ useHandCursor: true })
+                        .on('pointerup', () => {
+                            let pos = i + 1;
+                            let playerIndex = CommonMethods.GetPlayerIndexByPos(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId, pos);
+                            this.ExitRoomAndEnter(playerIndex);
+                        })
+                        .on('pointerover', () => {
+                            chairImage.y -= 3
+                        })
+                        .on('pointerout', () => {
+                            chairImage.y += 3
+                        })
+                    this.gameScene.roomUIControls.imagesChair.push(chairImage)
+                }
             } else {
-                //set player position
-                this.PlayerPosition[p.PlayerId] = i + 1;
-                this.PositionPlayer[i + 1] = p.PlayerId;
-
                 //skin
-                if (i !== 0) {
+                if (playerChanged && i !== 0) {
                     let skinInUse = this.DaojuInfo.daojuInfoByPlayer[p.PlayerId] ? this.DaojuInfo.daojuInfoByPlayer[p.PlayerId].skinInUse : CommonMethods.defaultSkinInUse;
                     let skinType = this.GetSkinType(skinInUse)
                     let skinImage: any
@@ -769,6 +765,8 @@ export class MainForm {
         this.drawingFormHelper.destroySidebar()
         this.drawingFormHelper.destroyScoreImageAndCards()
         this.drawingFormHelper.destroyLast8Cards()
+        this.PlayerPosition = {};
+        this.PositionPlayer = {};
 
         //重置状态
         this.tractorPlayer.CurrentGameState = new GameState();
