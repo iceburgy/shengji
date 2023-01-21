@@ -274,7 +274,7 @@ export class TractorPlayer {
         }
 
         //改变旁观视角
-        if (notifyType && notifyType === CommonMethods.NotifyCurrentHandStateType_ObservePlayerById) {
+        if (notifyType && notifyType === CommonMethods.NotifyStateType_ObservePlayerById) {
             let drawCards = false;
             if (SuitEnums.HandStep.DistributingCards <= currentHandState.CurrentHandStep &&
                 currentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing &&
@@ -286,13 +286,14 @@ export class TractorPlayer {
                 this.CurrentPoker.Trump = this.CurrentHandState.Trump;
             }
             this.mainForm.ReenterOrResumeOrObservePlayerByIDEvent(drawCards)
+            this.mainForm.TrumpChanged(false)
             return;
         }
 
         this.CurrentPoker.Trump = this.CurrentHandState.Trump;
 
         if (trumpChanged) {
-            this.mainForm.TrumpChanged(currentHandState)
+            this.mainForm.TrumpChanged(true)
 
             // //resort cards
             if (currentHandState.CurrentHandStep > SuitEnums.HandStep.DistributingCards) {
@@ -343,8 +344,10 @@ export class TractorPlayer {
         }
     }
     public NotifyCurrentTrickState(currentTrickState: CurrentTrickState, notifyType?: string) {
-
         this.CurrentTrickState.CloneFrom(currentTrickState);
+
+        if (notifyType === CommonMethods.NotifyStateType_ObservePlayerById) return;
+
         // 显示确定按钮，提示当前回合玩家出牌
         let isMeNextPlayer = this.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing &&
             Object.keys(this.CurrentTrickState.ShowedCards).length > 0 &&
