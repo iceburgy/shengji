@@ -741,11 +741,19 @@ export class MainForm {
         this.DrawDiscardedCardsCaller();
     }
 
-    public TrumpChanged(playerAudio: boolean) {
+    public TrumpChanged() {
         this.drawingFormHelper.DrawSidebarFull()
         if (SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep &&
             this.tractorPlayer.CurrentHandState.CurrentHandStep < SuitEnums.HandStep.DistributingLast8Cards) {
-            if (playerAudio && this.enableSound) this.gameScene.playAudio(CommonMethods.audioLiangpai, this.GetPlayerSex(this.tractorPlayer.CurrentHandState.TrumpMaker));
+            if (this.enableSound) this.gameScene.playAudio(CommonMethods.audioLiangpai, this.GetPlayerSex(this.tractorPlayer.CurrentHandState.TrumpMaker));
+            this.drawingFormHelper.TrumpMadeCardsShow()
+        }
+        this.drawingFormHelper.reDrawToolbar()
+    }
+
+    public TrumpChangedForObservePlayerById() {
+        if (SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep &&
+            this.tractorPlayer.CurrentHandState.CurrentHandStep < SuitEnums.HandStep.DistributingLast8Cards) {
             this.drawingFormHelper.TrumpMadeCardsShow()
         }
         this.drawingFormHelper.reDrawToolbar()

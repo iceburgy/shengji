@@ -286,14 +286,14 @@ export class TractorPlayer {
                 this.CurrentPoker.Trump = this.CurrentHandState.Trump;
             }
             this.mainForm.ReenterOrResumeOrObservePlayerByIDEvent(drawCards)
-            this.mainForm.TrumpChanged(false)
+            this.mainForm.TrumpChangedForObservePlayerById()
             return;
         }
 
         this.CurrentPoker.Trump = this.CurrentHandState.Trump;
 
         if (trumpChanged) {
-            this.mainForm.TrumpChanged(true)
+            this.mainForm.TrumpChanged()
 
             // //resort cards
             if (currentHandState.CurrentHandStep > SuitEnums.HandStep.DistributingCards) {
