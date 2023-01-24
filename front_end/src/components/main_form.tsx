@@ -1677,6 +1677,12 @@ export class MainForm {
             this.gameScene.noCutCards = cbxCutCards.checked.toString()
         }
 
+        let cbxYesDragSelect = this.modalForm.getChildByID("cbxYesDragSelect")
+        cbxYesDragSelect.checked = this.gameScene.yesDragSelect.toLowerCase() === "true"
+        cbxYesDragSelect.onchange = () => {
+            this.gameScene.yesDragSelect = cbxYesDragSelect.checked.toString()
+        }
+
         // 游戏道具栏
         // 升币
         let lblShengbi = this.modalForm.getChildByID("lblShengbi");

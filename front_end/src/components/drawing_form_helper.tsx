@@ -291,7 +291,7 @@ export class DrawingFormHelper {
                 this.isDragging = undefined
             });
             image.on('pointerover', (pointer: Phaser.Input.Pointer) => {
-                if (pointer.leftButtonDown() && this.isDragging !== image) {
+                if (this.mainForm.gameScene.yesDragSelect.toLowerCase() === "true" && pointer.leftButtonDown() && this.isDragging !== image) {
                     this.handleSelectingCard(image)
                 }
             });
