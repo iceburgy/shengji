@@ -755,8 +755,8 @@ export class MainForm {
         if (SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep &&
             this.tractorPlayer.CurrentHandState.CurrentHandStep < SuitEnums.HandStep.DistributingLast8Cards) {
             this.drawingFormHelper.TrumpMadeCardsShow()
+            this.drawingFormHelper.reDrawToolbar()
         }
-        this.drawingFormHelper.reDrawToolbar()
     }
 
     public destroyGameRoom() {
