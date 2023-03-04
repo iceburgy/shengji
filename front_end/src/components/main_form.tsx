@@ -1078,7 +1078,7 @@ export class MainForm {
         }
 
         //如果正在回看并且自己刚刚出了牌，则重置回看，重新画牌
-        if (this.tractorPlayer.ShowLastTrickCards && latestPlayer == this.tractorPlayer.PlayerId) {
+        if (this.tractorPlayer.ShowLastTrickCards) {
             this.HandleRightClickEmptyArea();
         }
 
