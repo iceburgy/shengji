@@ -410,6 +410,7 @@ export class SGDrawingHelper {
                     this.btnStartGobang.setVisible(false);
                 }
                 this.btnQuitGobang.setVisible([this.sggbState.PlayerId1, this.sggbState.PlayerId2].includes(this.mainForm.tractorPlayer.MyOwnId));
+                if (this.mainForm.enableSound) this.mainForm.gameScene.soundtie.play();
                 break;
             case "moved":
                 this.ProcessMovedGobang();
@@ -638,6 +639,8 @@ export class SGDrawingHelper {
     }
 
     private DrawPiecesGobang() {
+        let CurMoveIndexRow = this.sggbState.CurMove[0];
+        let CurMoveIndexCol = this.sggbState.CurMove[1];
         for (let i = 0; i < this.sggbState.ChessBoard.length; i++) {
             for (let j = 0; j < this.sggbState.ChessBoard[i].length; j++) {
                 let moveX = this.gobangBoardOriginX + this.gobangBoardCell * j;
@@ -648,7 +651,12 @@ export class SGDrawingHelper {
                 if (this.sggbState.LastMove && this.sggbState.LastMove[0] && this.sggbState.LastMove[0] === i && this.sggbState.LastMove[1] === j) {
                     pieceTypeID = 1;
                 }
-                this.imageChessboardCells[i][j] = this.mainForm.gameScene.add.sprite(moveX, moveY, pieceColor, pieceTypeID).setOrigin(0.5);
+                if (i === CurMoveIndexRow && j === CurMoveIndexCol) {
+                    pieceColor = `${pieceColor}0`;
+                }
+                this.imageChessboardCells[i][j] = this.mainForm.gameScene.add.sprite(moveX, moveY, pieceColor, pieceTypeID)
+                    .setDisplaySize(30, 30)
+                    .setOrigin(0.5);
                 this.hiddenGamesImages.push(this.imageChessboardCells[i][j]);
             }
         }
