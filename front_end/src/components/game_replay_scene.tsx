@@ -226,7 +226,7 @@ export class GameReplayScene extends Phaser.Scene {
             .on('pointerover', () => {
                 this.btnFirstPersonView.setStyle({ backgroundColor: 'lightblue' })
                 // tooltip
-                this.btnTT = this.createTooltip(pointer.x, pointer.y, "快捷键：0 键")
+                this.btnTT = this.createTooltip(this.btnFirstPersonView.getTopLeft().x, this.btnFirstPersonView.getTopLeft().y, "快捷键：0 键", true);
             })
             .on('pointerout', () => {
                 this.btnFirstPersonView.setStyle({ backgroundColor: 'gray' })
@@ -244,10 +244,10 @@ export class GameReplayScene extends Phaser.Scene {
             .setVisible(false)
             .setInteractive({ useHandCursor: true })
             .on('pointerup', () => this.btnFirstTrick_Click())
-            .on('pointerover', (pointer: Phaser.Input.Pointer) => {
+            .on('pointerover', () => {
                 this.btnFirstTrick.setStyle({ backgroundColor: 'lightblue' })
                 // tooltip
-                this.btnTT = this.createTooltip(pointer.x, pointer.y, "快捷键：↑ 上箭头")
+                this.btnTT = this.createTooltip(this.btnFirstTrick.getTopRight().x, this.btnFirstTrick.getTopRight().y, "快捷键：↑ 上箭头")
             })
             .on('pointerout', () => {
                 this.btnFirstTrick.setStyle({ backgroundColor: 'gray' });
@@ -266,10 +266,10 @@ export class GameReplayScene extends Phaser.Scene {
             .setVisible(false)
             .setInteractive({ useHandCursor: true })
             .on('pointerup', () => this.btnPreviousTrick_Click())
-            .on('pointerover', (pointer: Phaser.Input.Pointer) => {
+            .on('pointerover', () => {
                 this.btnPreviousTrick.setStyle({ backgroundColor: 'lightblue' })
                 // tooltip
-                this.btnTT = this.createTooltip(pointer.x, pointer.y, "快捷键：← 左箭头")
+                this.btnTT = this.createTooltip(this.btnPreviousTrick.getTopRight().x, this.btnPreviousTrick.getTopRight().y, "快捷键：← 左箭头")
             })
             .on('pointerout', () => {
                 this.btnPreviousTrick.setStyle({ backgroundColor: 'gray' })
@@ -288,10 +288,10 @@ export class GameReplayScene extends Phaser.Scene {
             .setVisible(false)
             .setInteractive({ useHandCursor: true })
             .on('pointerup', () => this.btnNextTrick_Click())
-            .on('pointerover', (pointer: Phaser.Input.Pointer) => {
+            .on('pointerover', () => {
                 this.btnNextTrick.setStyle({ backgroundColor: 'lightblue' })
                 // tooltip
-                this.btnTT = this.createTooltip(pointer.x, pointer.y, "快捷键：→ 右箭头")
+                this.btnTT = this.createTooltip(this.btnNextTrick.getTopRight().x, this.btnNextTrick.getTopRight().y, "快捷键：→ 右箭头")
             })
             .on('pointerout', () => {
                 this.btnNextTrick.setStyle({ backgroundColor: 'gray' })
@@ -310,10 +310,10 @@ export class GameReplayScene extends Phaser.Scene {
             .setVisible(false)
             .setInteractive({ useHandCursor: true })
             .on('pointerup', () => this.btnLastTrick_Click())
-            .on('pointerover', (pointer: Phaser.Input.Pointer) => {
+            .on('pointerover', () => {
                 this.btnLastTrick.setStyle({ backgroundColor: 'lightblue' })
                 // tooltip
-                this.btnTT = this.createTooltip(pointer.x, pointer.y, "快捷键：↓ 下箭头")
+                this.btnTT = this.createTooltip(this.btnLastTrick.getTopRight().x, this.btnLastTrick.getTopRight().y, "快捷键：↓ 下箭头")
             })
             .on('pointerout', () => {
                 this.btnLastTrick.setStyle({ backgroundColor: 'gray' })
@@ -789,14 +789,18 @@ export class GameReplayScene extends Phaser.Scene {
         }
     }
 
-    public createTooltip(x: number, y: number, content: string): Phaser.GameObjects.Text {
+    public createTooltip(x: number, y: number, content: string, alignLeft?: boolean): Phaser.GameObjects.Text {
         let temptt = this.add.text(x, y, content)
             .setColor('white')
             .setFontSize(20)
             .setShadow(2, 2, "#333333", 2, true, true)
             .setVisible(false);
 
-        y = y - (temptt.getBottomLeft().y - y);
+        if (!alignLeft) {
+            x = x - temptt.width;
+            temptt.setX(x);
+        }
+        y = y - temptt.height - 2;
         temptt.setY(y);
 
         this.tweens.add({
