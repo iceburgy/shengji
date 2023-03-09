@@ -225,9 +225,13 @@ export class GameReplayScene extends Phaser.Scene {
             .on('pointerup', () => this.btnFirstTrick_Click())
             .on('pointerover', () => {
                 this.btnFirstPersonView.setStyle({ backgroundColor: 'lightblue' })
+                // tooltip
+                this.btnTT = this.createTooltip(pointer.x, pointer.y, "快捷键：0 键")
             })
             .on('pointerout', () => {
                 this.btnFirstPersonView.setStyle({ backgroundColor: 'gray' })
+                // tooltip
+                this.btnTT.destroy();
             })
         this.roomUIControls.texts.push(this.btnFirstPersonView)
 
