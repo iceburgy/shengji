@@ -1480,6 +1480,9 @@ export class MainForm {
                 case 'arrowdown':
                     (this.gameScene as GameReplayScene).btnLastTrick_Click();
                     return;
+                case '0':
+                    (this.gameScene as GameReplayScene).btnFirstPersonView_Click();
+                    return;
                 default:
                     break;
             }

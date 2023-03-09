@@ -222,17 +222,7 @@ export class GameReplayScene extends Phaser.Scene {
             .setShadow(2, 2, "#333333", 2, true, true)
             .setStyle({ backgroundColor: 'gray' })
             .setInteractive({ useHandCursor: true })
-            .on('pointerup', () => {
-                if (this.yesFirstPersonView === "false") {
-                    this.yesFirstPersonView = "true";
-                    this.btnFirstPersonView.setText("全开视角")
-                } else {
-                    this.yesFirstPersonView = "false";
-                    this.btnFirstPersonView.setText("第一视角")
-                }
-                this.StartReplay(true);
-                this.saveSettings();
-            })
+            .on('pointerup', () => this.btnFirstTrick_Click())
             .on('pointerover', () => {
                 this.btnFirstPersonView.setStyle({ backgroundColor: 'lightblue' })
             })
@@ -564,6 +554,18 @@ export class GameReplayScene extends Phaser.Scene {
             "",
             ""
         ]);
+    }
+
+    public btnFirstPersonView_Click() {
+        if (this.yesFirstPersonView === "false") {
+            this.yesFirstPersonView = "true";
+            this.btnFirstPersonView.setText("全开视角")
+        } else {
+            this.yesFirstPersonView = "false";
+            this.btnFirstPersonView.setText("第一视角")
+        }
+        this.StartReplay(true);
+        this.saveSettings();
     }
 
     public btnFirstTrick_Click() {
