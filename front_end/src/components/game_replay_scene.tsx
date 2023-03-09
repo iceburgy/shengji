@@ -77,12 +77,14 @@ export class GameReplayScene extends Phaser.Scene {
     public noDanmu: string
     public noCutCards: string
     public yesDragSelect: string
+    public yesFirstPersonView: string
     public qiangliangMin: string
     public skinInUse: string = CommonMethods.defaultSkinInUse;
     public decadeUICanvas: HTMLElement
     public currentReplayEntities: any[]
     public selectDates: Element
     public selectTimes: Element
+    public btnFirstPersonView: Phaser.GameObjects.Text
     public btnFirstTrick: Phaser.GameObjects.Text
     public btnPreviousTrick: Phaser.GameObjects.Text
     public btnNextTrick: Phaser.GameObjects.Text
@@ -111,6 +113,8 @@ export class GameReplayScene extends Phaser.Scene {
         if (this.noCutCards === undefined) this.noCutCards = 'false'
         this.yesDragSelect = cookies.get("yesDragSelect");
         if (this.yesDragSelect === undefined) this.yesDragSelect = 'false'
+        this.yesFirstPersonView = cookies.get("yesFirstPersonView");
+        if (this.yesFirstPersonView === undefined) this.yesFirstPersonView = 'false'
         this.qiangliangMin = cookies.get("qiangliangMin");
         if (this.qiangliangMin === undefined) this.qiangliangMin = '5'
 
@@ -208,6 +212,34 @@ export class GameReplayScene extends Phaser.Scene {
         CommonMethods.BuildCardNumMap()
 
         this.loadReplayForm();
+
+        // 第一视角按钮
+        this.btnFirstPersonView = this.add.text(this.coordinates.btnFirstPersonView.x, this.coordinates.btnFirstPersonView.y, '第一视角')
+            .setColor('white')
+            .setFontSize(30)
+            .setPadding(10)
+            .setVisible(false)
+            .setShadow(2, 2, "#333333", 2, true, true)
+            .setStyle({ backgroundColor: 'gray' })
+            .setInteractive({ useHandCursor: true })
+            .on('pointerup', () => {
+                if (this.yesFirstPersonView === "false") {
+                    this.yesFirstPersonView = "true";
+                    this.btnFirstPersonView.setText("全开视角")
+                } else {
+                    this.yesFirstPersonView = "false";
+                    this.btnFirstPersonView.setText("第一视角")
+                }
+                this.StartReplay(true);
+                this.saveSettings();
+            })
+            .on('pointerover', () => {
+                this.btnFirstPersonView.setStyle({ backgroundColor: 'lightblue' })
+            })
+            .on('pointerout', () => {
+                this.btnFirstPersonView.setStyle({ backgroundColor: 'gray' })
+            })
+        this.roomUIControls.texts.push(this.btnFirstPersonView)
 
         this.btnFirstTrick = this.add.text(this.coordinates.btnFirstTrickPosition.x, this.coordinates.btnFirstTrickPosition.y, '|←')
             .setColor('white')
@@ -311,6 +343,7 @@ export class GameReplayScene extends Phaser.Scene {
         btnLoadReplay.onclick = () => {
             if (this.selectTimes.selectedIndex < 0) return;
             this.loadReplayEntity(this.currentReplayEntities[1][this.selectTimes.selectedIndex], true);
+            this.btnFirstPersonView.setVisible(true);
             this.btnFirstTrick.setVisible(true);
             this.btnPreviousTrick.setVisible(true);
             this.btnNextTrick.setVisible(true);
@@ -452,8 +485,12 @@ export class GameReplayScene extends Phaser.Scene {
     }
 
     private drawAllPlayerHandCards() {
-        for (let i = 1; i <= 4; i++) {
-            this.mainForm.drawingFormHelper.DrawHandCardsByPosition(i, this.mainForm.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[this.mainForm.PositionPlayer[i]], i == 1 ? 1 : this.coordinates.replayHandCardScale);
+        if (this.yesFirstPersonView === "true") {
+            this.mainForm.drawingFormHelper.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[this.mainForm.PositionPlayer[1]], 1);
+        } else {
+            for (let i = 1; i <= 4; i++) {
+                this.mainForm.drawingFormHelper.DrawHandCardsByPosition(i, this.mainForm.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[this.mainForm.PositionPlayer[i]], i == 1 ? 1 : this.coordinates.replayHandCardScale);
+            }
         }
     }
 
@@ -715,6 +752,7 @@ export class GameReplayScene extends Phaser.Scene {
         cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
         cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
         cookies.set('yesDragSelect', this.yesDragSelect, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
         cookies.set('qiangliangMin', this.qiangliangMin, { path: '/', expires: CommonMethods.GetCookieExpires() });
 
         if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {

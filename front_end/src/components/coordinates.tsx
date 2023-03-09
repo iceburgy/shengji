@@ -55,6 +55,7 @@ export class Coordinates {
     public btnShowLastTrickPosition
     public btnReadyPosition
     public btnRobotPosition
+    public btnFirstPersonView
     public btnFirstTrickPosition
 
     public controlButtonOffset
@@ -180,6 +181,7 @@ export class Coordinates {
         this.btnShowLastTrickPosition = { x: this.screenWid - 90, y: this.btnExitRoomPosition.y }
         this.btnReadyPosition = { x: this.btnShowLastTrickPosition.x - this.btnLowerSize, y: this.btnShowLastTrickPosition.y }
         this.btnRobotPosition = { x: this.btnShowLastTrickPosition.x - this.btnLowerSize * 2, y: this.btnShowLastTrickPosition.y }
+        this.btnFirstPersonView = { x: this.btnExitRoomPosition.x + this.btnLowerSize, y: this.btnExitRoomPosition.y }
         this.btnFirstTrickPosition = { x: this.screenWid - 300, y: this.btnExitRoomPosition.y }
 
         // players

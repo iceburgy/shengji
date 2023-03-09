@@ -263,6 +263,7 @@ export class GameScene extends Phaser.Scene {
     public noDanmu: string
     public noCutCards: string
     public yesDragSelect: string
+    public yesFirstPersonView: string
     public qiangliangMin: string
     public skinInUse: string;
     public decadeUICanvas: HTMLElement
@@ -310,6 +311,8 @@ export class GameScene extends Phaser.Scene {
         if (this.noCutCards === undefined) this.noCutCards = 'false'
         this.yesDragSelect = cookies.get("yesDragSelect");
         if (this.yesDragSelect === undefined) this.yesDragSelect = 'false'
+        this.yesFirstPersonView = cookies.get("yesFirstPersonView");
+        if (this.yesFirstPersonView === undefined) this.yesFirstPersonView = 'false'
         this.qiangliangMin = cookies.get("qiangliangMin");
         if (this.qiangliangMin === undefined) this.qiangliangMin = '5'
 
@@ -923,6 +926,7 @@ export class GameScene extends Phaser.Scene {
         cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
         cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
         cookies.set('yesDragSelect', this.yesDragSelect, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
         cookies.set('qiangliangMin', this.qiangliangMin, { path: '/', expires: CommonMethods.GetCookieExpires() });
 
         if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
