@@ -407,6 +407,7 @@ export class GameReplayScene extends Phaser.Scene {
 
     private StartReplay(shouldDraw: bool) {
         this.mainForm.drawingFormHelper.resetReplay();
+        this.mainForm.drawingFormHelper.destroyLast8Cards()
         let players: string[] = this.mainForm.tractorPlayer.replayEntity.Players;
         let playerRanks: int[] = new Array(4);
         if (this.mainForm.tractorPlayer.replayEntity.PlayerRanks != null) {
@@ -476,7 +477,7 @@ export class GameReplayScene extends Phaser.Scene {
         this.mainForm.tractorPlayer.CurrentPoker = this.mainForm.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[players[0]];
 
         this.mainForm.drawingFormHelper.DrawSidebarFull();
-        if (this.yesFirstPersonView !== "true") this.mainForm.drawingFormHelper.DrawDiscardedCards();
+        if (this.shouldShowLast8Cards()) this.mainForm.drawingFormHelper.DrawDiscardedCards();
 
         if (shouldDraw) {
             this.drawAllPlayerHandCards();
@@ -656,7 +657,7 @@ export class GameReplayScene extends Phaser.Scene {
         this.mainForm.tractorPlayer.replayEntity.CurrentTrickStates.unshift(trick);
         if (trick == null) {
             this.mainForm.tractorPlayer.CurrentHandState.Score -= this.mainForm.tractorPlayer.CurrentHandState.ScorePunishment + this.mainForm.tractorPlayer.CurrentHandState.ScoreLast8CardsBase * this.mainForm.tractorPlayer.CurrentHandState.ScoreLast8CardsMultiplier;
-            if (this.yesFirstPersonView !== "true") this.mainForm.drawingFormHelper.DrawDiscardedCards();
+            if (this.shouldShowLast8Cards()) this.mainForm.drawingFormHelper.DrawDiscardedCards();
         }
         else if (Object.keys(trick.ShowedCards).length == 4) {
             for (const [key, value] of Object.entries(trick.ShowedCards)) {
@@ -745,6 +746,11 @@ export class GameReplayScene extends Phaser.Scene {
                 }
             }
         }
+    }
+
+    private shouldShowLast8Cards() {
+        return this.yesFirstPersonView !== "true" ||
+            this.mainForm.tractorPlayer.CurrentHandState.Starter === this.mainForm.tractorPlayer.replayEntity.Players[0];
     }
 
     public saveSettings() {
