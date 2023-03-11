@@ -222,7 +222,7 @@ export class GameReplayScene extends Phaser.Scene {
             .setShadow(2, 2, "#333333", 2, true, true)
             .setStyle({ backgroundColor: 'gray' })
             .setInteractive({ useHandCursor: true })
-            .on('pointerup', () => this.btnFirstTrick_Click())
+            .on('pointerup', () => this.btnFirstPersonView_Click())
             .on('pointerover', () => {
                 this.btnFirstPersonView.setStyle({ backgroundColor: 'lightblue' })
                 // tooltip

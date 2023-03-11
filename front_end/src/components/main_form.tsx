@@ -1686,7 +1686,13 @@ export class MainForm {
             this.gameScene.yesDragSelect = cbxYesDragSelect.checked.toString()
         }
 
+        if (this.gameScene.isReplayMode) return;
+
+        // 以下为需要连接服务器才能显示的设置
         // 游戏道具栏
+        let divDaojuWrapper = this.modalForm.getChildByID("divDaojuWrapper");
+        divDaojuWrapper.style.display = "block";
+
         // 升币
         let lblShengbi = this.modalForm.getChildByID("lblShengbi");
         let shengbiNum = 0;
@@ -1771,50 +1777,51 @@ export class MainForm {
             }
         }
 
-        let cbxNoOverridingFlag = this.modalForm.getChildByID("cbxNoOverridingFlag");
-        cbxNoOverridingFlag.checked = this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag;
-        cbxNoOverridingFlag.onchange = () => {
-            this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag = cbxNoOverridingFlag.checked;
-            this.gameScene.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
-        };
+        if (this.gameScene.isInGameRoom()) {
+            let cbxNoOverridingFlag = this.modalForm.getChildByID("cbxNoOverridingFlag");
+            cbxNoOverridingFlag.checked = this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag;
+            cbxNoOverridingFlag.onchange = () => {
+                this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag = cbxNoOverridingFlag.checked;
+                this.gameScene.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
+            };
 
-        if (this.gameScene.isReplayMode || this.gameScene.isInGameHall()) {
             let divRoomSettingsWrapper = this.modalForm.getChildByID("divRoomSettingsWrapper");
-            divRoomSettingsWrapper.remove();
-        } else if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
-            let divRoomSettings = this.modalForm.getChildByID("divRoomSettings");
-            divRoomSettings.remove();
-            cbxNoOverridingFlag.disabled = true;
-        } else {
-            let btnResumeGame = this.modalForm.getChildByID("btnResumeGame")
-            btnResumeGame.onclick = () => {
-                if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
-                    alert("游戏中途不允许继续牌局,请完成此盘游戏后重试")
-                } else {
-                    this.gameScene.sendMessageToServer(ResumeGameFromFile_REQUEST, this.tractorPlayer.MyOwnId, "");
+            divRoomSettingsWrapper.style.display = "block";
+            if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
+                cbxNoOverridingFlag.disabled = true;
+            } else {
+                let divRoomSettings = this.modalForm.getChildByID("divRoomSettings");
+                divRoomSettings.style.display = "block";
+                let btnResumeGame = this.modalForm.getChildByID("btnResumeGame")
+                btnResumeGame.onclick = () => {
+                    if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+                        alert("游戏中途不允许继续牌局,请完成此盘游戏后重试")
+                    } else {
+                        this.gameScene.sendMessageToServer(ResumeGameFromFile_REQUEST, this.tractorPlayer.MyOwnId, "");
+                    }
+                    this.DesotroyModalForm();
                 }
-                this.DesotroyModalForm();
-            }
 
-            let btnRandomSeat = this.modalForm.getChildByID("btnRandomSeat")
-            btnRandomSeat.onclick = () => {
-                if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
-                    alert("游戏中途不允许随机组队,请完成此盘游戏后重试")
-                } else {
-                    this.gameScene.sendMessageToServer(RandomSeat_REQUEST, this.tractorPlayer.MyOwnId, "");
+                let btnRandomSeat = this.modalForm.getChildByID("btnRandomSeat")
+                btnRandomSeat.onclick = () => {
+                    if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+                        alert("游戏中途不允许随机组队,请完成此盘游戏后重试")
+                    } else {
+                        this.gameScene.sendMessageToServer(RandomSeat_REQUEST, this.tractorPlayer.MyOwnId, "");
+                    }
+                    this.DesotroyModalForm();
                 }
-                this.DesotroyModalForm();
-            }
 
-            let btnSwapSeat = this.modalForm.getChildByID("btnSwapSeat")
-            btnSwapSeat.onclick = () => {
-                if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
-                    alert("游戏中途不允许互换座位,请完成此盘游戏后重试")
-                } else {
-                    let selectSwapSeat = this.modalForm.getChildByID("selectSwapSeat")
-                    this.gameScene.sendMessageToServer(SwapSeat_REQUEST, this.tractorPlayer.MyOwnId, selectSwapSeat.value);
+                let btnSwapSeat = this.modalForm.getChildByID("btnSwapSeat")
+                btnSwapSeat.onclick = () => {
+                    if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+                        alert("游戏中途不允许互换座位,请完成此盘游戏后重试")
+                    } else {
+                        let selectSwapSeat = this.modalForm.getChildByID("selectSwapSeat")
+                        this.gameScene.sendMessageToServer(SwapSeat_REQUEST, this.tractorPlayer.MyOwnId, selectSwapSeat.value);
+                    }
+                    this.DesotroyModalForm();
                 }
-                this.DesotroyModalForm();
             }
         }
     }
