@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/shengjiweb/static/css/main.5ad0da08.css",
-    "main.js": "/shengjiweb/static/js/main.a796430a.js",
+    "main.js": "/shengjiweb/static/js/main.be8a9e2e.js",
     "static/js/787.22edae46.chunk.js": "/shengjiweb/static/js/787.22edae46.chunk.js",
     "static/media/badjob.png": "/shengjiweb/static/media/badjob.42a9576209b8b6ef2382.png",
     "static/media/badjob2.png": "/shengjiweb/static/media/badjob2.69b0d76db1dea5a75369.png",
@@ -108,8 +108,8 @@
     "static/media/skin_boy_5.webp": "/shengjiweb/static/media/skin_boy_5.55fcddc983d5a68e9afc.webp",
     "static/media/skin_boy_8.webp": "/shengjiweb/static/media/skin_boy_8.8192a1e68a6973089cca.webp",
     "static/media/skin_girl_3.webp": "/shengjiweb/static/media/skin_girl_3.0a63671dd0752e219cd0.webp",
+    "static/media/settings_form.htm": "/shengjiweb/static/media/settings_form.850211ecfd9bbb80eb99.htm",
     "static/media/skin_boy_2.webp": "/shengjiweb/static/media/skin_boy_2.d650369c173d12fca638.webp",
-    "static/media/settings_form.htm": "/shengjiweb/static/media/settings_form.e8d258aece1b0d2c74be.htm",
     "static/media/skin_boy_4.webp": "/shengjiweb/static/media/skin_boy_4.a086931d0556cf5344a3.webp",
     "static/media/skin_girl_6.webp": "/shengjiweb/static/media/skin_girl_6.cdbee26191bd653abb3d.webp",
     "static/media/biyue1.mp3": "/shengjiweb/static/media/biyue1.1522c92cde01bc5f3e9a.mp3",
@@ -133,11 +133,11 @@
     "static/media/replay_form.htm": "/shengjiweb/static/media/replay_form.0072c5b6eb0c31dfce5a.htm",
     "static/media/chatPanel.webp": "/shengjiweb/static/media/chatPanel.cd4c19676a3defaa1fe7.webp",
     "main.5ad0da08.css.map": "/shengjiweb/static/css/main.5ad0da08.css.map",
-    "main.a796430a.js.map": "/shengjiweb/static/js/main.a796430a.js.map",
+    "main.be8a9e2e.js.map": "/shengjiweb/static/js/main.be8a9e2e.js.map",
     "787.22edae46.chunk.js.map": "/shengjiweb/static/js/787.22edae46.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5ad0da08.css",
-    "static/js/main.a796430a.js"
+    "static/js/main.be8a9e2e.js"
   ]
 }
