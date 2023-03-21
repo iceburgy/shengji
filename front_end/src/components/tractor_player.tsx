@@ -19,7 +19,6 @@ import { IDBHelper } from './idb_helper';
 
 const PlayerMakeTrump_REQUEST = "PlayerMakeTrump"
 const UsedShengbi_REQUEST = "UsedShengbi"
-const UsedShengbiType_Qiangliangka = "UsedShengbiType_Qiangliangka"
 const NotifyPong_REQUEST = "NotifyPong"
 
 export class TractorPlayer {
@@ -487,8 +486,8 @@ export class TractorPlayer {
         let params: number[] = [trumpExposingPoker, trump]
         this.mainForm.gameScene.sendMessageToServer(PlayerMakeTrump_REQUEST, this.PlayerId, JSON.stringify(params))
     }
-    public UsedShengbi() {
-        this.mainForm.gameScene.sendMessageToServer(UsedShengbi_REQUEST, this.PlayerId, UsedShengbiType_Qiangliangka)
+    public UsedShengbi(usedShengbiType: string) {
+        this.mainForm.gameScene.sendMessageToServer(UsedShengbi_REQUEST, this.PlayerId, usedShengbiType)
     }
 
     // handle failure

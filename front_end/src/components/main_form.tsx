@@ -45,6 +45,7 @@ const PLAYER_EXIT_AND_OBSERVE_REQUEST = "ExitAndObserve"
 const PLAYER_QIANDAO_REQUEST = "PlayerQiandao"
 const BUY_USE_SKIN_REQUEST = "BuyUseSkin"
 const cookies = new Cookies();
+const UsedShengbiType_Qiangliangka = "UsedShengbiType_Qiangliangka"
 
 export class MainForm {
     public gameScene: GameScene | GameReplayScene
@@ -860,7 +861,7 @@ export class MainForm {
                 usedShengbi = true;
             }
             this.tractorPlayer.ExposeTrump(next, trumpToExpose);
-            if (usedShengbi) this.tractorPlayer.UsedShengbi();
+            if (usedShengbi) this.tractorPlayer.UsedShengbi(UsedShengbiType_Qiangliangka);
         }
     }
 
