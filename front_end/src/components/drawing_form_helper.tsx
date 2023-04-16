@@ -597,10 +597,10 @@ export class DrawingFormHelper {
                     else trumpExpIndex = SuitEnums.TrumpExposingPoker.PairBlackJoker
                 }
                 imagebar.on('pointerdown', () => {
-                    this.mainForm.tractorPlayer.ExposeTrump(trumpExpIndex, i + 1);
+                    this.mainForm.tractorPlayer.ExposeTrump(trumpExpIndex, i + 1, 0);
                 })
                 image.on('pointerdown', () => {
-                    this.mainForm.tractorPlayer.ExposeTrump(trumpExpIndex, i + 1);
+                    this.mainForm.tractorPlayer.ExposeTrump(trumpExpIndex, i + 1, 0);
                 })
             }
 

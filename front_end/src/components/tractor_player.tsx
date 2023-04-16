@@ -482,8 +482,8 @@ export class TractorPlayer {
         }
         return availableTrumps;
     }
-    public ExposeTrump(trumpExposingPoker: number, trump: number) {
-        let params: number[] = [trumpExposingPoker, trump]
+    public ExposeTrump(trumpExposingPoker: number, trump: number, usedShengbi: number) {
+        let params: number[] = [trumpExposingPoker, trump, usedShengbi]
         this.mainForm.gameScene.sendMessageToServer(PlayerMakeTrump_REQUEST, this.PlayerId, JSON.stringify(params))
     }
     public UsedShengbi(usedShengbiType: string) {

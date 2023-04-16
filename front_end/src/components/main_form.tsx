@@ -856,12 +856,11 @@ export class MainForm {
                     next = SuitEnums.TrumpExposingPoker.PairRedJoker;
             }
             // 之前自己抢亮，后来再双亮加持不消耗抢亮卡
-            let usedShengbi = false;
+            let usedShengbi = 0;
             if (next === SuitEnums.TrumpExposingPoker.SingleRank || this.tractorPlayer.CurrentHandState.TrumpMaker !== this.tractorPlayer.MyOwnId) {
-                usedShengbi = true;
+                usedShengbi = 1;
             }
-            this.tractorPlayer.ExposeTrump(next, trumpToExpose);
-            if (usedShengbi) this.tractorPlayer.UsedShengbi(UsedShengbiType_Qiangliangka);
+            this.tractorPlayer.ExposeTrump(next, trumpToExpose, usedShengbi);
         }
     }
 
@@ -901,7 +900,8 @@ export class MainForm {
         }
 
         //摸牌结束，如果处于托管状态，则取消托管
-        if (this.btnRobot.text == "取消" && !this.tractorPlayer.CurrentRoomSetting.IsFullDebug) {
+        var me: PlayerEntity = CommonMethods.GetPlayerByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.MyOwnId);
+        if (me.IsRobot && this.btnRobot.text == "取消" && !this.tractorPlayer.CurrentRoomSetting.IsFullDebug) {
             this.btnRobot_Click()
         }
 

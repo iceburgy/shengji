@@ -111,6 +111,17 @@ export class CommonMethods {
         return -1
     }
 
+    public static GetPlayerByID(a: PlayerEntity[], playerID: string): PlayerEntity {
+        var res: any;
+        for (let i = 0; i < a.length; i++) {
+            var p = a[i]
+            if (p != null && p.PlayerId == playerID) {
+                res = p;
+            }
+        }
+        return res;
+    }
+
     public static GetPlayerIndexByPos(a: PlayerEntity[], playerID: string, pos: number): number {
         let selfIndex = CommonMethods.GetPlayerIndexByID(a, playerID);
         return (selfIndex + (pos - 1)) % 4;
