@@ -225,7 +225,7 @@ export class CommonMethods {
             } as { [key: string]: any };
             for (var attr in instance) {
                 if ((instance as Object).hasOwnProperty(attr))
-                    copyInstance[attr] = CommonMethods.deepCopy<any>(instance[attr]);
+                    copyInstance[attr] = CommonMethods.deepCopy<any>((instance as any)[attr]);
             }
             return copyInstance as T;
         }

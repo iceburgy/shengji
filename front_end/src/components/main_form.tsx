@@ -1758,9 +1758,14 @@ export class MainForm {
         btnBuyOrUseSelectedSkin.onclick = () => {
             let skinName = selectFullSkinInfo.value;
             let isSkinOwned = this.IsSkinOwned(skinName);
+            if (isSkinOwned) {
+                this.gameScene.sendMessageToServer(BUY_USE_SKIN_REQUEST, this.tractorPlayer.MyOwnId, skinName);
+                this.DesotroyModalForm();
+                return;
+            }
             let isSkinAfordableWithConfMsg: any[] = this.IsSkinAfordableWithConfMsg(skinName);
             let isSkinAfordable = isSkinAfordableWithConfMsg[0] as boolean;
-            if (!isSkinOwned && !isSkinAfordable) {
+            if (!isSkinAfordable) {
                 alert("升币余额不足，无法购买此皮肤")
             } else {
                 let doTransaction = true;
