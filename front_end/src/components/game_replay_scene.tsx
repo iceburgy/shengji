@@ -372,7 +372,7 @@ export class GameReplayScene extends Phaser.Scene {
         IDBHelper.ReadReplayEntityAll((dtList: string[]) => {
             let dates: string[] = [];
             for (let i = 0; i < dtList.length; i++) {
-                let dt: ReplayEntity = dtList[i];
+                let dt: string = dtList[i];
                 let datetimes: string[] = dt.split(IDBHelper.replaySeparator);
                 let dateString = datetimes[0];
                 if (!dates.includes(dateString)) {
@@ -382,7 +382,7 @@ export class GameReplayScene extends Phaser.Scene {
                     that.selectDates.add(option);
                 }
             }
-            that.selectDates.selectedIndex = selectDates.options.length - 1;
+            that.selectDates.selectedIndex = that.selectDates.options.length - 1;
             that.onDatesSelectChange(true, 0);
         });
     }
