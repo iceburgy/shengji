@@ -3,6 +3,8 @@ import { CurrentPoker } from './current_poker';
 import { PlayerEntity } from './player_entity';
 import { SuitEnums } from './suit_enums';
 export class CommonMethods {
+    public static PLAYER_CLIENT_TYPE_shengjiweb = "PlayerClientType_shengjiweb"
+    public static PLAYER_CLIENT_TYPE_TLJAPP = "PlayerClientType_tljapp"
     public static SendEmoji_REQUEST = "SendEmoji"
     public static SendBroadcast_REQUEST = "SendBroadcast"
     public static PlayerHasCutCards_REQUEST = "PlayerHasCutCards"

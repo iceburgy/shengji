@@ -170,11 +170,10 @@ import { ReplayEntity } from "./replay_entity";
 import { IDBHelper } from "./idb_helper";
 import { SGCSPlayer } from "./sg_cs_player";
 import { SGCSState } from "./sg_cs_state";
+import { EnterHallInfo } from "./enter_hall_info";
 
 const cookies = new Cookies();
 const SET_PLAYER_NAME_REQUEST = "set_player_name"
-const PLAYER_CLIENT_TYPE_REQUEST = "PlayerClientType"
-const PLAYER_CLIENT_TYPE_shengjiweb = "PlayerClientType_shengjiweb"
 const PLAYER_ENTER_HALL_REQUEST = "PlayerEnterHall"
 const JOIN_ROOM_REQUEST = "join_room"
 const PREPARE_REQUEST = "prepare"
@@ -609,8 +608,8 @@ export class GameScene extends Phaser.Scene {
                 this.playerName = "";
             }
         }
-        this.sendMessageToServer(PLAYER_CLIENT_TYPE_REQUEST, this.playerName, PLAYER_CLIENT_TYPE_shengjiweb);
-        this.sendMessageToServer(PLAYER_ENTER_HALL_REQUEST, this.playerName, JSON.stringify([this.nickNameOverridePass, this.playerEmail]));
+        let enterHallInfo: EnterHallInfo = new EnterHallInfo(this.nickNameOverridePass, this.playerEmail, CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb);
+        this.sendMessageToServer(PLAYER_ENTER_HALL_REQUEST, this.playerName, JSON.stringify(enterHallInfo));
         this.mainForm = new MainForm(this)
         this.loadAudioFiles()
         this.input.mouse.disableContextMenu();
