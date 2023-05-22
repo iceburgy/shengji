@@ -569,11 +569,11 @@ export class MainForm {
                         skinImage = this.gameScene.add.sprite(0, 0, skinInUse)
                             .setDepth(-1)
                             .setVisible(false)
-                            .setInteractive()
-                            .on('pointerup', () => {
-                                if (skinImage.anims.isPlaying) skinImage.stop();
-                                else skinImage.play(skinInUse);
-                            });
+                            // .setInteractive()
+                            // .on('pointerup', () => {
+                            //     if (skinImage.anims.isPlaying) skinImage.stop();
+                            //     else skinImage.play(skinInUse);
+                            // });
                         skinImage.play(skinInUse);
                     }
                     let x = this.gameScene.coordinates.playerSkinPositions[i].x;
@@ -2430,11 +2430,11 @@ export class MainForm {
                     this.MySkinInUse = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x, this.gameScene.coordinates.playerSkinPositions[0].y, this.gameScene.skinInUse)
                 } else {
                     this.MySkinInUse = this.gameScene.add.sprite(this.gameScene.coordinates.playerSkinPositions[0].x, this.gameScene.coordinates.playerSkinPositions[0].y, this.gameScene.skinInUse)
-                        .setInteractive()
-                        .on('pointerup', () => {
-                            if (this.MySkinInUse.anims.isPlaying) this.MySkinInUse.stop();
-                            else this.MySkinInUse.play(this.gameScene.skinInUse);
-                        })
+                        // .setInteractive()
+                        // .on('pointerup', () => {
+                        //     if (this.MySkinInUse.anims.isPlaying) this.MySkinInUse.stop();
+                        //     else this.MySkinInUse.play(this.gameScene.skinInUse);
+                        // })
                         .play(this.gameScene.skinInUse);
                 }
                 let width = this.gameScene.coordinates.cardHeight * (this.MySkinInUse.width / this.MySkinInUse.height);
@@ -2482,11 +2482,11 @@ export class MainForm {
                 } else {
                     skinImage = this.gameScene.add.sprite(0, 0, skinInUse)
                         .setVisible(false)
-                        .setInteractive()
-                        .on('pointerup', () => {
-                            if (skinImage.anims.isPlaying) skinImage.stop();
-                            else skinImage.play(skinInUse);
-                        });
+                        // .setInteractive()
+                        // .on('pointerup', () => {
+                        //     if (skinImage.anims.isPlaying) skinImage.stop();
+                        //     else skinImage.play(skinInUse);
+                        // });
                     skinImage.play(skinInUse);
                 }
                 let x = this.gameScene.coordinates.playerSkinPositions[i].x;
