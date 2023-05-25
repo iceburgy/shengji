@@ -451,19 +451,19 @@ export class MainForm {
             this.btnExitAndObserve.setInteractive({ useHandCursor: true })
             this.btnExitAndObserve.setColor('white')
 
-            // small games
-            this.btnSmallGames.setInteractive({ useHandCursor: true })
-            this.btnSmallGames.setColor('white')
+            // // small games
+            // this.btnSmallGames.setInteractive({ useHandCursor: true })
+            // this.btnSmallGames.setColor('white')
         } else {
             this.btnReady.disableInteractive()
             this.btnReady.setColor('gray')
             this.btnExitAndObserve.disableInteractive()
             this.btnExitAndObserve.setColor('gray')
 
-            // small games
-            this.btnSmallGames.disableInteractive()
-            this.btnSmallGames.setColor('gray')
-            this.groupSmallGames.setVisible(false);
+            // // small games
+            // this.btnSmallGames.disableInteractive()
+            // this.btnSmallGames.setColor('gray')
+            // this.groupSmallGames.setVisible(false);
         }
         this.btnReady.setText(readyToStart ? "取消" : "就绪")
         this.setStartLabels()
@@ -516,11 +516,11 @@ export class MainForm {
         this.btnReady.setVisible(!this.tractorPlayer.isObserver)
         this.btnExitAndObserve.setVisible(!this.tractorPlayer.isObserver)
 
-        // small games
-        this.btnSmallGames.setVisible(!this.tractorPlayer.isObserver);
-        if (this.tractorPlayer.isObserver) {
-            this.groupSmallGames.setVisible(false);
-        }
+        // // small games
+        // this.btnSmallGames.setVisible(!this.tractorPlayer.isObserver);
+        // if (this.tractorPlayer.isObserver) {
+        //     this.groupSmallGames.setVisible(false);
+        // }
 
         this.btnRobot.setVisible(!this.tractorPlayer.isObserver)
 
@@ -716,10 +716,10 @@ export class MainForm {
         this.btnExitAndObserve.disableInteractive()
         this.btnExitAndObserve.setColor('gray')
 
-        // small games
-        this.btnSmallGames.disableInteractive()
-        this.btnSmallGames.setColor('gray')
-        this.groupSmallGames.setVisible(false);
+        // // small games
+        // this.btnSmallGames.disableInteractive()
+        // this.btnSmallGames.setColor('gray')
+        // this.groupSmallGames.setVisible(false);
 
         this.destroyGameRoom();
         this.gameScene.sendMessageToServer(PLAYER_EXIT_AND_OBSERVE_REQUEST, this.tractorPlayer.MyOwnId, "");
