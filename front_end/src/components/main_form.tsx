@@ -2526,9 +2526,9 @@ export class MainForm {
         let isPlayerInGameHall = this.gameScene.isInGameHall();
         if (0 <= emojiType && emojiType < CommonMethods.winEmojiTypeLength && Object.keys(this.PlayerPosition).includes(playerID)) {
             msgString = CommonMethods.emojiMsgs[emojiType];
-            if (!isPlayerInGameHall) {
-                this.drawingFormHelper.DrawEmojiByPosition(this.PlayerPosition[playerID], emojiType, emojiIndex, isCenter);
-            }
+            // if (!isPlayerInGameHall) {
+            //     this.drawingFormHelper.DrawEmojiByPosition(this.PlayerPosition[playerID], emojiType, emojiIndex, isCenter);
+            // }
         }
         if (isCenter) return;
         let finalMsg = "";
