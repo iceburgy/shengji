@@ -2213,7 +2213,6 @@ export class MainForm {
     }
 
     public NotifyGameHallEventHandler(roomStateList: RoomState[], playerList: string[]) {
-        this.loadEmojiForm();
         this.updateOnlineAndRoomPlayerList(roomStateList, playerList);
         if (playerList.includes(this.tractorPlayer.MyOwnId)) {
             this.tractorPlayer.destroyAllClientMessages();

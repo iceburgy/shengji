@@ -610,8 +610,10 @@ export class GameScene extends Phaser.Scene {
         }
         let enterHallInfo: EnterHallInfo = new EnterHallInfo(this.nickNameOverridePass, this.playerEmail, CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb);
         this.sendMessageToServer(PLAYER_ENTER_HALL_REQUEST, this.playerName, JSON.stringify(enterHallInfo));
-        this.mainForm = new MainForm(this)
-        this.loadAudioFiles()
+        this.mainForm = new MainForm(this);
+        this.mainForm.loadEmojiForm();
+
+        this.loadAudioFiles();
         this.input.mouse.disableContextMenu();
         CommonMethods.BuildCardNumMap()
         EmojiUtil.CreateAllAnimations(this);
