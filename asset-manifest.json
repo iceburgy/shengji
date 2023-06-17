@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/shengjiweb/static/css/main.5ad0da08.css",
-    "main.js": "/shengjiweb/static/js/main.63db53a3.js",
+    "main.js": "/shengjiweb/static/js/main.813c4944.js",
     "static/js/787.22edae46.chunk.js": "/shengjiweb/static/js/787.22edae46.chunk.js",
     "static/media/badjob.png": "/shengjiweb/static/media/badjob.42a9576209b8b6ef2382.png",
     "static/media/badjob2.png": "/shengjiweb/static/media/badjob2.69b0d76db1dea5a75369.png",
@@ -133,11 +133,11 @@
     "static/media/replay_form.htm": "/shengjiweb/static/media/replay_form.0072c5b6eb0c31dfce5a.htm",
     "static/media/chatPanel.webp": "/shengjiweb/static/media/chatPanel.cd4c19676a3defaa1fe7.webp",
     "main.5ad0da08.css.map": "/shengjiweb/static/css/main.5ad0da08.css.map",
-    "main.63db53a3.js.map": "/shengjiweb/static/js/main.63db53a3.js.map",
+    "main.813c4944.js.map": "/shengjiweb/static/js/main.813c4944.js.map",
     "787.22edae46.chunk.js.map": "/shengjiweb/static/js/787.22edae46.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5ad0da08.css",
-    "static/js/main.63db53a3.js"
+    "static/js/main.813c4944.js"
   ]
 }
