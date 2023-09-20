@@ -332,7 +332,7 @@ export class SGDrawingHelper {
         if (!this.IsPlayingGame) return;
         this.mainForm.gameScene.physics.pause();
         this.IsPlayingGame = "";
-        this.mainForm.NotifyStartTimerEventHandler(delaySeconds)
+        this.mainForm.NotifyStartTimerEventHandler(delaySeconds, "")
         setTimeout(() => {
             this.hiddenGamesImages.forEach(image => {
                 if (image.clear && typeof image.clear === "function") image.clear(true, true);

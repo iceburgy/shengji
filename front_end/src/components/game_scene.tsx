@@ -784,7 +784,8 @@ export class GameScene extends Phaser.Scene {
 
     private handleNotifyStartTimer(objList: []) {
         var result: number = objList[0];
-        this.mainForm.tractorPlayer.NotifyStartTimer(result)
+        var playerID: string = objList[1];
+        this.mainForm.tractorPlayer.NotifyStartTimer(result, playerID);
     }
 
     private handleNotifyDumpingValidationResult(objList: []) {

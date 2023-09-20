@@ -500,8 +500,8 @@ export class TractorPlayer {
         this.mainForm.NotifyTryToDumpResultEventHandler(result)
     }
 
-    public NotifyStartTimer(timerLength: number) {
-        this.mainForm.NotifyStartTimerEventHandler(timerLength)
+    public NotifyStartTimer(timerLength: number, playerID: string) {
+        this.mainForm.NotifyStartTimerEventHandler(timerLength, playerID)
     }
 
     public NotifyGameHall(roomStateList: RoomState[], playerList: string[]) {

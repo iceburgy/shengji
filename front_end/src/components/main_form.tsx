@@ -83,6 +83,7 @@ export class MainForm {
     public sgDrawingHelper: SGDrawingHelper
     public IsDebug: boolean
     public timerIntervalID: any[]
+    public timerCountDownID: any
     public timerCountDown: number
     public timerImage: Phaser.GameObjects.Text
     public modalForm: any
@@ -477,7 +478,21 @@ export class MainForm {
         this.IsDebug = isRobot;
 
         if (shouldTrigger) {
-            if (!this.tractorPlayer.CurrentTrickState.IsStarted()) this.RobotPlayStarting();
+            // 等待玩家切牌
+            if (this.modalForm) {
+                let btnRandom = this.modalForm.getChildByID("btnRandom");
+                if (btnRandom) {
+                    let cutPoint = 0;
+                    let cutInfo = `取消,${cutPoint}`;
+                    this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+                    return;
+                }
+            }
+
+            // 其它情况：埋底，领出，跟出
+            if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards &&
+                this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) this.DiscardingLast8();
+            else if (!this.tractorPlayer.CurrentTrickState.IsStarted()) this.RobotPlayStarting();
             else this.RobotPlayFollowing();
         }
     }
@@ -569,11 +584,11 @@ export class MainForm {
                         skinImage = this.gameScene.add.sprite(0, 0, skinInUse)
                             .setDepth(-1)
                             .setVisible(false)
-                            // .setInteractive()
-                            // .on('pointerup', () => {
-                            //     if (skinImage.anims.isPlaying) skinImage.stop();
-                            //     else skinImage.play(skinInUse);
-                            // });
+                        // .setInteractive()
+                        // .on('pointerup', () => {
+                        //     if (skinImage.anims.isPlaying) skinImage.stop();
+                        //     else skinImage.play(skinInUse);
+                        // });
                         skinImage.play(skinInUse);
                     }
                     let x = this.gameScene.coordinates.playerSkinPositions[i].x;
@@ -953,7 +968,7 @@ export class MainForm {
         // g.Dispose();
 
         //托管代打：埋底
-        if (this.tractorPlayer.CurrentRoomSetting.IsFullDebug && this.IsDebug && !this.tractorPlayer.isObserver) {
+        if (this.IsDebug && !this.tractorPlayer.isObserver) {
             if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards &&
                 this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) //如果等我扣牌
             {
@@ -2083,7 +2098,7 @@ export class MainForm {
         }
     }
 
-    public NotifyStartTimerEventHandler(timerLength: number) {
+    public NotifyStartTimerEventHandler(timerLength: number, playerID: string) {
         if (timerLength == 0) {
             this.timerCountDown = 0
             this.clearTimer()
@@ -2095,6 +2110,14 @@ export class MainForm {
         this.timerImage.depth = 100;
         this.timerImage.setText(this.timerCountDown.toString())
         this.timerIntervalID.push(setInterval(() => { this.timerTicker() }, 1000))
+
+        if (playerID && playerID === this.tractorPlayer.PlayerId) {
+            this.timerCountDownID = setTimeout(() => {
+                if (!this.tractorPlayer.isObserver) {
+                    this.btnRobot_Click();
+                }
+            }, 1000 * timerLength);
+        }
     }
 
     private timerTicker() {
@@ -2109,6 +2132,10 @@ export class MainForm {
     }
 
     private clearTimer() {
+        if (this.timerCountDownID) {
+            clearInterval(this.timerCountDownID);
+            this.timerCountDownID = undefined;
+        }
         if (this.timerIntervalID.length > 0) clearInterval(this.timerIntervalID.shift())
         if (this.timerIntervalID.length == 0 && this.timerImage) this.timerImage.setVisible(false)
     }
@@ -2481,11 +2508,11 @@ export class MainForm {
                 } else {
                     skinImage = this.gameScene.add.sprite(0, 0, skinInUse)
                         .setVisible(false)
-                        // .setInteractive()
-                        // .on('pointerup', () => {
-                        //     if (skinImage.anims.isPlaying) skinImage.stop();
-                        //     else skinImage.play(skinInUse);
-                        // });
+                    // .setInteractive()
+                    // .on('pointerup', () => {
+                    //     if (skinImage.anims.isPlaying) skinImage.stop();
+                    //     else skinImage.play(skinInUse);
+                    // });
                     skinImage.play(skinInUse);
                 }
                 let x = this.gameScene.coordinates.playerSkinPositions[i].x;
